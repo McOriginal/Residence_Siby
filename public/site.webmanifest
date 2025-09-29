@@ -1,0 +1,21 @@
+{
+  "lang": "fr",
+  "name": "Commerce Général Groupe Siby",
+  "short_name": "Groupe Siby",
+  "description": "Groupe Siby - Votre quincaillerie de confiance à BAMAKO, MALI. Spécialisée dans la vente de matériel de quincaillerie, Immoblier, Location de Voiture , plomberie, électricité et bien plus.",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": " #ffffff",
+  "background_color": " #FEF3E2",
+  "display": "standalone"
+}

@@ -1,0 +1,19 @@
+name: Déploiement sur Render
+
+on:
+  push:
+    branches:
+      - Main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Déclenchement du Deploy Hook de Render
+        run: curl -X POST ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+
+      - name: Statut du déploiement
+        run: echo "✨ Déployé avec Succès ✅"
