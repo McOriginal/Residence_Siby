@@ -12,10 +12,9 @@ import UserProfile from '../Pages/Authentication/user-profile';
 
 // Importing other pages
 import PaiementsListe from '../Pages/Paiements/PaiementsListe.js';
-import ApprovisonnementListe from '../Pages/Approvisonnements/ApprovisonnementListe.js';
 import DepenseListe from '../Pages/Depenses/DepenseListe.js';
 import UpdatePassword from '../Pages/Authentication/UpdatePassword.js';
-import VerifyCode from '../Pages/Authentication/VerifyCode.js';
+
 import ResetPassword from '../Pages/Authentication/ResetPassword.js';
 
 import PaiementsHistorique from '../Pages/Commandes/PaiementsHistorique/PaiementsHistorique.js';
@@ -24,9 +23,9 @@ import UsersProfilesListe from '../Pages/Authentication/UsersProfilesListe.js';
 import ProfileDetail from '../Pages/Authentication/ProfileDetail.js';
 import Bilans from '../Pages/Bilans/Bilans.js';
 import Secteur from '../Pages/Secteurs/Secteur.js';
+import AppartementListe from '../Pages/Appartements/AppartementListe.js';
 
 const sharedRoutes = [
-
   // Paiements Liste
   { path: '/paiements', component: <PaiementsListe /> },
 
@@ -45,11 +44,12 @@ const authProtectedRoutes = [
     component: <Navigate to='/dashboard' />,
   },
 
-{path: '/secteurs', component: <Secteur />},
+  { path: '/secteurs', component: <Secteur /> },
+
+  { path: '/secteur/:id', component: <AppartementListe /> },
 
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },
-
 
   // Dépenses
   { path: '/depenses', component: <DepenseListe /> },
@@ -68,7 +68,6 @@ const authProtectedRoutes = [
 
   // Raports & Bilans
   { path: '/bilans', component: <Bilans /> },
-
 
   { path: '/register', component: <Register /> },
   // --------------------------------------------------------
@@ -94,7 +93,6 @@ const publicRoutes = [
   { path: '/register', component: <Register /> },
   { path: '/login', component: <Login /> },
   { path: '/forgotPassword', component: <ForgetPasswordPage /> },
-  { path: '/verifyCode', component: <VerifyCode /> },
   { path: '/resetPassword', component: <ResetPassword /> },
 ];
 

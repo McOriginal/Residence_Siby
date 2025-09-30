@@ -27,7 +27,6 @@ export const useAllSecteur = () =>
     queryFn: () => api.get('/secteurs/getAllSecteurs').then((res) => res.data),
   });
 
-
 // Obtenir un Secteur
 export const useOneSecteur = (id) =>
   useQuery({

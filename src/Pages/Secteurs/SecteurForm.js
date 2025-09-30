@@ -10,13 +10,12 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import {  useState } from 'react';
+import { useState } from 'react';
 import {
   errorMessageAlert,
   successMessageAlert,
 } from '../components/AlerteModal';
 import LoadingSpiner from '../components/LoadingSpiner';
-
 
 import { useCreateSecteur, useUpdateSecteur } from '../../Api/queriesSecteurs';
 
@@ -25,8 +24,6 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
   const { mutate: createSecteur } = useCreateSecteur();
   // Secteur Query pour Mettre à jour la Secteur
   const { mutate: updateSecteur } = useUpdateSecteur();
-
-
 
   // State pour gérer le chargement
   const [isLoading, setIsLoading] = useState(false);
@@ -37,16 +34,13 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
     enableReinitialize: true,
 
     initialValues: {
-      secteur:
-       secteurToEdit?._id || undefined,
-     adresse: secteurToEdit?.adresse || undefined,
-      secteurNumber: secteurToEdit?.reduction || undefined,
-    
+      secteur: secteurToEdit?._id || undefined,
+      adresse: secteurToEdit?.adresse || undefined,
+      secteurNumber: secteurToEdit?.secteurNumber || undefined,
     },
     validationSchema: Yup.object({
       adresse: Yup.string().required('Ce champ est obligatoire'),
       secteurNumber: Yup.number().required('Ce champ est obligatoire'),
-     
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -83,25 +77,22 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
 
       // Sinon on créer un nouveau étudiant
       else {
-        createSecteur(
-         values,
-          {
-            onSuccess: () => {
-              successMessageAlert('Secteur ajoutée avec succès');
-              setIsLoading(false);
-              resetForm();
-              tog_form_modal();
-            },
-            onError: (err) => {
-              const errorMessage =
-                err?.response?.data?.message ||
-                err?.message ||
-                "Oh Oh ! une erreur est survenu lors de l'enregistrement";
-              errorMessageAlert(errorMessage);
-              setIsLoading(false);
-            },
-          }
-        );
+        createSecteur(values, {
+          onSuccess: () => {
+            successMessageAlert('Secteur ajoutée avec succès');
+            setIsLoading(false);
+            resetForm();
+            tog_form_modal();
+          },
+          onError: (err) => {
+            const errorMessage =
+              err?.response?.data?.message ||
+              err?.message ||
+              "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+            errorMessageAlert(errorMessage);
+            setIsLoading(false);
+          },
+        });
       }
       setTimeout(() => {
         if (isLoading) {
@@ -121,8 +112,6 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
         return false;
       }}
     >
-    
-
       <Row>
         <Col md='6'>
           <FormGroup className='mb-3'>
@@ -131,7 +120,6 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
             <Input
               name='adresse'
               type='text'
-            
               placeholder='Adresse du Secteur Ex: ( Hamdallaye, Sotuba, Missabougou....'
               className='form-control no-spinner border-1 border-dark'
               id='adresse'
@@ -159,7 +147,6 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
               name='secteurNumber'
               type='number'
               min={0}
-             
               placeholder="Numéro d'identifiant"
               className='form-control border-1 border-dark'
               id='secteurNumber'
@@ -167,12 +154,14 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
               onBlur={validation.handleBlur}
               value={validation.values.secteurNumber || undefined}
               invalid={
-                validation.touched.secteurNumber && validation.errors.secteurNumber
+                validation.touched.secteurNumber &&
+                validation.errors.secteurNumber
                   ? true
                   : false
               }
             />
-            {validation.touched.secteurNumber && validation.errors.secteurNumber ? (
+            {validation.touched.secteurNumber &&
+            validation.errors.secteurNumber ? (
               <FormFeedback type='invalid'>
                 {validation.errors.secteurNumber}
               </FormFeedback>
@@ -180,7 +169,6 @@ const SecteurForm = ({ secteurToEdit, tog_form_modal }) => {
           </FormGroup>
         </Col>
       </Row>
-     
 
       <div className='d-grid text-center mt-4'>
         {isLoading && <LoadingSpiner />}

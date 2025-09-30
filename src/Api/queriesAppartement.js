@@ -5,8 +5,7 @@ import api from './api';
 export const useCreateAppartement = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data) =>
-      api.post('/appartements/createAppartement', data),
+    mutationFn: (data) => api.post('/appartements/addAppartement', data),
     onSuccess: () => queryClient.invalidateQueries(['appartements']),
   });
 };
@@ -26,9 +25,7 @@ export const useAllAppartement = () =>
   useQuery({
     queryKey: ['appartements'],
     queryFn: () =>
-      api
-        .get('/appartements/getAllAppartements')
-        .then((res) => res.data),
+      api.get('/appartements/getAllAppartements').then((res) => res.data),
   });
 
 // Obtenir une Appartement
@@ -36,9 +33,7 @@ export const useOneAppartement = (id) =>
   useQuery({
     queryKey: ['getAppartement', id],
     queryFn: () =>
-      api
-        .get(`/appartements/getAppartement/${id}`)
-        .then((res) => res.data),
+      api.get(`/appartements/getAppartement/${id}`).then((res) => res.data),
     enabled: Boolean(id),
     staleTime: 1000 * 60 * 5, //chaque 5 minutes rafraichir les données
   });
@@ -47,8 +42,7 @@ export const useOneAppartement = (id) =>
 export const useCancelAppartement = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id) =>
-      api.delete(`/appartements/cancelAppartement/${id}`),
+    mutationFn: (id) => api.delete(`/appartements/cancelAppartement/${id}`),
     onSuccess: () => queryClient.invalidateQueries(['appartements']),
   });
 };
@@ -57,8 +51,7 @@ export const useCancelAppartement = () => {
 export const useDeleteAppartement = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id) =>
-      api.delete(`/appartements/deleteAppartement/${id}`),
+    mutationFn: (id) => api.delete(`/appartements/deleteAppartement/${id}`),
     onSuccess: () => queryClient.invalidateQueries(['appartements']),
   });
 };
