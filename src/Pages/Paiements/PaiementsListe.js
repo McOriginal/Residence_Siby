@@ -20,6 +20,7 @@
 //   const { mutate: deletePaiement, isDeleting } = useDeletePaiement();
 //   const [paiementToUpdate, setPaiementToUpdate] = useState(null);
 //   const [formModalTitle, setFormModalTitle] = useState('Nouveau Paiement');
+
 //   const [selectedPaiement, setSelectedPaiement] = useState(null);
 //   const [show_modal, setShow_modal] = useState(false);
 
