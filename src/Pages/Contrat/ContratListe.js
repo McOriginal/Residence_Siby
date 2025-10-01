@@ -8,27 +8,26 @@ import {
   formatPhoneNumber,
 } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
-import { useAllClient, useDeleteClient } from '../../Api/queriesClient';
-import ClientForm from './ClientForm';
-
-export default function ClientListe() {
+import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
+import ContratForm from './ContratForm';
+export default function ContratListe() {
   const [form_modal, setForm_modal] = useState(false);
-  const { data: clientData, isLoading, error } = useAllClient();
-  const { mutate: deleteClient, isDeleting } = useDeleteClient();
-  const [clientToUpdate, setClientToUpdate] = useState(null);
-  const [formModalTitle, setFormModalTitle] = useState('Ajouter un Client');
+  const { data: contratData, isLoading, error } = useAllContrat();
+  const { mutate: deleteContrat, isDeleting } = useDeleteContrat();
+  const [contratToUpdate, setContratToUpdate] = useState(null);
+  const [formModalTitle, setFormModalTitle] = useState('Nouveau Contrat');
 
   // State de Rechercher
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fonction pour filtrer les clients en fonction du terme de recherche
-  const filteredClient = clientData?.filter((client) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      `${client.firstName} ${client.lastName}`.toLowerCase().includes(search) ||
-      client.phoneNumber.toString().includes(search)
-    );
-  });
+  // const filteredContrat = contratData?.filter((contrat) => {
+  //   const search = searchTerm.toLowerCase();
+  //   return (
+  //     `${contrat.firstName} ${contrat.lastName}`.toLowerCase().includes(search) ||
+  //     contrat.phoneNumber.toString().includes(search)
+  //   );
+  // });
 
   function tog_form_modal() {
     setForm_modal(!form_modal);
@@ -37,7 +36,7 @@ export default function ClientListe() {
     <React.Fragment>
       <div className='page-content'>
         <Container fluid>
-          <Breadcrumbs title='Secteurs' breadcrumbItem='List des Client' />
+          <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
 
           {/* -------------------------- */}
           <FormModal
@@ -47,8 +46,8 @@ export default function ClientListe() {
             modal_title={formModalTitle}
             size='md'
             bodyContent={
-              <ClientForm
-                fournisseurToEdit={clientToUpdate}
+              <ContratForm
+                contratToEdit={contratToUpdate}
                 tog_form_modal={tog_form_modal}
               />
             }
@@ -68,21 +67,21 @@ export default function ClientListe() {
                             className='add-btn'
                             id='create-btn'
                             onClick={() => {
-                              setClientToUpdate(null);
+                              setContratToUpdate(null);
                               tog_form_modal();
                             }}
                           >
                             <i className='fas fa-user align-center me-1'></i>{' '}
-                            Ajouter un Client
+                            Nouveau Contrat
                           </Button>
                         </div>
                       </Col>
                       <Col>
                         <p className='text-center font-size-15 mt-2'>
-                          Total Clients:{' '}
+                          Total Contrat:{' '}
                           <span className='text-warning'>
                             {' '}
-                            {filteredClient?.length}{' '}
+                            {contratData?.length}{' '}
                           </span>
                         </p>
                       </Col>
@@ -116,12 +115,12 @@ export default function ClientListe() {
                     {isLoading && <LoadingSpiner />}
 
                     <div className='table-responsive table-card mt-3 mb-1'>
-                      {!filteredClient?.length && !isLoading && !error && (
+                      {!contratData?.length && !isLoading && !error && (
                         <div className='text-center text-mutate'>
                           Aucun Clients trouvée !
                         </div>
                       )}
-                      {!error && filteredClient?.length > 0 && !isLoading && (
+                      {!error && contratData?.length > 0 && !isLoading && (
                         <table
                           className='table align-middle table-nowrap table-hover'
                           id='fournisseurTable'
@@ -141,13 +140,15 @@ export default function ClientListe() {
                           </thead>
 
                           <tbody className='list form-check-all text-center'>
-                            {filteredClient?.map((client, index) => (
-                              <tr key={client._id} className='text-center'>
+                            {contratData?.map((contrat, index) => (
+                              <tr key={contrat._id} className='text-center'>
                                 <th scope='row'>{index + 1}</th>
-                                <td>{capitalizeWords(client.firstName)} </td>
-                                <td>{capitalizeWords(client.lastName)} </td>
+                                <td>{capitalizeWords(contrat.firstName)} </td>
+                                <td>{capitalizeWords(contrat.lastName)} </td>
 
-                                <td>{formatPhoneNumber(client.phoneNumber)}</td>
+                                <td>
+                                  {formatPhoneNumber(contrat.phoneNumber)}
+                                </td>
 
                                 <td className='text-center'>
                                   <div className='d-flex justify-content-center align-items-center gap-2'>
@@ -160,7 +161,7 @@ export default function ClientListe() {
                                           setFormModalTitle(
                                             'Modifier les données'
                                           );
-                                          setClientToUpdate(client);
+                                          setContratToUpdate(contrat);
                                           tog_form_modal();
                                         }}
                                       >
@@ -176,11 +177,11 @@ export default function ClientListe() {
                                           data-bs-target='#deleteRecordModal'
                                           onClick={() => {
                                             deleteButton(
-                                              client._id,
-                                              client.firstName +
+                                              contrat._id,
+                                              contrat.firstName +
                                                 ' ' +
-                                                client.lastName,
-                                              deleteClient
+                                                contrat.lastName,
+                                              deleteContrat
                                             );
                                           }}
                                         >

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from './api';
 
-// Ajouter une Fournisseur
+// Ajouter une clients
 export const useCreateClient = () => {
   const queryClient = useQueryClient();
 
@@ -14,33 +14,30 @@ export const useCreateClient = () => {
 // Obtenir une Client
 export const useAllClient = () =>
   useQuery({
-    queryKey: ['fournisseur'],
-    queryFn: () =>
-      api.get('/clients/getAllClients').then((res) => res.data),
+    queryKey: ['clients'],
+    queryFn: () => api.get('/clients/getAllClients').then((res) => res.data),
     staleTime: 1000 * 60 * 5, //chaque 5 minutes rafraichir les données
   });
 
-// Obtenir une Fournisseur
+// Obtenir une clients
 export const useOneClient = (id) =>
   useQuery({
-    queryKey: ['fournisseur', id],
-    queryFn: () =>
-      api.get(`/clients/getClient/${id}`).then((res) => res.data),
+    queryKey: ['clients', id],
+    queryFn: () => api.get(`/clients/getClient/${id}`).then((res) => res.data),
     enabled: Boolean(id),
     staleTime: 1000 * 60 * 5, //chaque 5 minutes rafraichir les données
   });
 
 // Mettre à jour une Client
-export const useUpdateClient= () => {
+export const useUpdateClient = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }) =>
-      api.put(`/clients/updateClient/${id}`, data),
+    mutationFn: ({ id, data }) => api.put(`/clients/updateClient/${id}`, data),
     onSuccess: () => queryClient.invalidateQueries(['clients']),
   });
 };
 
-// Supprimer une Fournisseur
+// Supprimer une clients
 export const useDeleteClient = () => {
   const queryClient = useQueryClient();
   return useMutation({

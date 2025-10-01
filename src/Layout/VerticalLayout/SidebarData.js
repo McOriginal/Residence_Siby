@@ -15,6 +15,12 @@ const SidebarData = [
     isHasArrow: true,
     url: '/clients',
   },
+  {
+    label: 'Contrat',
+    icon: 'fas fa-file',
+    isHasArrow: true,
+    url: '/contrats',
+  },
 
   // --------------------------------------
 

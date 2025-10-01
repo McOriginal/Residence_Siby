@@ -24,7 +24,9 @@ import ProfileDetail from '../Pages/Authentication/ProfileDetail.js';
 import Bilans from '../Pages/Bilans/Bilans.js';
 import Secteur from '../Pages/Secteurs/Secteur.js';
 import AppartementListe from '../Pages/Appartements/AppartementListe.js';
-import ClientListe from '../Pages/Client/FournisseurListe.js';
+import ClientListe from '../Pages/Client/ClientsListe.js';
+import ContratListe from '../Pages/Contrat/ContratListe.js';
+import ClientContratListe from '../Pages/Client/ClientContratListe.js';
 
 const sharedRoutes = [
   // Paiements Liste
@@ -50,6 +52,10 @@ const authProtectedRoutes = [
   { path: '/secteur/:id', component: <AppartementListe /> },
 
   { path: '/clients', component: <ClientListe /> },
+
+  { path: '/client/:id', component: <ClientContratListe /> },
+
+  { path: '/contrats', component: <ContratListe /> },
 
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },

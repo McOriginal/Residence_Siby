@@ -89,7 +89,13 @@ export default function Secteur() {
                 secteurData?.map((item) => (
                   <Col id={item?._id} sm={4} md={5}>
                     <Card
-                      onClick={() => navigate(`/secteur/${item?._id}`)}
+                      onClick={() => {
+                        localStorage.setItem(
+                          'selectedSecteur',
+                          JSON.stringify(item)
+                        );
+                        navigate(`/secteur/${item?._id}`);
+                      }}
                       style={{
                         position: 'relative',
                         cursor: 'pointer',
