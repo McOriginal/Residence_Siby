@@ -8,7 +8,7 @@ const appartementSchema = new mongoose.Schema(
       trim: true,
     }, // Ex: Nom de produit
 
-    appartID: {
+    appartementNumber: {
       type: Number,
       required: true,
       trim: true,
@@ -49,9 +49,9 @@ const appartementSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    imageUrl: {
-      type: String,
-    },
+    // imageUrl: {
+    //   type: String,
+    // },
     secteur: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Secteur',

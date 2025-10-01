@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      user: req.user.id,
+      // user: req.user.id,
     });
 
     res.status(201).json({ message: 'Utilisateur enregistré avec succès.' });

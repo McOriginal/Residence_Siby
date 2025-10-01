@@ -86,7 +86,6 @@ exports.updateClient = async (req, res) => {
 exports.getAllClients = async (req, res) => {
   try {
     const clients = await Client.find()
-      .populate('appartement')
       .populate('user')
       .sort({ createdAt: -1 });
     return res.status(200).json(clients);
@@ -99,7 +98,6 @@ exports.getAllClients = async (req, res) => {
 exports.getClient = async (req, res) => {
   try {
     const client = await Client.findById(req.params.id)
-    .populate('appartement')
     .populate('user');
     if (!client)
       return res

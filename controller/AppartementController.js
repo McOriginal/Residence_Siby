@@ -5,7 +5,7 @@ const Secteur = require('../models/SecteurModel');
 // Enregistrer un Produit
 exports.createAppartement = async (req, res) => {
   try {
-    const { appartID, name, description } = req.body;
+    const { appartementNumber, name, description } = req.body;
 
     const lowerName = name.toLowerCase();
     const lowerDescription = description.toLowerCase();
@@ -14,14 +14,14 @@ exports.createAppartement = async (req, res) => {
     const selectedSecteur = req.body.secteur
  
     const existingAppartements = await Appartement.findOne({
-      appartID,
+      appartementNumber,
       secteur: selectedSecteur,
     }).exec();
 
     if (existingAppartements) {
       return res.status(400).json({
         status: 'error',
-        message: `Appartement ${appartID} existe déjà.`,
+        message: `Appartement ${appartementNumber} existe déjà.`,
       });
     }
 
@@ -43,7 +43,7 @@ exports.createAppartement = async (req, res) => {
 // Mettre à jour une Appartement
 exports.updateAppartement = async (req, res) => {
   try {
-    const { appartID, name, description } = req.body;
+    const { appartementNumber, name, description } = req.body;
 
     const lowerName = name.toLowerCase();
     const lowerDescription = description.toLowerCase();
@@ -51,7 +51,7 @@ exports.updateAppartement = async (req, res) => {
 const selectedSecteur = req.body.secteur
  
     const existingAppartements = await Appartement.findOne({
-      appartID,
+      appartementNumber,
       secteur: selectedSecteur,
       _id: { $ne: req.params.id },
     }).exec();
@@ -59,7 +59,7 @@ const selectedSecteur = req.body.secteur
     if (existingAppartements) {
       return res.status(400).json({
         status: 'error',
-        message: `Appartement ${appartID} existe déjà.`,
+        message: `Appartement ${appartementNumber} existe déjà.`,
       });
     }
 
@@ -90,7 +90,7 @@ exports.getAllAppartements = async (req, res) => {
     const appartements = await Appartement.find()
       .populate('secteur')
       .populate('user')
-      .sort({ createdAt: -1 });
+      .sort({ appartementNumber: 1 });
 
     return res.status(200).json(appartements);
   } catch (err) {

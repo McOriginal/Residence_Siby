@@ -87,7 +87,7 @@ exports.getAllSecteurs = async (req, res) => {
   try {
     const secteurs = await Secteur.find()
       .populate('user')
-      .sort({ createdAt: -1 });
+      .sort({ secteurNumber: 1 });
     return res.status(200).json(secteurs);
   } catch (e) {
     return res.status(404).json({ e });
@@ -97,7 +97,8 @@ exports.getAllSecteurs = async (req, res) => {
 // Récupérer un Secteur par ID
 exports.getSecteur = async (req, res) => {
   try {
-    const secteur = await Secteur.findById(req.params.id).populate(
+    const secteur = await Secteur.findById(req.params.id)
+    .populate(
       'user'
     );
     if (!secteur)
@@ -105,7 +106,7 @@ exports.getSecteur = async (req, res) => {
         .status(404)
         .json({ status: 'error', message: 'Secteur non trouvé' });
 
-    res.status(200).json(Secteur);
+    res.status(200).json(secteur);
   } catch (err) {
     return res.status(400).json({ status: 'error', message: err.message });
   }

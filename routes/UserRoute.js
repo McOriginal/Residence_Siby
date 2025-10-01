@@ -5,7 +5,7 @@ const userController = require('../controller/UserController');
 // Enregistrer un nouvel utilisateur
 router.post(
   '/register',
-  userController.authMiddleware,
+  // userController.authMiddleware,
   userController.register
 );
 
