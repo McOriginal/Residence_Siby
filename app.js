@@ -4,6 +4,7 @@ const userRoute = require('./routes/UserRoute');
 const secteurRoute = require('./routes/SecteurRoute');
 const appartementRoute = require('./routes/AppartementRoute');
 const clientRoute = require('./routes/ClientRoute');
+const contratRoute = require('./routes/ContratRoute');
 // const paiementRoute = require('./routes/PaiementRoute');
 // const paiementHistoriqueRoute = require('./routes/PaiementHistoriqueRoute');
 const depenseRoute = require('./routes/DepenseRoute');
@@ -47,6 +48,9 @@ app.use('/api/appartements', appartementRoute);
 
 // Utilisation des routes client
 app.use('/api/clients', clientRoute);
+
+// Utilisation des routes contrats
+app.use('/api/contrats', contratRoute);
 
 // Utilisation des routes Paiement
 // app.use('/api/paiements', paiementRoute);

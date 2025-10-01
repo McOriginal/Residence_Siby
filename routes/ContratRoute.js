@@ -1,0 +1,35 @@
+const express = require('express');
+const router = express.Router();
+const userController = require('../controller/UserController');
+
+const contratController = require('../controller/ContratController');
+
+// Créer un Contrat
+router.post(
+  '/createContrat',
+  userController.authMiddleware,
+  contratController.createContrat
+);
+
+// Afficher toutes les Contrats
+router.get('/getAllContrats', contratController.getAllContrat);
+
+// Afficher un seul Contrat
+router.get('/getContrat/:id', contratController.getContrat);
+
+// Mettre à jour un Contrat
+router.put('/updateContrat/:id', contratController.updateContrat);
+
+// supprimer un Contrat
+router.delete(
+  '/deleteContrat/:id',
+  contratController.deleteContrat
+);
+
+// Supprimer toutes les Contrat
+router.delete(
+  '/deleteAllContrat',
+  contratController.deleteAllContrats
+);
+
+module.exports = router;

@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 
 const paiementSchema = new mongoose.Schema(
   {
-    totalAmount: {
-      type: Number,
-      required: true,
-      trim: true,
-    },
+   
     totalPaye: {
       type: Number,
       required: true,
@@ -25,6 +21,10 @@ const paiementSchema = new mongoose.Schema(
     client: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Client',
+    },
+    contrat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Contrat',
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

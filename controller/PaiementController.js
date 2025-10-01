@@ -5,7 +5,7 @@
 // exports.createPaiement = async (req, res) => {
 //   try {
 //     // On vérifie si le PAIEMENT n'existe pas via ID de Appartement
-//     const appart = req.body.appartementId;
+//     const appart = req.body.appartement;
 //     const existingPaiement = await Paiement.findOne({
 //       appartement: appart,
 //     }).exec();
@@ -14,7 +14,7 @@
 //     if (existingPaiement) {
 //       return res
 //         .status(404)
-//         .json({ message: 'Il existe déjà un Paiement pour cette Commande' });
+//         .json({ message: "Il y'a déjà un Paiement"  });
 //     }
 
 //     // sinon on créer un nouveau PAIEMENT

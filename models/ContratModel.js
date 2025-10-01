@@ -4,8 +4,24 @@ const contratSchema = new mongoose.Schema(
   {
    
 
-    duration: {
-      type: String,
+    heure: {
+      type: Number,
+      default: 0,
+      trim: true,
+    },
+    jour: {
+      type: Number,
+      default: 0,
+      trim: true,
+    },
+    semaine: {
+      type: Number,
+      default: 0,
+      trim: true,
+    },
+    mois: {
+      type: Number,
+      default: 0,
       trim: true,
     },
 
@@ -17,6 +33,11 @@ const contratSchema = new mongoose.Schema(
     },
     endDate: {
       type: Date,
+      required: true,
+      time: true
+    },
+    totalAmount: {
+      type: Number,
       required: true,
       time: true
     },
