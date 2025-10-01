@@ -24,6 +24,7 @@ import ProfileDetail from '../Pages/Authentication/ProfileDetail.js';
 import Bilans from '../Pages/Bilans/Bilans.js';
 import Secteur from '../Pages/Secteurs/Secteur.js';
 import AppartementListe from '../Pages/Appartements/AppartementListe.js';
+import ClientListe from '../Pages/Client/FournisseurListe.js';
 
 const sharedRoutes = [
   // Paiements Liste
@@ -47,6 +48,8 @@ const authProtectedRoutes = [
   { path: '/secteurs', component: <Secteur /> },
 
   { path: '/secteur/:id', component: <AppartementListe /> },
+
+  { path: '/clients', component: <ClientListe /> },
 
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },

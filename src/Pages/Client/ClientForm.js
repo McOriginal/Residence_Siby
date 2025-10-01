@@ -16,17 +16,12 @@ import {
   successMessageAlert,
 } from '../components/AlerteModal';
 import LoadingSpiner from '../components/LoadingSpiner';
-import {
-  useCreateFournisseur,
-  useUpdateFournisseur,
-} from '../../Api/queriesFournisseur';
+import { useCreateClient, useUpdateClient } from '../../Api/queriesClient';
 
-const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
-  // Patient Query pour créer un etudiant
-  const { mutate: createFournisseur } = useCreateFournisseur();
+const ClientForm = ({ clientToEdit, tog_form_modal }) => {
+  const { mutate: createClient } = useCreateClient();
 
-  // Patient Query pour Mettre à jour un etudiant
-  const { mutate: updateFournisseur } = useUpdateFournisseur();
+  const { mutate: updateClient } = useUpdateClient();
   const [isLoading, setIsLoading] = useState(false);
 
   // Form validation
@@ -35,11 +30,9 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
     enableReinitialize: true,
 
     initialValues: {
-      firstName: fournisseurToEdit?.firstName || '',
-      lastName: fournisseurToEdit?.lastName || '',
-      phoneNumber: fournisseurToEdit?.phoneNumber || undefined,
-      adresse: fournisseurToEdit?.adresse || '',
-      emailAdresse: fournisseurToEdit?.emailAdresse || '',
+      firstName: clientToEdit?.firstName || '',
+      lastName: clientToEdit?.lastName || '',
+      phoneNumber: clientToEdit?.phoneNumber || undefined,
     },
     validationSchema: Yup.object({
       firstName: Yup.string()
@@ -50,26 +43,14 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
         .matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Veillez Entrez une valeur correct !')
         .required('Ce champ Prénom est obligatoire'),
       phoneNumber: Yup.number().required('Ce champ est obligatoire'),
-      emailAdresse: Yup.string().matches(
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        'Veillez Entrez un Email correct !'
-      ),
-      adresse: Yup.string()
-        .matches(/^[a-z0-9À-ÿ\s]+$/i, 'Veillez Entrez une valeur correct !')
-        .required('Ce champ est obligatoire'),
     }),
 
     onSubmit: (values, { resetForm }) => {
       setIsLoading(true);
 
-      // Si la méthode est pour mise à jour alors
-      const fournisseurDataLoaded = {
-        ...values,
-      };
-
-      if (fournisseurToEdit) {
-        updateFournisseur(
-          { id: fournisseurToEdit._id, data: fournisseurDataLoaded },
+      if (clientToEdit) {
+        updateClient(
+          { id: clientToEdit._id, ...values },
           {
             onSuccess: () => {
               successMessageAlert('Données mise à jour avec succès');
@@ -90,9 +71,9 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
 
       // Sinon on créer un nouveau étudiant
       else {
-        createFournisseur(values, {
+        createClient(values, {
           onSuccess: () => {
-            successMessageAlert('Fournisseur ajoutée avec succès');
+            successMessageAlert('Client ajoutée avec succès');
             setIsLoading(false);
             resetForm();
             tog_form_modal();
@@ -177,7 +158,7 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
         </Col>
       </Row>
       <Row>
-        <Col md='6'>
+        <Col md='12'>
           <FormGroup className='mb-3'>
             <Label htmlFor='phoneNumber'>Téléphone</Label>
             <Input
@@ -202,61 +183,6 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
             ) : null}
           </FormGroup>
         </Col>
-        <Col md='6'>
-          <FormGroup className='mb-3'>
-            <Label htmlFor='adresse'>Adresse Domicile</Label>
-            <Input
-              name='adresse'
-              placeholder='Kabala...'
-              type='text'
-              className='form-control border-1 border-dark'
-              onChange={validation.handleChange}
-              onBlur={validation.handleBlur}
-              value={validation.values.adresse || ''}
-              invalid={
-                validation.touched.adresse && validation.errors.adresse
-                  ? true
-                  : false
-              }
-            />
-            {validation.touched.adresse && validation.errors.adresse ? (
-              <FormFeedback type='invalid'>
-                {validation.errors.adresse}
-              </FormFeedback>
-            ) : null}
-          </FormGroup>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm='12'>
-          <FormGroup className='mb-3'>
-            <Label htmlFor='emailAdresse'>Adresse Email</Label>
-
-            <Input
-              name='emailAdresse'
-              type='mail'
-              placeholder='fournisseur@gmail.com'
-              className='form-control border-1 border-dark'
-              id='emailAdresse'
-              onChange={validation.handleChange}
-              onBlur={validation.handleBlur}
-              value={validation.values.emailAdresse || ''}
-              invalid={
-                validation.touched.emailAdresse &&
-                validation.errors.emailAdresse
-                  ? true
-                  : false
-              }
-            />
-
-            {validation.touched.emailAdresse &&
-            validation.errors.emailAdresse ? (
-              <FormFeedback type='invalid'>
-                {validation.errors.emailAdresse}
-              </FormFeedback>
-            ) : null}
-          </FormGroup>
-        </Col>
       </Row>
 
       <div className='d-grid text-center mt-4'>
@@ -271,4 +197,4 @@ const FournisseurForm = ({ fournisseurToEdit, tog_form_modal }) => {
   );
 };
 
-export default FournisseurForm;
+export default ClientForm;
