@@ -36,6 +36,16 @@ const contratSchema = new mongoose.Schema(
       required: true,
       time: true
     },
+    amount: {
+      type: Number,
+      required: true,
+      time: true
+    },
+    reduction: {
+      type: Number,
+      required: true,
+      time: true
+    },
     totalAmount: {
       type: Number,
       required: true,

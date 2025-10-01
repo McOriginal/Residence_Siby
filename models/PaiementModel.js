@@ -8,20 +8,14 @@ const paiementSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    reduction: {
-      type: Number,
-      default: 0,
-    },
+   
 
     paiementDate: {
       type: Date,
       required: true,
     },
     
-    client: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Client',
-    },
+    
     contrat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contrat',
