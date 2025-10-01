@@ -155,8 +155,6 @@ export default function ContratListe() {
                                     <div className='edit'>
                                       <button
                                         className='btn btn-sm btn-success edit-item-btn'
-                                        data-bs-toggle='modal'
-                                        data-bs-target='#showModal'
                                         onClick={() => {
                                           setFormModalTitle(
                                             'Modifier les données'
@@ -173,8 +171,6 @@ export default function ContratListe() {
                                       <div className='remove'>
                                         <button
                                           className='btn btn-sm btn-danger remove-item-btn'
-                                          data-bs-toggle='modal'
-                                          data-bs-target='#deleteRecordModal'
                                           onClick={() => {
                                             deleteButton(
                                               contrat._id,

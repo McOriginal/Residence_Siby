@@ -27,6 +27,7 @@ import AppartementListe from '../Pages/Appartements/AppartementListe.js';
 import ClientListe from '../Pages/Client/ClientsListe.js';
 import ContratListe from '../Pages/Contrat/ContratListe.js';
 import ClientContratListe from '../Pages/Client/ClientContratListe.js';
+import PaiementsContrat from '../Pages/Contrat/PaiementsContrat.js';
 
 const sharedRoutes = [
   // Paiements Liste
@@ -56,6 +57,8 @@ const authProtectedRoutes = [
   { path: '/client/:id', component: <ClientContratListe /> },
 
   { path: '/contrats', component: <ContratListe /> },
+
+  { path: '/contrat/:id', component: <PaiementsContrat /> },
 
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },

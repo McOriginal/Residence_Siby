@@ -52,6 +52,8 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
         contratToEdit?.startDate || new Date().toISOString().substring(0, 10),
       endDate:
         contratToEdit?.endDate || new Date().toISOString().substring(0, 10),
+      amount: contratToEdit?.amount || undefined,
+      reduction: contratToEdit?.reduction || undefined,
       totalAmount: contratToEdit?.totalAmount || undefined,
     },
     validationSchema: Yup.object({
@@ -64,6 +66,8 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
       startDate: Yup.date().required('Ce champ est obligatoire'),
       endDate: Yup.date().required('Ce champ est obligatoire'),
       totalAmount: Yup.number(),
+      amount: Yup.number(),
+      reduction: Yup.number(),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -142,9 +146,12 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
     );
 
     const total = heurePrice + dayPrice + weekPrice + mounthPrice;
-    validation.setFieldValue('totalAmount', Number(total));
+    const sumReduction = validation.values.reduction || 0;
+    validation.setFieldValue('amount', Number(total));
+    validation.setFieldValue('totalAmount', Number(total - sumReduction));
   }, [
     appartment,
+    validation.values.reduction,
     validation.values.appartement,
     validation.values.heure,
     validation.values.jour,
@@ -162,7 +169,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
       }}
     >
       <h6 className='text-info text-end'>
-        Total: {formatPrice(validation.values.totalAmount || 0)}
+        Total: {formatPrice(validation.values.amount || 0)}
         {' F '}
       </h6>
       <Row>
@@ -360,6 +367,44 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               </FormFeedback>
             ) : null}
           </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='reduction'>Reduction / Remise</Label>
+            <Input
+              name='reduction'
+              placeholder='Voudrais-vous faire une remise sur le prix...'
+              type='number'
+              className='form-control border-1 border-dark'
+              id='reduction'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.reduction || undefined}
+              invalid={
+                validation.touched.reduction && validation.errors.reduction
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.reduction && validation.errors.reduction ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.reduction}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col className='d-flex justify-content-center align-items-center'>
+          <div>
+            <h6 className='text-warning text-center'>
+              Total : {formatPrice(validation.values.amount || 0)} F{' '}
+            </h6>
+            <h6 className='text-info text-center'>
+              Total après remise:{' '}
+              {formatPrice(validation.values.totalAmount || 0)} F{' '}
+            </h6>
+          </div>
         </Col>
       </Row>
 

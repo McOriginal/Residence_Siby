@@ -166,7 +166,7 @@ export default function ClientListe() {
                                   >
                                     <u>contrat</u>
                                     <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info'>
-                                      {formatPrice(clientContrat(client))}
+                                      {formatPrice(clientContrat(client) || 0)}
                                     </span>
                                   </button>
                                 </td>

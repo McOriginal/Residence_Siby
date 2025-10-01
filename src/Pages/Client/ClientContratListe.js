@@ -11,7 +11,7 @@ import {
 import { deleteButton } from '../components/AlerteModal';
 import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
 import ContratForm from '../Contrat/ContratForm';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useOneClient } from '../../Api/queriesClient';
 import BackButton from '../components/BackButton';
 export default function ClientContratListe() {
@@ -22,7 +22,7 @@ export default function ClientContratListe() {
   const [form_modal, setForm_modal] = useState(false);
   const [contratToUpdate, setContratToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Contrat');
-
+  const navigate = useNavigate();
   // State de Rechercher
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -131,6 +131,8 @@ export default function ClientContratListe() {
                               <th>Jour</th>
                               <th>Heure</th>
                               <th>Montant</th>
+                              <th>Remise</th>
+                              <th>Après Remise</th>
 
                               <th>Action</th>
                             </tr>
@@ -139,7 +141,7 @@ export default function ClientContratListe() {
                           <tbody className='list form-check-all text-center'>
                             {filteredContrat?.map((contrat) => (
                               <tr key={contrat?._id} className='text-center'>
-                                <th className='badge bg-secondary text-center text-light'>
+                                <th className='badge bg-secondary  rounded rounded-pill text-center text-light'>
                                   {formatPrice(
                                     contrat?.appartement?.appartementNumber
                                   )}{' '}
@@ -167,18 +169,30 @@ export default function ClientContratListe() {
                                 </td>
                                 <td>{formatPrice(contrat.mois)} </td>
 
-                                <td>{formatPrice(contrat.semaine)}</td>
-                                <td>{formatPrice(contrat.jour)}</td>
-                                <td>{formatPrice(contrat.heure)}</td>
-                                <td>{formatPrice(contrat.totalAmount)} F</td>
+                                <td>{formatPrice(contrat.semaine || 0)}</td>
+                                <td>{formatPrice(contrat.jour || 0)}</td>
+                                <td>{formatPrice(contrat.heure || 0)}</td>
+                                <td>{formatPrice(contrat.amount || 0)} F</td>
+                                <td>{formatPrice(contrat.reduction || 0)} F</td>
+                                <td>
+                                  {formatPrice(contrat.totalAmount || 0)} F
+                                </td>
 
                                 <td className='text-center'>
                                   <div className='d-flex justify-content-center align-items-center gap-2'>
                                     <div className='edit'>
                                       <button
+                                        className='btn btn-sm btn-warning'
+                                        onClick={() => {
+                                          navigate(`/contrat/${contrat._id}`);
+                                        }}
+                                      >
+                                        <i className='fas fa-dollar-sign text-white'></i>
+                                      </button>
+                                    </div>
+                                    <div>
+                                      <button
                                         className='btn btn-sm btn-success edit-item-btn'
-                                        data-bs-toggle='modal'
-                                        data-bs-target='#showModal'
                                         onClick={() => {
                                           setFormModalTitle(
                                             'Modifier les données'
@@ -192,11 +206,9 @@ export default function ClientContratListe() {
                                     </div>
                                     {isDeleting && <LoadingSpiner />}
                                     {!isDeleting && (
-                                      <div className='remove'>
+                                      <div>
                                         <button
                                           className='btn btn-sm btn-danger remove-item-btn'
-                                          data-bs-toggle='modal'
-                                          data-bs-target='#deleteRecordModal'
                                           onClick={() => {
                                             deleteButton(
                                               contrat._id,
