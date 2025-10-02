@@ -6,9 +6,11 @@ import LoadingSpiner from '../components/LoadingSpiner';
 import {
   capitalizeWords,
   formatPhoneNumber,
+  formatPrice,
 } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
+import { useNavigate } from 'react-router-dom';
 import ContratForm from './ContratForm';
 export default function ContratListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -17,17 +19,20 @@ export default function ContratListe() {
   const [contratToUpdate, setContratToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Contrat');
 
+  const navigate = useNavigate();
   // State de Rechercher
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fonction pour filtrer les clients en fonction du terme de recherche
-  // const filteredContrat = contratData?.filter((contrat) => {
-  //   const search = searchTerm.toLowerCase();
-  //   return (
-  //     `${contrat.firstName} ${contrat.lastName}`.toLowerCase().includes(search) ||
-  //     contrat.phoneNumber.toString().includes(search)
-  //   );
-  // });
+  const filteredContrat = contratData?.filter((contrat) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      `${contrat?.client?.firstName} ${contrat?.client?.lastName}`
+        .toLowerCase()
+        .includes(search) ||
+      contrat?.client?.phoneNumber.toString().includes(search)
+    );
+  });
 
   function tog_form_modal() {
     setForm_modal(!form_modal);
@@ -38,7 +43,7 @@ export default function ContratListe() {
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
 
-          {/* -------------------------- */}
+          {/* -------------------------------- */}
           <FormModal
             form_modal={form_modal}
             setForm_modal={setForm_modal}
@@ -52,33 +57,17 @@ export default function ContratListe() {
               />
             }
           />
+          {/* -------------------------------- */}
 
-          {/* -------------------- */}
           <Row>
             <Col lg={12}>
               <Card>
                 <CardBody>
                   <div id='clientsList'>
                     <Row className='g-4 mb-3'>
-                      <Col className='col-sm-auto'>
-                        <div className='d-flex gap-1'>
-                          <Button
-                            color='info'
-                            className='add-btn'
-                            id='create-btn'
-                            onClick={() => {
-                              setContratToUpdate(null);
-                              tog_form_modal();
-                            }}
-                          >
-                            <i className='fas fa-user align-center me-1'></i>{' '}
-                            Nouveau Contrat
-                          </Button>
-                        </div>
-                      </Col>
                       <Col>
                         <p className='text-center font-size-15 mt-2'>
-                          Total Contrat:{' '}
+                          Nombre:{' '}
                           <span className='text-warning'>
                             {' '}
                             {contratData?.length}{' '}
@@ -115,44 +104,103 @@ export default function ContratListe() {
                     {isLoading && <LoadingSpiner />}
 
                     <div className='table-responsive table-card mt-3 mb-1'>
-                      {!contratData?.length && !isLoading && !error && (
+                      {!filteredContrat?.length && !isLoading && !error && (
                         <div className='text-center text-mutate'>
-                          Aucun Clients trouvée !
+                          Aucun Contrat Enregistré !
                         </div>
                       )}
-                      {!error && contratData?.length > 0 && !isLoading && (
+                      {!error && filteredContrat?.length > 0 && !isLoading && (
                         <table
                           className='table align-middle table-nowrap table-hover'
                           id='fournisseurTable'
                         >
                           <thead className='table-light'>
                             <tr className='text-center'>
-                              <th scope='col' style={{ width: '50px' }}>
-                                ID
-                              </th>
-                              <th>Nom</th>
-                              <th>Prénom</th>
-
+                              <th>N° d'Appartement</th>
+                              <th>Client</th>
                               <th>Téléphone</th>
+                              <th>Date D'Entrée</th>
+                              <th>Date de Sortie</th>
+                              <th>Mois</th>
+                              <th>Semaine</th>
+
+                              <th>Jour</th>
+                              <th>Heure</th>
+                              <th>Montant</th>
+                              <th>Remise</th>
+                              <th>Après Remise</th>
 
                               <th>Action</th>
                             </tr>
                           </thead>
 
                           <tbody className='list form-check-all text-center'>
-                            {contratData?.map((contrat, index) => (
-                              <tr key={contrat._id} className='text-center'>
-                                <th scope='row'>{index + 1}</th>
-                                <td>{capitalizeWords(contrat.firstName)} </td>
-                                <td>{capitalizeWords(contrat.lastName)} </td>
-
+                            {filteredContrat?.map((contrat) => (
+                              <tr key={contrat?._id} className='text-center'>
+                                <th className='badge bg-secondary  rounded rounded-pill text-center text-light'>
+                                  {formatPrice(
+                                    contrat?.appartement?.appartementNumber
+                                  )}{' '}
+                                </th>
                                 <td>
-                                  {formatPhoneNumber(contrat.phoneNumber)}
+                                  {capitalizeWords(
+                                    contrat?.client?.firstName +
+                                      ' ' +
+                                      contrat?.client?.lastName
+                                  )}{' '}
+                                </td>
+                                <td>
+                                  {formatPhoneNumber(
+                                    contrat?.client?.phoneNumber
+                                  )}{' '}
+                                </td>
+                                <td>
+                                  {new Date(contrat.endDate).toLocaleDateString(
+                                    'fr-Fr',
+                                    {
+                                      weekday: 'short',
+                                      day: '2-digit',
+                                      month: 'numeric',
+                                      year: 'numeric',
+                                    }
+                                  )}{' '}
+                                </td>
+                                <td>
+                                  {new Date(
+                                    contrat.startDate
+                                  ).toLocaleDateString('fr-Fr', {
+                                    weekday: 'short',
+                                    day: '2-digit',
+                                    month: 'numeric',
+                                    year: 'numeric',
+                                  })}{' '}
+                                </td>
+                                <td>{formatPrice(contrat.mois)} </td>
+
+                                <td>{formatPrice(contrat.semaine || 0)}</td>
+                                <td>{formatPrice(contrat.jour || 0)}</td>
+                                <td>{formatPrice(contrat.heure || 0)}</td>
+                                <td>{formatPrice(contrat.amount || 0)} F</td>
+                                <td>{formatPrice(contrat.reduction || 0)} F</td>
+                                <td>
+                                  {formatPrice(contrat.totalAmount || 0)} F
                                 </td>
 
                                 <td className='text-center'>
                                   <div className='d-flex justify-content-center align-items-center gap-2'>
                                     <div className='edit'>
+                                      <button
+                                        className='btn btn-sm btn-warning'
+                                        onClick={() => {
+                                          navigate(
+                                            `/contrat/document/${contrat._id}`
+                                          );
+                                        }}
+                                      >
+                                        <i className='fas fa-file text-white'></i>
+                                      </button>
+                                    </div>
+                                    <div>
                                       <button
                                         className='btn btn-sm btn-success edit-item-btn'
                                         onClick={() => {
@@ -168,15 +216,15 @@ export default function ContratListe() {
                                     </div>
                                     {isDeleting && <LoadingSpiner />}
                                     {!isDeleting && (
-                                      <div className='remove'>
+                                      <div>
                                         <button
                                           className='btn btn-sm btn-danger remove-item-btn'
                                           onClick={() => {
                                             deleteButton(
-                                              contrat._id,
-                                              contrat.firstName +
+                                              contrat?._id,
+                                              contrat?.client?.firstName +
                                                 ' ' +
-                                                contrat.lastName,
+                                                contrat?.client?.lastName,
                                               deleteContrat
                                             );
                                           }}

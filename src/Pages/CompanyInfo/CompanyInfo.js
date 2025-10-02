@@ -16,6 +16,7 @@ import avatar from '../../assets/images/user_profile_image.png';
 import comImg from './../../assets/images/passer-la-commande.png';
 import rechargeImg from './../../assets/images/recharge.png';
 import carImg from './../../assets/images/car.png';
+import homeImg from './../../assets/images/home_img.png';
 
 const companyName = 'Quincaillerie Générale Groupe Siby';
 
@@ -56,4 +57,5 @@ export {
   comImg,
   rechargeImg,
   carImg,
+  homeImg,
 };

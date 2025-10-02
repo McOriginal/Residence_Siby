@@ -51,7 +51,9 @@ const PaiementForm = ({
     validationSchema: Yup.object({
       contrat: Yup.string().required('Ce champ est obligatoire'),
       paiementDate: Yup.date().required('Ce champ est obligatoire'),
-      totalPaye: Yup.number().required('Ce champ est obligatoire'),
+      totalPaye: Yup.number()
+        .positive('Vous devez entrez une valeur positive')
+        .required('Ce champ est obligatoire'),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -61,7 +63,7 @@ const PaiementForm = ({
         updatePaiement(
           {
             id: paiementToEdit?._id,
-            ...values,
+            data: values,
           },
           {
             onSuccess: () => {
@@ -138,7 +140,7 @@ const PaiementForm = ({
               name='totalPaye'
               type='number'
               min={0}
-              max={totalContratAmount || 0}
+              max={totalReliqua}
               placeholder='Somme Payé'
               className='form-control no-spinner border-1 border-dark'
               id='totalPaye'

@@ -60,6 +60,8 @@ const authProtectedRoutes = [
 
   { path: '/contrat/:id', component: <PaiementsContrat /> },
 
+  { path: '/contrat/document/:id', component: <PaiementsContrat /> },
+
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },
 

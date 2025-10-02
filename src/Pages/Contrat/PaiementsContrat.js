@@ -15,6 +15,7 @@ import { useParams } from 'react-router-dom';
 import PaiementForm from '../Paiements/PaiementForm';
 import { useOneContrat } from '../../Api/queriesContrat';
 import BackButton from '../components/BackButton';
+import ReçuPaiement from '../Paiements/ReçuPaiement';
 
 export default function PaiementsContrat() {
   const contrat = useParams();
@@ -73,11 +74,12 @@ export default function PaiementsContrat() {
             }
           />
 
-          {/* <ReçuPaiement
+          <ReçuPaiement
             show_modal={show_modal}
             tog_show_modal={tog_show_modal}
             selectedPaiementID={selectedPaiement}
-          /> */}
+            totalReliqua={sumTotalReliqua}
+          />
           {/* -------------------- */}
           <Row>
             <Col lg={12}>
@@ -169,25 +171,26 @@ export default function PaiementsContrat() {
                                     )}{' '}
                                   </td>
                                   <td>
-                                    {formatPrice(paiement?.contrat?.amount) ||
-                                      0}{' '}
-                                    F
-                                  </td>
-                                  <td>
                                     {formatPrice(
-                                      paiement?.contrat?.reduction
+                                      paiement?.contrat?.amount || 0
                                     ) || 0}{' '}
                                     F
                                   </td>
                                   <td>
                                     {formatPrice(
-                                      paiement?.contrat?.totalAmount
-                                    ) || 0}{' '}
+                                      paiement?.contrat?.reduction || 0
+                                    )}{' '}
+                                    F
+                                  </td>
+                                  <td>
+                                    {formatPrice(
+                                      paiement?.contrat?.totalAmount || 0
+                                    )}{' '}
                                     F
                                   </td>
 
                                   <td>
-                                    {formatPrice(paiement?.totalPaye)}
+                                    {formatPrice(paiement?.totalPaye || 0)}
                                     {' F '}
                                   </td>
 

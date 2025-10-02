@@ -42,7 +42,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
     enableReinitialize: true,
 
     initialValues: {
-      client: contratToEdit?.selectedClient._id || clientId,
+      client: contratToEdit?.client?._id || clientId,
       appartement: contratToEdit?.appartment?._id || secteurStorage?._id,
       heure: contratToEdit?.heure || 0,
       jour: contratToEdit?.jour || 0,
@@ -62,7 +62,6 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
       jour: Yup.number(),
       semaine: Yup.number(),
       mois: Yup.number(),
-
       startDate: Yup.date().required('Ce champ est obligatoire'),
       endDate: Yup.date().required('Ce champ est obligatoire'),
       totalAmount: Yup.number(),
@@ -225,6 +224,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='heure'
               placeholder='Heure...'
               type='number'
+              min={0}
               className='form-control border-1 border-dark'
               id='heure'
               onChange={validation.handleChange}
@@ -250,6 +250,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='jour'
               placeholder='Jour...'
               type='number'
+              min={0}
               className='form-control border-1 border-dark'
               id='jour'
               onChange={validation.handleChange}
@@ -273,6 +274,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='semaine'
               placeholder='Semaine...'
               type='number'
+              min={0}
               className='form-control border-1 border-dark'
               id='semaine'
               onChange={validation.handleChange}
@@ -298,6 +300,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='mois'
               placeholder='Mois...'
               type='number'
+              min={0}
               className='form-control border-1 border-dark'
               id='mois'
               onChange={validation.handleChange}
@@ -377,6 +380,8 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='reduction'
               placeholder='Voudrais-vous faire une remise sur le prix...'
               type='number'
+              min={0}
+              max={validation.values.amount}
               className='form-control border-1 border-dark'
               id='reduction'
               onChange={validation.handleChange}

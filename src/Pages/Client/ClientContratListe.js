@@ -3,11 +3,7 @@ import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import FormModal from '../components/FormModal';
 import LoadingSpiner from '../components/LoadingSpiner';
-import {
-  capitalizeWords,
-  formatPhoneNumber,
-  formatPrice,
-} from '../components/capitalizeFunction';
+import { formatPrice } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
 import ContratForm from '../Contrat/ContratForm';
