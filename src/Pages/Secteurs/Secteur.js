@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardTitle,
   Col,
   Container,
@@ -35,9 +36,18 @@ export default function Secteur() {
 
   const { data: appartementData } = useAllAppartement();
 
-  const appartements = (secteur) => {
+  const appartements = (secteur, disponibility) => {
     return appartementData?.filter((item) => {
       return item?.secteur?._id === secteur?._id;
+    })?.length;
+  };
+
+  const availableAppartements = (secteur, disponibility) => {
+    return appartementData?.filter((item) => {
+      return (
+        item?.secteur?._id === secteur?._id &&
+        item?.isAvailable === disponibility
+      );
     })?.length;
   };
 
@@ -47,8 +57,8 @@ export default function Secteur() {
 
   return (
     <>
-      <div className='page-content'>
-        <Container fluid={false}>
+      <div className='page-content bg-primary'>
+        <Container fluid={true}>
           <FormModal
             form_modal={form_modal}
             setForm_modal={setForm_modal}
@@ -62,7 +72,7 @@ export default function Secteur() {
               />
             }
           />
-          <CardTitle className='text-center'> Secteurs Disponible</CardTitle>
+          <h3 className='text-center'> Secteurs Disponible</h3>
           <Button
             color='info'
             className='mx-auto my-3 d-flex justify-content-center align-items-center'
@@ -89,17 +99,12 @@ export default function Secteur() {
                 secteurData?.map((item) => (
                   <Col id={item?._id} sm={4} md={5}>
                     <Card
-                      onClick={() => {
-                        localStorage.setItem(
-                          'selectedSecteur',
-                          JSON.stringify(item)
-                        );
-                        navigate(`/secteur/${item?._id}`);
-                      }}
                       style={{
                         position: 'relative',
-                        cursor: 'pointer',
                         padding: '10px 15px',
+                        border: '2px solid #f1fafeee ',
+                        boxShadow: '0 0 10px rgba(2, 48, 71, 0.37)',
+                        background: ' #023047',
                       }}
                     >
                       <div
@@ -114,7 +119,7 @@ export default function Secteur() {
                             className='btn btn-soft-secondary btn-sm'
                             tag='button'
                           >
-                            <i className='fas fa-ellipsis-v fs-5 text-info'></i>
+                            <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
                           </DropdownToggle>
                           <DropdownMenu className='dropdown-menu-end'>
                             <DropdownItem
@@ -146,18 +151,49 @@ export default function Secteur() {
                           </DropdownMenu>
                         </UncontrolledDropdown>
                       </div>
-                      <CardTitle>Secteur N° {item.secteurNumber}</CardTitle>
+                      <h5 className='text-light'>
+                        Secteur N° {item.secteurNumber}
+                      </h5>
 
-                      <CardBody className='d-flex flex-column justify-content-center align-items-center'>
-                        <CardTitle>{capitalizeWords(item?.adresse)}</CardTitle>
+                      <CardBody className='d-flex flex-column justify-content-center align-items-center text-light'>
+                        <h5 className='text-light'>
+                          {capitalizeWords(item?.adresse)}
+                        </h5>
                         <span
-                          className={`badge ${
-                            appartements(item) > 0 ? 'bg-info' : 'bg-danger'
+                          className={`mb-2 ${
+                            appartements(item) > 0
+                              ? 'text-success'
+                              : 'text-danger'
                           }`}
                         >
-                          {formatPrice(appartements(item))} appartement{' '}
+                          {formatPrice(appartements(item))} Appartements
+                        </span>
+                        <span
+                          className={`badge ${
+                            availableAppartements(item, false) > 0
+                              ? 'bg-success'
+                              : 'bg-danger'
+                          }`}
+                        >
+                          {formatPrice(availableAppartements(item, false))}{' '}
+                          Disponible
                         </span>
                       </CardBody>
+                      <CardFooter className='d-flex justify-content-end align-items-center'>
+                        <Button
+                          className='text-end'
+                          color='info'
+                          onClick={() => {
+                            localStorage.setItem(
+                              'selectedSecteur',
+                              JSON.stringify(item)
+                            );
+                            navigate(`/secteur/${item?._id}`);
+                          }}
+                        >
+                          <i className=' fas fa-angle-double-right'></i>
+                        </Button>
+                      </CardFooter>
                     </Card>
                   </Col>
                 ))}

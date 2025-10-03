@@ -49,7 +49,7 @@ const authProtectedRoutes = [
     component: <Navigate to='/dashboard' />,
   },
 
-  { path: '/secteurs', component: <Secteur /> },
+  // { path: '/secteurs', component: <Secteur /> },
 
   { path: '/secteur/:id', component: <AppartementListe /> },
 
@@ -103,6 +103,7 @@ const usersRoutes = [
 
 const publicRoutes = [
   // { path: '/unauthorized', component: <Unauthorized /> },
+  { path: '/secteurs', component: <Secteur /> },
 
   // Authentication Page
   { path: '/register', component: <Register /> },
