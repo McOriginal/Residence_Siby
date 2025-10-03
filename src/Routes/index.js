@@ -14,6 +14,7 @@ import HorizontalLayout from '../Layout/HorizontalLayout/index';
 
 import {
   authProtectedRoutes,
+  noSideBarRoutes,
   publicRoutes,
   sharedRoutes,
   usersRoutes,
@@ -78,15 +79,14 @@ const Index = () => {
         ))}
       </Route>
 
-      {/* --------------- Routes Partager entre les utilisateurs --------------------------- */}
-      {/* --------------- Routes Partager entre les utilisateurs --------------------------- */}
+      {/* --------------- Routes sans le SideBar --------------------------- */}
       <Route>
-        {sharedRoutes.map((route, idx) => (
+        {noSideBarRoutes.map((route, idx) => (
           <Route
             path={route.path}
             element={
               <PrivateRoute allowedRoles={['admin', 'user']}>
-                <Layout>{route.component}</Layout>
+                {route.component}
               </PrivateRoute>
             }
             key={idx}
@@ -104,22 +104,6 @@ const Index = () => {
               <PrivateRoute allowedRoles={['admin']}>
                 <Layout>{route.component}</Layout>
               </PrivateRoute>
-            }
-            key={idx}
-            exact={true}
-          />
-        ))}
-      </Route>
-
-      {/*  Routes uniquement pour les  Médecins */}
-      <Route>
-        {usersRoutes.map((route, idx) => (
-          <Route
-            path={route.path}
-            element={
-              // <PrivateRoute allowedRoles={['medecin']}>
-              <Layout>{route.component}</Layout>
-              // </PrivateRoute>
             }
             key={idx}
             exact={true}

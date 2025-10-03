@@ -17,26 +17,15 @@ import UpdatePassword from '../Pages/Authentication/UpdatePassword.js';
 
 import ResetPassword from '../Pages/Authentication/ResetPassword.js';
 
-import PaiementsHistorique from '../Pages/Commandes/PaiementsHistorique/PaiementsHistorique.js';
-
 import UsersProfilesListe from '../Pages/Authentication/UsersProfilesListe.js';
 import ProfileDetail from '../Pages/Authentication/ProfileDetail.js';
-import Bilans from '../Pages/Bilans/Bilans.js';
 import Secteur from '../Pages/Secteurs/Secteur.js';
-import AppartementListe from '../Pages/Appartements/AppartementListe.js';
 import ClientListe from '../Pages/Client/ClientsListe.js';
 import ContratListe from '../Pages/Contrat/ContratListe.js';
 import ClientContratListe from '../Pages/Client/ClientContratListe.js';
 import PaiementsContrat from '../Pages/Contrat/PaiementsContrat.js';
 import ContractDocument from '../Pages/Contrat/ContratDocument.js';
-
-const sharedRoutes = [
-  // Paiements Liste
-  { path: '/paiements', component: <PaiementsListe /> },
-
-  // Changer le mot de passe
-  { path: '/updatePassword', component: <UpdatePassword /> },
-];
+import SelectedSecteur from '../Pages/Secteurs/SelectedSecteur.js';
 
 // Routes pour les ADMINS
 const authProtectedRoutes = [
@@ -48,26 +37,6 @@ const authProtectedRoutes = [
     exact: true,
     component: <Navigate to='/dashboard' />,
   },
-
-  // { path: '/secteurs', component: <Secteur /> },
-
-  { path: '/secteur/:id', component: <AppartementListe /> },
-
-  { path: '/clients', component: <ClientListe /> },
-
-  { path: '/client/:id', component: <ClientContratListe /> },
-
-  { path: '/contrats', component: <ContratListe /> },
-
-  { path: '/contrat/:id', component: <PaiementsContrat /> },
-
-  { path: '/contrat/document/:id', component: <ContractDocument /> },
-
-  // Historique Paiement
-  { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },
-
-  // Dépenses
-  { path: '/depenses', component: <DepenseListe /> },
 
   // Profile
   { path: '/userprofile', component: <UserProfile /> },
@@ -82,28 +51,47 @@ const authProtectedRoutes = [
   { path: '/usersProfileListe', component: <UsersProfilesListe /> },
 
   // Raports & Bilans
-  { path: '/bilans', component: <Bilans /> },
+  // { path: '/bilans', component: <Bilans /> },
 
-  { path: '/register', component: <Register /> },
   // --------------------------------------------------------
 ];
 
 // Routes pour les Médecins
-const usersRoutes = [
-  {
-    path: '/',
-    exact: true,
-    component: <Navigate to='/dashboard-user' />,
-  },
-  //dashboard
-  { path: '/dashboard-user', component: <Dashboard /> },
-  // Profile
-  { path: '/userprofile', component: <UserProfile /> },
+// const usersRoutes = [
+//   {
+//     path: '/',
+//     exact: true,
+//     component: <Navigate to='/dashboard-user' />,
+//   },
+//dashboard
+//   { path: '/dashboard-user', component: <Dashboard /> },
+// Profile
+//   { path: '/userprofile', component: <UserProfile /> },
+// ];
+
+const noSideBarRoutes = [
+  { path: '/home', component: <Secteur /> },
+  { path: '/secteur/:id', component: <SelectedSecteur /> },
+
+  { path: '/clients', component: <ClientListe /> },
+
+  { path: '/client/:id', component: <ClientContratListe /> },
+
+  { path: '/contrats', component: <ContratListe /> },
+
+  { path: '/contrat/:id', component: <PaiementsContrat /> },
+
+  { path: '/contrat/document/:id', component: <ContractDocument /> },
+
+  { path: '/paiements', component: <PaiementsListe /> },
+
+  { path: '/depenses', component: <DepenseListe /> },
+
+  { path: '/register', component: <Register /> },
 ];
 
 const publicRoutes = [
   // { path: '/unauthorized', component: <Unauthorized /> },
-  { path: '/secteurs', component: <Secteur /> },
 
   // Authentication Page
   { path: '/register', component: <Register /> },
@@ -112,4 +100,4 @@ const publicRoutes = [
   { path: '/resetPassword', component: <ResetPassword /> },
 ];
 
-export { authProtectedRoutes, usersRoutes, publicRoutes, sharedRoutes };
+export { authProtectedRoutes, noSideBarRoutes, publicRoutes };

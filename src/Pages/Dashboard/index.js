@@ -5,15 +5,13 @@ import { Row, Container, Col } from 'reactstrap';
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
-import TotalFounisseurs from './TotalFournisseurs';
-import TotalProduit from './TotalProduit';
-import {
-  TotalCommande,
-  TotalCommandeNotDelivred,
-  TotalCommandeToDelivre,
-} from './TotalCommande';
-import TotalArticleSansStock from './TotalArticleSansStock';
 import { companyName } from '../CompanyInfo/CompanyInfo';
+import {
+  TotalSecteur,
+  TotalAppartement,
+  TotalClient,
+  TotalContrat,
+} from './Total_Items';
 
 const Dashboard = () => {
   document.title = `Tableau de Bord | ${companyName} `;
@@ -32,9 +30,24 @@ const Dashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-          
-          </motion.div>
+            <Row>
+              <Col sm={3} md={6}>
+                <TotalSecteur />
+              </Col>
 
+              <Col sm={3} md={6}>
+                <TotalAppartement />
+              </Col>
+
+              <Col sm={3} md={6}>
+                <TotalClient />
+              </Col>
+
+              <Col sm={3} md={6}>
+                <TotalContrat />
+              </Col>
+            </Row>
+          </motion.div>
         </Container>
       </div>
     </React.Fragment>

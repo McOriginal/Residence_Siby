@@ -8,28 +8,19 @@ import {
   formatPrice,
 } from '../components/capitalizeFunction';
 import { useAllPaiements } from '../../Api/queriesPaiement';
-import ReçuPaiement from './ReçuPaiement';
+import ReçuPaiement from '../Paiements/ReçuPaiement';
+import { useParams } from 'react-router-dom';
 
-export default function PaiementsListe() {
+export default function ContratPaiements() {
+  const param = useParams();
   const { data: paiementsData, isLoading, error } = useAllPaiements();
   const [selectedPaiement, setSelectedPaiement] = useState(false);
   const [selectedPaiementTotalPaye, setSelectedPaiementTotalPaye] = useState(0);
   const [show_modal, setShow_modal] = useState(false);
 
-  const filterPaiement = paiementsData?.reduce((acc, item) => {
-    // Vérifie si le contrat existe déjà dans l'accumulateur
-    const existe = acc.find((it) => it?.contrat?._id === item?.contrat?._id);
-
-    if (existe) {
-      // Si déjà présent → on additionne totalPaye
-      existe.totalPaye = (existe.totalPaye || 0) + (item.totalPaye || 0);
-    } else {
-      // Sinon → on ajoute le contrat avec son totalPaye initial
-      acc.push({ ...item, totalPaye: item.totalPaye || 0 });
-    }
-
-    return acc;
-  }, []);
+  const filterPaiement = paiementsData?.filter(
+    (value) => value?.contrat?.appartement?.secteur?._id === param.id
+  );
 
   // Total de commandes
   const sumTotalAmount = filterPaiement?.reduce((curr, item) => {
@@ -54,7 +45,7 @@ export default function PaiementsListe() {
     <React.Fragment>
       <div className='page-content'>
         <Container fluid>
-          <Breadcrumbs title='Transaction' breadcrumbItem='Paiements' />
+          <Breadcrumbs title='Secteur' breadcrumbItem='Paiements' />
 
           {/* -------------------- */}
           <ReçuPaiement
@@ -114,7 +105,6 @@ export default function PaiementsListe() {
                               <th>Remise</th>
                               <th>Total après remise</th>
                               <th>Net Payé</th>
-                              <th>Reliquat</th>
                               <th>Action</th>
                             </tr>
                           </thead>
@@ -141,9 +131,8 @@ export default function PaiementsListe() {
                                     )}{' '}
                                   </td>
                                   <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.amount || 0
-                                    )}{' '}
+                                    {formatPrice(paiement?.contrat?.amount) ||
+                                      0}{' '}
                                     F
                                   </td>
                                   <td className='text-warning'>
@@ -161,13 +150,6 @@ export default function PaiementsListe() {
 
                                   <td>
                                     {formatPrice(paiement?.totalPaye)}
-                                    {' F '}
-                                  </td>
-                                  <td className='text-danger'>
-                                    {formatPrice(
-                                      paiement?.contrat?.totalAmount -
-                                        paiement?.totalPaye || 0
-                                    )}
                                     {' F '}
                                   </td>
 

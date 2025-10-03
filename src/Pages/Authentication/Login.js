@@ -81,21 +81,7 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
-              switch (role) {
-                case 'admin':
-                  navigate('/dashboard');
-                  break;
-                case 'user':
-                  navigate('/dashboard-user');
-                  break;
-
-                default:
-                  errorMessageAlert('Rôle non reconnu.');
-              }
-              // Recharger la page pour mettre à jour l'état de l'application
-              // Cela peut être utile si vous avez des données qui doivent être rafraîchies
-              // mais dans ce cas, on utilise navigate pour aller à la bonne page
-              window.location.reload();
+              navigate('/dashboard');
 
               // -----------------------
             } catch (err) {

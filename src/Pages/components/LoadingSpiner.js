@@ -3,7 +3,7 @@ import { Spinner } from 'reactstrap';
 export default function LoadingSpiner() {
   return (
     <Spinner
-      color='primary'
+      color='info'
       style={{
         height: '3rem',
         width: '3rem',

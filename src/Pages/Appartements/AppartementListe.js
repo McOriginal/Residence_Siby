@@ -78,13 +78,15 @@ export default function AppartementListe() {
               <Card>
                 {secteurLoading && <LoadingSpiner />}
                 {selectedSecteurData && !secteurLoading && !secteurError && (
-                  <h5 className='text-center my-3 text-primary'>
-                    Secteur{' '}
-                    {formatPhoneNumber(selectedSecteurData?.secteurNumber)}
+                  <h5 className='text-center my-2 text-info'>
+                    Appartements de :{' '}
+                    <span className=' text-warning'>
+                      Secteur{' '}
+                      {formatPhoneNumber(selectedSecteurData?.secteurNumber)}
+                    </span>
                   </h5>
                 )}
                 <CardBody>
-                  <BackButton />
                   <Col>
                     <Button
                       color='info d-flex px-4 gap-2 justify-content-center align-items-center'
@@ -160,9 +162,9 @@ export default function AppartementListe() {
                                   </th>
                                   <td>
                                     {appart?.isAvailable ? (
-                                      <sapn className='badge bg-success'>
+                                      <span className='badge bg-success'>
                                         Disponible
-                                      </sapn>
+                                      </span>
                                     ) : (
                                       <span className='badge bg-danger'>
                                         non disponible
