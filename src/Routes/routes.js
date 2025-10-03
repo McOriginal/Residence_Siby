@@ -47,6 +47,9 @@ const authProtectedRoutes = [
   // Modifier un Profile
   { path: '/updateUser/:id', component: <UserProfile /> },
 
+  // Changer le mot de passe
+  { path: '/updatePassword', component: <UpdatePassword /> },
+
   // Liste des Utilisateurs
   { path: '/usersProfileListe', component: <UsersProfilesListe /> },
 
