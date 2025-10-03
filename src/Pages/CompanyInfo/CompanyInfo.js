@@ -18,18 +18,18 @@ import rechargeImg from './../../assets/images/recharge.png';
 import carImg from './../../assets/images/car.png';
 import homeImg from './../../assets/images/home_img.png';
 
-const companyName = 'Quincaillerie Générale Groupe Siby';
+const companyName = 'Groupe Siby Residence';
 
 const companyLittleName = 'Groupe Siby';
 const companyServices1 =
   'Vente des: Matelats - Carreaux - Couches de Bébé etc...';
 const companyServices2 = 'Location des Voitures et Appartements meublés';
 
-const companyOwnerName = 'Commerce Général';
+const companyOwnerName = 'Mr Mahamadou Simaga';
 
-const companyAdresse = "Banconi Razel à 100m de l'impôts de la Commune I";
+const companyAdresse = 'Boulkassoumbougou rue MONTANA';
 
-const companyTel = '+223 76-96-82-97 / 71-76-11-11 / 76-23-29-07 / 71-81-85-55';
+const companyTel = '+223 71-76-11-11 / 61-76-11-11';
 
 export {
   companyLogo,

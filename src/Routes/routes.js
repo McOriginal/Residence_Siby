@@ -28,6 +28,7 @@ import ClientListe from '../Pages/Client/ClientsListe.js';
 import ContratListe from '../Pages/Contrat/ContratListe.js';
 import ClientContratListe from '../Pages/Client/ClientContratListe.js';
 import PaiementsContrat from '../Pages/Contrat/PaiementsContrat.js';
+import ContractDocument from '../Pages/Contrat/ContratDocument.js';
 
 const sharedRoutes = [
   // Paiements Liste
@@ -60,7 +61,7 @@ const authProtectedRoutes = [
 
   { path: '/contrat/:id', component: <PaiementsContrat /> },
 
-  { path: '/contrat/document/:id', component: <PaiementsContrat /> },
+  { path: '/contrat/document/:id', component: <ContractDocument /> },
 
   // Historique Paiement
   { path: '/paiements_historique/:id', component: <PaiementsHistorique /> },

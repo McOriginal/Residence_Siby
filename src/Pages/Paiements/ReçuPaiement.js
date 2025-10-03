@@ -13,9 +13,9 @@ import {
 } from '../components/capitalizeFunction';
 import html2pdf from 'html2pdf.js';
 
-import { useOnePaiement } from '../../Api/queriesPaiement';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { useOnePaiement } from '../../Api/queriesPaiement';
 import { companyName } from '../CompanyInfo/CompanyInfo';
 import RecuHeader from './ReçueHeader';
 

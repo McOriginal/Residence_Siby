@@ -1,0 +1,448 @@
+import { Button, Card, CardBody, Container } from 'reactstrap';
+import html2pdf from 'html2pdf.js';
+
+import { useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
+
+import {
+  companyAdresse,
+  companyName,
+  companyOwnerName,
+  companyTel,
+} from '../CompanyInfo/CompanyInfo';
+import { useParams } from 'react-router-dom';
+import { useOneContrat } from '../../Api/queriesContrat';
+import {
+  capitalizeWords,
+  formatPhoneNumber,
+  formatPrice,
+} from '../components/capitalizeFunction';
+import LoadingSpiner from '../components/LoadingSpiner';
+import RecuHeader from '../Paiements/ReçueHeader';
+import BackButton from '../components/BackButton';
+
+export default function ContractDocument() {
+  const param = useParams();
+
+  const {
+    data: selectedContrat,
+    isLoading: loadingContrat,
+    error: errorContrat,
+  } = useOneContrat(param.id);
+
+  const contentRef = useRef();
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
+  // ------------------------------------------
+  // ------------------------------------------
+  // Export En PDF
+  // ------------------------------------------
+  // ------------------------------------------
+  const exportPaiementToPDF = () => {
+    const element = document.getElementById('contrat');
+    const opt = {
+      filename: 'contrat_de_location.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    };
+
+    html2pdf()
+      .from(element)
+      .set(opt)
+      .save()
+      .catch((err) => console.error('Error generating PDF:', err));
+  };
+
+  return (
+    <div className='page-content'>
+      <Container fluid>
+        <BackButton />
+
+        <div className='modal-header'>
+          <div className='d-flex gap-1 justify-content-around align-items-center w-100'>
+            <Button
+              color='info'
+              className='add-btn'
+              id='create-btn'
+              onClick={reactToPrintFn}
+            >
+              <i className='fas fa-print align-center me-1'></i> Imprimer
+            </Button>
+
+            <Button color='danger' onClick={exportPaiementToPDF}>
+              <i className='fas fa-paper-plane  me-1 '></i>
+              Télécharger en PDF
+            </Button>
+          </div>
+        </div>
+
+        {errorContrat && (
+          <h3>Erreur de chargement Veuillez actualiser la page</h3>
+        )}
+
+        {loadingContrat && <LoadingSpiner />}
+
+        <div id='contrat' ref={contentRef}>
+          {!loadingContrat && !errorContrat && (
+            <Card className='p-4 '>
+              <h1
+                className='text-center text-info'
+                style={{
+                  margin: '5% auto',
+                  textTransform: 'uppercase',
+                  textDecoration: 'underline',
+                }}
+              >
+                CONTRAT DE LOCATION
+              </h1>
+              <div style={{ marginBottom: '5%' }}>
+                <RecuHeader />
+              </div>
+              <p>
+                {' '}
+                <strong> Entre les soussignés : </strong> {companyName}
+              </p>
+              <p>
+                {' '}
+                <strong> Représenter par : </strong> {companyOwnerName}{' '}
+              </p>
+              <p>
+                <strong>Adresse: </strong>
+                {companyAdresse}{' '}
+              </p>
+              <p>
+                {' '}
+                <strong>Contact:</strong> {companyTel}{' '}
+              </p>
+
+              <h5 className='my-3'>ET</h5>
+
+              <p>
+                <strong> Mr/Mme :</strong>{' '}
+                {capitalizeWords(
+                  selectedContrat?.client?.firstName +
+                    ' ' +
+                    selectedContrat?.client?.lastName
+                )}
+              </p>
+              <p>
+                <strong>
+                  {' '}
+                  Contact:{' '}
+                  {formatPhoneNumber(selectedContrat?.client?.phoneNumber)}{' '}
+                </strong>
+              </p>
+
+              <CardBody>
+                <h6 className='text-center'>
+                  {' '}
+                  IL A ÉTÉ CONVENU ET ARRETE CE QUI SUIT{' '}
+                </h6>
+                <p>
+                  {' '}
+                  Le Bailleur donne en location les locaux et équipements
+                  ci-après désignés au locataire qui accepte :
+                </p>
+                <p>
+                  <ul>
+                    <li>Les locaux et équipements privatifs suivants :</li>
+                  </ul>
+                </p>
+                <p>
+                  <strong> Appartement N° : </strong>
+                  {formatPhoneNumber(
+                    selectedContrat?.appartement?.appartementNumber
+                  )}{' '}
+                </p>
+                <p>
+                  <strong>Nom: </strong>
+                  {capitalizeWords(selectedContrat?.appartement?.name)}{' '}
+                </p>
+                <p>
+                  {' '}
+                  <strong>Situé à l'Adresse de : </strong>{' '}
+                  {capitalizeWords(
+                    selectedContrat?.appartement?.secteur?.adresse
+                  )}{' '}
+                </p>
+                <p>
+                  ainsi que, le cas échéant, les équipements désignés sur une
+                  liste annexée aux présentes.{' '}
+                </p>
+
+                <ol>
+                  <strong>
+                    <li>Durée du contrat</li>
+                  </strong>
+                  <p>
+                    Le présent contrat est conclu pour une durée de:{' '}
+                    <strong>
+                      {selectedContrat?.mois > 0 &&
+                        formatPrice(selectedContrat?.mois) + ' mois - '}{' '}
+                    </strong>{' '}
+                    <strong>
+                      {selectedContrat?.semaine > 0 &&
+                        formatPrice(selectedContrat?.semaine) +
+                          ' semaine - '}{' '}
+                    </strong>{' '}
+                    <strong>
+                      {selectedContrat?.jour > 0 &&
+                        formatPrice(selectedContrat?.jour) + ' jour - et '}{' '}
+                    </strong>{' '}
+                    <strong>
+                      {selectedContrat?.heur > 0 &&
+                        formatPrice(selectedContrat?.heure) + '  heure'}{' '}
+                    </strong>{' '}
+                  </p>
+                  <p>
+                    Il prendra effet à compter du :{' '}
+                    <strong>
+                      {new Date(selectedContrat?.startDate).toLocaleDateString(
+                        'fr-FR',
+                        {
+                          weekday: 'long',
+                          day: '2-digit',
+                          month: 'numeric',
+                          year: 'numeric',
+                        }
+                      )}{' '}
+                    </strong>{' '}
+                  </p>
+                  <p>
+                    et prendra fin :{' '}
+                    <strong>
+                      {new Date(selectedContrat?.endDate).toLocaleDateString(
+                        'fr-FR',
+                        {
+                          weekday: 'long',
+                          day: '2-digit',
+                          month: 'numeric',
+                          year: 'numeric',
+                        }
+                      )}{' '}
+                    </strong>{' '}
+                  </p>
+                  <li>
+                    <strong>Résiliation</strong>
+
+                    <p>
+                      {' '}
+                      Il pourra etre résilié par une lettre recommandée avec
+                      avis de réception ou par acte d'huissier :
+                    </p>
+
+                    <ul type='disc'>
+                      <li>
+                        {' '}
+                        Par Le Locataire, à tout moment, sous réserve de
+                        prévenir le Bailleur trois jours en avance.
+                      </li>
+                      <li>
+                        Par le bailleur, au terme du contrat, en cas de motif
+                        sérieux et légitime résultant notamment de l'inexécution
+                        par Le Locataire de l'une des obligations lui incombant.
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>Destination des lieux</strong>
+                  </li>
+                  <p>
+                    Les lieux loués, objet du présent contrat, sont destinés à
+                    l'usage exclusif d'habitation. Le Locataire peut, en
+                    conséquence, ne peut y exercer une quelconque profession
+                    qu'elle soit artisanale, commerciale ou libérale, sans
+                    solliciter et à obtenir l'autorisation expresse et écrite du
+                    Bailleur
+                  </p>
+
+                  <li>
+                    <strong>Montant de la location</strong>
+                  </li>
+
+                  <p>
+                    {' '}
+                    La présente location est consentie et acceptée moyennant
+                    paiement d'un loyer journalier librement fixé entre les
+                    parties.
+                  </p>
+                  <p>
+                    {' '}
+                    Le montant de la présente location s'établit comme suit :
+                  </p>
+
+                  <p>
+                    {' '}
+                    <strong>
+                      Somme en chiffres:{' '}
+                      <mark>
+                        {formatPrice(selectedContrat?.appartement?.heurePrice)}{' '}
+                        F
+                      </mark>{' '}
+                    </strong>{' '}
+                    par jour{' '}
+                  </p>
+                  <p>
+                    {' '}
+                    <strong>
+                      Ce qui fait un Total de:{' '}
+                      <mark>{formatPrice(selectedContrat?.amount)} F</mark>{' '}
+                    </strong>{' '}
+                  </p>
+                  {selectedContrat?.reduction > 0 && (
+                    <p>
+                      {' '}
+                      <strong>
+                        Avec une Remise de :{' '}
+                        <mark>{formatPrice(selectedContrat?.reduction)} F</mark>{' '}
+                      </strong>{' '}
+                    </p>
+                  )}
+                  {selectedContrat?.totalAmount > 0 && (
+                    <p>
+                      {' '}
+                      <strong>
+                        Montant après Remise :{' '}
+                        <mark>
+                          {formatPrice(selectedContrat?.totalAmount)} F
+                        </mark>{' '}
+                      </strong>{' '}
+                    </p>
+                  )}
+
+                  <p>
+                    {' '}
+                    Le présent loyer pourra etre révisé à la demande de l'une ou
+                    l'autre des parties.
+                  </p>
+                  <p>
+                    Dans le cas ou le présent loyer sera réglementé par des
+                    textes legislatifs, les variations prévues par textes seront
+                    applicables de plein droit
+                  </p>
+
+                  <li>
+                    {' '}
+                    <strong>Obligations du Bailleur</strong>
+                    <p>
+                      {' '}
+                      Le Bailleur est tenu des obligations principales suivantes
+                      :
+                    </p>
+                    <ol type='a'>
+                      <li>
+                        Délivrer au Locataire les lieux loués en bon état
+                        d'usage et de réparations, ainsi que les équipements
+                        existants en bon état de fonctionnement.{' '}
+                      </li>
+                      <li>
+                        Assurer au Locataire la jouissance paisble des lieux
+                        loués et de le garantir des vices ou défauts de nature à
+                        y faire obstacle.
+                      </li>
+                      <li>
+                        Entretenir les locaux en état de servir à l'usage prévu
+                        par le présent contrat et y faire toutes les
+                        réparations, autres que locatives, nécessaireau maintien
+                        en état et à l'entretien normal des lieux loués.{' '}
+                      </li>
+                    </ol>
+                  </li>
+
+                  <li className='my-4'>
+                    {' '}
+                    <strong>Obligations du locataire </strong>
+                    <p>
+                      {' '}
+                      Le Locataire est tenu des obligations principales
+                      suivantes :
+                    </p>
+                    <ol type='a'>
+                      <li>
+                        {' '}
+                        Payer le loyer et toute autre somme due aux termes
+                        convenus.
+                      </li>
+                      <li>
+                        {' '}
+                        User paisiblement des lieux loués suivant la destination
+                        qui leur a été donnée par le présent contrat .{' '}
+                      </li>
+                      <li>
+                        Répondre des dégradations et pertes qui surviendraient
+                        pendant la durée du contrat dans des lieux loués dont il
+                        a la jouissance exclusive.
+                      </li>
+                      <li>
+                        ne pas transformer les lieux loués sans l'accord écrit
+                        du bailleur ; à défaut d'accord, Le Bailleur pourra
+                        exiger du locataire, lors de son départ, la remise en
+                        état des lieux loués ou conserver à son bénéfice les
+                        transformations effectuées sans que le locataire puisse
+                        réclamer une quelconque indemnité
+                      </li>
+                      <li>
+                        Le Bailleur pourra toutefois exiger la remise immédiate
+                        des lieux à l'état, aux frais du Locataire, lorsque les
+                        transformations effectuées mettront en péril le bon
+                        fonctionnement des equipements ou la sécurité des lieux
+                        loués.
+                      </li>
+                      <li>
+                        {' '}
+                        Ne pas consentir des sous-locations totales ou
+                        partielles.
+                      </li>
+                      <li>
+                        {' '}
+                        Il est egalement interdit de céder tout ou partie de ses
+                        droits locatifs.
+                      </li>
+                    </ol>
+                  </li>
+
+                  <li>
+                    <strong> Election de domicile</strong>
+                  </li>
+
+                  <p>
+                    Les parties signataires font élection de domicile : Le
+                    Bailleur en son domicile et Le Locataire dans les lieux
+                    louées.
+                  </p>
+                </ol>
+
+                <p>
+                  {' '}
+                  En deux exemplaires, dont un est remis à chacune des parties
+                  qui le reconnaissent.
+                </p>
+
+                <h6 className='text-end my-4 '>
+                  Fait à Bamako,{' '}
+                  {new Date(selectedContrat?.startDate).toLocaleDateString(
+                    'fr-Fr',
+                    {
+                      weekday: 'long',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    }
+                  )}{' '}
+                </h6>
+                <div
+                  className='d-flex justify-content-between align-items-center'
+                  style={{ margin: '15% auto' }}
+                >
+                  <h4> LE BAILLEUR</h4>
+                  <h4> LE LOCATAIRE</h4>
+                </div>
+              </CardBody>
+            </Card>
+          )}
+        </div>
+      </Container>
+    </div>
+  );
+}
