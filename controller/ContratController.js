@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Contrat = require('../models/ContratModel');
 const textValidation = require('./regexValidation');
+const { populate } = require('../models/PaiementModel');
 
 // Ajouter un Contrat
 exports.createContrat = async (req, res) => {
@@ -51,6 +52,7 @@ exports.getAllContrat = async (req, res) => {
     const contrat = await Contrat.find()
     .populate('client')
       .populate('appartement')
+      .populate({path:'appartement', populate:'secteur'})
       .populate('user')
       .sort({ createdAt: -1 });
     return res.status(200).json(contrat);
@@ -65,6 +67,7 @@ exports.getContrat = async (req, res) => {
     const contrat = await Contrat.findById(req.params.id)
     .populate('client')
     .populate('appartement')
+      .populate({path:'appartement', populate:'secteur'})
     .populate('user');
     if (!contrat)
       return res

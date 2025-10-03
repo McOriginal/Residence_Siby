@@ -6,7 +6,6 @@ const appartementRoute = require('./routes/AppartementRoute');
 const clientRoute = require('./routes/ClientRoute');
 const contratRoute = require('./routes/ContratRoute');
 const paiementRoute = require('./routes/PaiementRoute');
-// const paiementHistoriqueRoute = require('./routes/PaiementHistoriqueRoute');
 const depenseRoute = require('./routes/DepenseRoute');
 
 const nodemailer = require('nodemailer');
@@ -54,9 +53,6 @@ app.use('/api/contrats', contratRoute);
 
 // Utilisation des routes Paiement
 app.use('/api/paiements', paiementRoute);
-
-// Utilisation des routes Paiement
-// app.use('/api/paiements_historique', paiementHistoriqueRoute);
 
 // Utilisation des routes Depense
 app.use('/api/depenses', depenseRoute);

@@ -1,5 +1,4 @@
 const Paiement = require('../models/PaiementModel');
-const PaiementHistorique = require('../models/PaiementHistoriqueModel');
 
 // Enregistrer un paiement
 exports.createPaiement = async (req, res) => {
@@ -41,6 +40,7 @@ exports.getAllPaiements = async (req, res) => {
     const paiements = await Paiement.find()
       .populate( 'contrat')
       .populate({path:'contrat', populate:{path:'client'}})
+      .populate({path:'contrat', populate:{path:'appartement', populate:'secteur'}})
       .populate('user')
       .sort({ createdAt: -1 });
 
@@ -56,6 +56,7 @@ exports.getPaiement = async (req, res) => {
     const paiements = await Paiement.findById(req.params.id)
     .populate('contrat')
     .populate({path:'contrat', populate:{path:'client'}})
+    .populate({path:'contrat', populate:{path:'appartement', populate:'secteur'}})
       .populate('user');
 
     return res.status(200).json(paiements);
