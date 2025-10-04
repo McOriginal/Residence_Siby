@@ -49,9 +49,7 @@ const appartementSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    // imageUrl: {
-    //   type: String,
-    // },
+    
     secteur: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Secteur',

@@ -1,5 +1,5 @@
 const Appartement = require('../models/AppartementModel');
-const Secteur = require('../models/SecteurModel');
+const Contrat = require('../models/ContratModel');
 
 
 // Enregistrer un Produit
@@ -29,13 +29,13 @@ exports.createAppartement = async (req, res) => {
     const appartement = await Appartement.create({
       name: lowerName,
       description: lowerDescription,
-     
       user: req.user.id,
       ...req.body,
     });
 
     return res.status(201).json(appartement);
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -58,6 +58,7 @@ const selectedSecteur = req.body.secteur
 
     if (existingAppartements) {
       return res.status(400).json({
+
         status: 'error',
         message: `Appartement ${appartementNumber} existe déjà.`,
       });
@@ -69,7 +70,6 @@ const selectedSecteur = req.body.secteur
       {
         name: lowerName,
         description: lowerDescription,
-      
         ...req.body,
       },
       {
@@ -80,6 +80,7 @@ const selectedSecteur = req.body.secteur
 
     return res.status(200).json(updated);
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -92,6 +93,20 @@ exports.getAllAppartements = async (req, res) => {
       .populate('user')
       .sort({ appartementNumber: 1 });
 
+      const contrats = await Contrat.find();
+      // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
+      // Alors on met isAvailable à true pour l'appartement concerné
+      for (const contrat of contrats) {
+        if (contrat.endDate < new Date()) {
+         // Mettre l'appartement en indisponible
+   await Appartement.findByIdAndUpdate(
+    contrat.appartement?._id,
+    { isAvailable: true },
+    { new: true }
+  );
+        }
+      }
+  
     return res.status(200).json(appartements);
   } catch (err) {
     return res.status(400).json({ status: 'error', message: err.message });

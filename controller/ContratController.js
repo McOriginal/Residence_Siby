@@ -1,16 +1,32 @@
 const mongoose = require('mongoose');
 const Contrat = require('../models/ContratModel');
+const Appartement = require('../models/AppartementModel');
+const Paiement = require('../models/PaiementModel')
 const textValidation = require('./regexValidation');
-const { populate } = require('../models/PaiementModel');
 
 // Ajouter un Contrat
 exports.createContrat = async (req, res) => {
   try {
+
+    const appartement = await Appartement.findById(req.body.appartement)
+
+ 
+    if(appartement.isAvailable === false){
+      return res.status(400).json({message: "Cet Appartement n'est pas disponible"})
+    }
+
       const newContrat = await Contrat.create({
       
       user: req.user.id,
       ...req.body,
     });
+     // Mettre l'appartement en indisponible
+     await Appartement.findByIdAndUpdate(
+      appartement,
+      { isAvailable: false },
+      { new: true }
+    );
+ 
     return res.status(201).json(newContrat);
   } catch (e) {
     return res.status(409).json({
@@ -24,13 +40,22 @@ exports.createContrat = async (req, res) => {
 // Mettre à jour un Contrat
 exports.updateContrat = async (req, res) => {
   try {
+   const oldContrat = await Contrat.findById(req.params.id)
+
+
    
+   if(req.body.appartement !== oldContrat.appartement.toString()){
+    const appartement = await Appartement.findById(req.body.appartement)
+
+    if(appartement.isAvailable === false){
+      return res.status(400).json({message: "Cet Appartement n'est pas disponible"})
+    }
+   }
+
     //  Si il n y a pas d'erreur on met ajour
     const updated = await Contrat.findByIdAndUpdate(
       req.params.id,
       {
-       
-    
         ...req.body,
       },
       {
@@ -39,9 +64,21 @@ exports.updateContrat = async (req, res) => {
         context: 'query',
       }
     );
+
+    if(updated.endDate > new Date()){
+      
+      // Mettre l'appartement en indisponible
+  return   await Appartement.findByIdAndUpdate(
+      req.body.appartement,
+      { isAvailable: false },
+      { new: true }
+    );
+ 
+    }
   
     return res.status(200).json(updated);
   } catch (err) {
+    console.log(err)
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };
@@ -83,7 +120,22 @@ exports.getContrat = async (req, res) => {
 // Supprimer un Contrat
 exports.deleteContrat = async (req, res) => {
   try {
-    await Contrat.findByIdAndDelete(req.params.id);
+  const contrat=  await Contrat.findByIdAndDelete(req.params.id);
+
+    await Appartement.findByIdAndUpdate(
+     contrat.appartement._id,
+      { isAvailable: true },
+      { new: true }
+    );
+const paiements = await Paiement.find();
+
+if(paiements){
+    for(const pai of paiements){
+      await Paiement.findByIdAndDelete(pai._id);
+    }
+    }
+
+
     return res
       .status(200)
       .json({ status: 'success', message: 'Contrat supprimé avec succès' });

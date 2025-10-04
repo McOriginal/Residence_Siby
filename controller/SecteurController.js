@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Secteur = require('../models/SecteurModel');
+const Contrat = require('../models/ContratModel');
+const Appartement = require('../models/AppartementModel');
 const textValidation = require('./regexValidation');
 
 // Créer un Fournisseur
@@ -88,6 +90,20 @@ exports.getAllSecteurs = async (req, res) => {
     const secteurs = await Secteur.find()
       .populate('user')
       .sort({ secteurNumber: 1 });
+
+      const contrats = await Contrat.find();
+      // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
+      // Alors on met isAvailable à true pour l'appartement concerné
+      for (const contrat of contrats) {
+        if (contrat.endDate < new Date()) {
+         // Mettre l'appartement en indisponible
+   await Appartement.findByIdAndUpdate(
+    contrat.appartement._id,
+    { isAvailable: true },
+    { new: true }
+  );
+        }
+      }
     return res.status(200).json(secteurs);
   } catch (e) {
     return res.status(404).json({ e });
@@ -105,6 +121,21 @@ exports.getSecteur = async (req, res) => {
       return res
         .status(404)
         .json({ status: 'error', message: 'Secteur non trouvé' });
+
+
+        const contrats = await Contrat.find();
+        // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
+        // Alors on met isAvailable à true pour l'appartement concerné
+        for (const contrat of contrats) {
+          if (contrat.endDate < new Date()) {
+           // Mettre l'appartement en indisponible
+     await Appartement.findByIdAndUpdate(
+      contrat.appartement._id,
+      { isAvailable: true },
+      { new: true }
+    );
+          }
+        }
 
     res.status(200).json(secteur);
   } catch (err) {

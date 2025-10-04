@@ -1,4 +1,6 @@
 const User = require('./../models/UserModel');
+const Contrat = require('./../models/ContratModel');
+const Appartement = require('./../models/AppartementModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -33,7 +35,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      // user: req.user.id,
+      user: req.user.id,
     });
 
     res.status(201).json({ message: 'Utilisateur enregistré avec succès.' });
@@ -52,7 +54,7 @@ exports.login = async (req, res) => {
     if (!user) {
       return res
         .status(401)
-        .json({ message: "Cet utilisateur n'existe pas invalides." });
+        .json({ message: "Cet Compte N'existe Pas." });
     }
 
     // Vérifie le mot de passe
@@ -86,6 +88,20 @@ exports.login = async (req, res) => {
       });
     }
 
+ 
+    const contrats = await Contrat.find();
+    // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
+    // Alors on met isAvailable à true pour l'appartement concerné
+    for (const contrat of contrats) {
+      if (contrat.endDate < new Date()) {
+       // Mettre l'appartement en indisponible
+ await Appartement.findByIdAndUpdate(
+  contrat.appartement._id,
+  { isAvailable: true },
+  { new: true }
+);
+      }
+    }
     // Retourner le token et les infos utilisateur
     res.status(200).json({
       message: 'Connexion réussie.',
