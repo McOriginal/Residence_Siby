@@ -20,7 +20,7 @@ import homeImg from './../../assets/images/home_img.png';
 
 const companyName = 'Groupe Siby Residence';
 
-const companyLittleName = 'Groupe Siby';
+const companyLittleName = 'Residence Siby';
 const companyServices1 =
   'Vente des: Matelats - Carreaux - Couches de Bébé etc...';
 const companyServices2 = 'Location des Voitures et Appartements meublés';

@@ -44,8 +44,8 @@ const AppartementForm = ({
       weekPrice: appartementToEdit?.weekPrice || undefined,
       mounthPrice: appartementToEdit?.mounthPrice || undefined,
       description: appartementToEdit?.description || '',
-      isAvailable: appartementToEdit?.isAvailable ?? false,
-      etat: appartementToEdit?.etat ?? false,
+      isAvailable: appartementToEdit?.isAvailable ?? true,
+      etat: appartementToEdit?.etat ?? true,
       secteur: selectedSecteur?.id,
     },
 
@@ -66,7 +66,7 @@ const AppartementForm = ({
 
       if (appartementToEdit) {
         updateAppartement(
-          { id: appartementToEdit?._id, ...values },
+          { id: appartementToEdit?._id, data: values },
           {
             onSuccess: () => {
               setIsLoading(false);
@@ -304,10 +304,10 @@ const AppartementForm = ({
                 type='checkbox'
                 name='isAvailable'
                 // checked={validation.values.isAvailable}
-                className='form-control border-1 border-dark'
+                className={`form-control border-1 border-dark  ${validation.values.isAvailable ? 'bg-success' : 'bg-light'}`}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.isAvailable || ''}
+                value={validation.values.isAvailable || true}
                 invalid={
                   validation.touched.isAvailable &&
                   validation.errors.isAvailable
@@ -338,7 +338,7 @@ const AppartementForm = ({
                 type='checkbox'
                 name='etat'
                 // checked={validation.values.etat}
-                className='form-control  border-1 border-dark'
+                className={`form-control border-1 border-dark  ${validation.values.etat ? 'bg-success' : 'bg-light'}`}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
                 invalid={

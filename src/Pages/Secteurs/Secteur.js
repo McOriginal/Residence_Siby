@@ -21,6 +21,7 @@ import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useNavigate } from 'react-router-dom';
 import { useAllAppartement } from '../../Api/queriesAppartement';
+import { DashboardButton } from '../components/NavigationButton';
 
 export default function Secteur() {
   const [form_modal, setForm_modal] = useState(false);
@@ -54,7 +55,6 @@ export default function Secteur() {
   function tog_form_modal() {
     setForm_modal(!form_modal);
   }
-
   return (
     <>
       <div className='page-content bg-primary'>
@@ -73,16 +73,19 @@ export default function Secteur() {
             }
           />
           <h3 className='text-center'> Secteurs Disponible</h3>
-          <Button
-            color='info'
-            className='mx-auto my-3 d-flex justify-content-center align-items-center'
-            onClick={() => {
-              setSecteurToUpdate(null);
-              tog_form_modal();
-            }}
-          >
-            Ajouter un Secteur
-          </Button>
+          <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
+            <Button
+              color='info'
+              onClick={() => {
+                setSecteurToUpdate(null);
+                tog_form_modal();
+              }}
+            >
+              Ajouter un Secteur
+            </Button>
+
+            <DashboardButton />
+          </div>
 
           {dataError && (
             <div className='text-danger text-center my-4'>
@@ -91,13 +94,14 @@ export default function Secteur() {
               </h6>
             </div>
           )}
+          {secteurData?.length ===0 &&<h5 className='text-center my-4'>Aucun Secteur Disponible </h5>}
 
           {loadingData && <LoadingSpiner />}
           {!dataError && !loadingData && (
             <Row className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
               {secteurData?.length > 0 &&
                 secteurData?.map((item) => (
-                  <Col id={item?._id} sm={4} md={5}>
+                  <Col key={item?._id} sm={4} md={5}>
                     <Card
                       style={{
                         position: 'relative',
@@ -170,12 +174,12 @@ export default function Secteur() {
                         </span>
                         <span
                           className={`badge ${
-                            availableAppartements(item, false) > 0
+                            availableAppartements(item, true) > 0
                               ? 'bg-success'
                               : 'bg-danger'
                           }`}
                         >
-                          {formatPrice(availableAppartements(item, false))}{' '}
+                          {formatPrice(availableAppartements(item, true))}{' '}
                           Disponible
                         </span>
                       </CardBody>

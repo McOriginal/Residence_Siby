@@ -43,15 +43,17 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
 
     initialValues: {
       client: contratToEdit?.client?._id || clientId,
-      appartement: contratToEdit?.appartment?._id || secteurStorage?._id,
+      appartement: contratToEdit?.appartement?._id || undefined,
       heure: contratToEdit?.heure || 0,
       jour: contratToEdit?.jour || 0,
       semaine: contratToEdit?.semaine || 0,
       mois: contratToEdit?.mois || 0,
       startDate:
-        contratToEdit?.startDate || new Date().toISOString().substring(0, 10),
+        contratToEdit?.startDate.substring(0, 10) ||
+        new Date().toISOString().substring(0, 10),
       endDate:
-        contratToEdit?.endDate || new Date().toISOString().substring(0, 10),
+        contratToEdit?.endDate.substring(0, 10) ||
+        new Date().toISOString().substring(0, 10),
       amount: contratToEdit?.amount || undefined,
       reduction: contratToEdit?.reduction || undefined,
       totalAmount: contratToEdit?.totalAmount || undefined,
@@ -74,7 +76,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
 
       if (contratToEdit) {
         updateContrat(
-          { id: contratToEdit._id, ...values },
+          { id: contratToEdit._id, data: values },
           {
             onSuccess: () => {
               successMessageAlert('Données mise à jour avec succès');
@@ -173,7 +175,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
       </h6>
       <Row>
         {loadingAppart && <LoadingSpiner />}
-        {!loadingAppart && !errorAppart && secteurAppartement?.length === 0 && (
+        {!loadingAppart && errorAppart && secteurAppartement?.length === 0 && (
           <h6 className='text-center text-warning'>
             Aucun Appartement dans le Secteur {secteurStorage?.secteurNumber}
           </h6>
@@ -352,7 +354,7 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
               name='endDate'
               placeholder='Entrez La date de fin du contrat'
               type='date'
-              min={validation.values.startDate}
+              min={new Date().getTime()}
               className='form-control border-1 border-dark'
               id='endDate'
               onChange={validation.handleChange}

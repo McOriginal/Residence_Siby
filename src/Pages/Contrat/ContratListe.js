@@ -12,6 +12,11 @@ import { deleteButton } from '../components/AlerteModal';
 import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
 import { useNavigate } from 'react-router-dom';
 import ContratForm from './ContratForm';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 export default function ContratListe() {
   const [form_modal, setForm_modal] = useState(false);
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -42,7 +47,11 @@ export default function ContratListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
-
+          <div className='d-flex justify-content-center align-items-center gap-4'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>
           {/* -------------------------------- */}
           <FormModal
             form_modal={form_modal}
@@ -155,6 +164,16 @@ export default function ContratListe() {
                                   )}{' '}
                                 </td>
                                 <td>
+                                  {new Date(
+                                    contrat.startDate
+                                  ).toLocaleDateString('fr-Fr', {
+                                    weekday: 'short',
+                                    day: '2-digit',
+                                    month: 'numeric',
+                                    year: 'numeric',
+                                  })}{' '}
+                                </td>
+                                <td>
                                   {new Date(contrat.endDate).toLocaleDateString(
                                     'fr-Fr',
                                     {
@@ -165,16 +184,7 @@ export default function ContratListe() {
                                     }
                                   )}{' '}
                                 </td>
-                                <td>
-                                  {new Date(
-                                    contrat.startDate
-                                  ).toLocaleDateString('fr-Fr', {
-                                    weekday: 'short',
-                                    day: '2-digit',
-                                    month: 'numeric',
-                                    year: 'numeric',
-                                  })}{' '}
-                                </td>
+                               
                                 <td>{formatPrice(contrat.mois)} </td>
 
                                 <td>{formatPrice(contrat.semaine || 0)}</td>

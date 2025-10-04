@@ -9,7 +9,11 @@ import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
 import ContratForm from '../Contrat/ContratForm';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useOneClient } from '../../Api/queriesClient';
-import BackButton from '../components/BackButton';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -30,12 +34,19 @@ export default function ClientContratListe() {
   function tog_form_modal() {
     setForm_modal(!form_modal);
   }
+
+  const today = new Date().toISOString().substring(0, 10);
+
   return (
     <React.Fragment>
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
-          <BackButton />
+          <div className='d-flex justify-content-center align-items-center gap-4'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>{' '}
           {/* -------------------------- */}
           <FormModal
             form_modal={form_modal}
@@ -51,7 +62,6 @@ export default function ClientContratListe() {
               />
             }
           />
-
           {/* -------------------- */}
           <Row>
             <Col lg={12}>
@@ -119,6 +129,7 @@ export default function ClientContratListe() {
                           <thead className='table-light'>
                             <tr className='text-center'>
                               <th>N° d'Appartement</th>
+                              <th>Secteur</th>
                               <th>Date D'Entrée</th>
                               <th>Date de Sortie</th>
                               <th>Mois</th>
@@ -142,17 +153,7 @@ export default function ClientContratListe() {
                                     contrat?.appartement?.appartementNumber
                                   )}{' '}
                                 </th>
-                                <th>
-                                  {new Date(contrat.endDate).toLocaleDateString(
-                                    'fr-Fr',
-                                    {
-                                      weekday: 'short',
-                                      day: '2-digit',
-                                      month: 'numeric',
-                                      year: 'numeric',
-                                    }
-                                  )}{' '}
-                                </th>
+                                <td>{contrat?.appartement?.secteur?.adresse}</td>
                                 <td>
                                   {new Date(
                                     contrat.startDate
@@ -162,6 +163,17 @@ export default function ClientContratListe() {
                                     month: 'numeric',
                                     year: 'numeric',
                                   })}{' '}
+                                </td>
+                                <td className={`${contrat.endDate > today ? 'text-success' : contrat.endDate < today ? 'text-danger' :  contrat.endDate === today ? 'text-warning' : ''}`}>
+                                  {new Date(contrat.endDate).toLocaleDateString(
+                                    'fr-Fr',
+                                    {
+                                      weekday: 'short',
+                                      day: '2-digit',
+                                      month: 'numeric',
+                                      year: 'numeric',
+                                    }
+                                  )}{' '}
                                 </td>
                                 <td>{formatPrice(contrat.mois)} </td>
 

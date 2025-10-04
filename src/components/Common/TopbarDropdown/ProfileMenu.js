@@ -36,8 +36,8 @@ const ProfileMenu = (props) => {
           <i className='mdi mdi-chevron-down d-xl-inline-block' />
         </DropdownToggle>
         <DropdownMenu className='dropdown-menu-end'>
-          <DropdownItem>
-            <Link to='/userprofile'>
+          <DropdownItem className='bg-dark'>
+            <Link to='/userprofile' className='text-light'>
               {' '}
               <i className='ri-user-line align-middle me-2' />
               Profile{' '}

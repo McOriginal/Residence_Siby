@@ -35,7 +35,7 @@ const authProtectedRoutes = [
   {
     path: '/',
     exact: true,
-    component: <Navigate to='/dashboard' />,
+    component: <Navigate to='/home' />,
   },
 
   // Profile
@@ -90,7 +90,7 @@ const noSideBarRoutes = [
 
   { path: '/depenses', component: <DepenseListe /> },
 
-  { path: '/register', component: <Register /> },
+  // { path: '/register', component: <Register /> },
 ];
 
 const publicRoutes = [

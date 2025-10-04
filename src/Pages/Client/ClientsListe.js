@@ -13,6 +13,11 @@ import { useAllClient, useDeleteClient } from '../../Api/queriesClient';
 import ClientForm from './ClientForm';
 import { useNavigate } from 'react-router-dom';
 import { useAllContrat } from '../../Api/queriesContrat';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 
 export default function ClientListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -48,7 +53,11 @@ export default function ClientListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Client' />
-
+          <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>
           {/* -------------------------- */}
           <FormModal
             form_modal={form_modal}

@@ -81,7 +81,8 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
-              navigate('/dashboard');
+              navigate('/home');
+              window.location.reload();
 
               // -----------------------
             } catch (err) {
@@ -235,7 +236,7 @@ const Login = () => {
                                 <LoadingSpiner />
                               ) : (
                                 <button
-                                  className='btn btn-primary waves-effect waves-light'
+                                  className='btn btn-success waves-effect waves-light'
                                   type='submit'
                                 >
                                   Se Connecter

@@ -4,6 +4,12 @@ const SidebarData = [
     isMainMenu: true,
   },
   {
+    label: 'Accueil',
+    icon: 'fas fa-home',
+    isHasArrow: true,
+    url: '/home',
+  },
+  {
     label: 'Tableau De Bord',
     icon: 'mdi mdi-home-variant-outline',
     isHasArrow: true,

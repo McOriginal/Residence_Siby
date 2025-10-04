@@ -19,7 +19,7 @@ import {
 } from '../components/capitalizeFunction';
 import LoadingSpiner from '../components/LoadingSpiner';
 import RecuHeader from '../Paiements/ReçueHeader';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/NavigationButton';
 
 export default function ContractDocument() {
   const param = useParams();

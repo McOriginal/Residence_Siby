@@ -16,7 +16,7 @@ import {
 } from '../../Api/queriesAppartement';
 import FormModal from '../components/FormModal';
 import AppartementForm from './AppartementForm';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/NavigationButton';
 import { useOneSecteur } from '../../Api/queriesSecteurs';
 
 export default function AppartementListe() {

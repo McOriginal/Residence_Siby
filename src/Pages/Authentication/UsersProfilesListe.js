@@ -3,9 +3,9 @@ import { Card, Container } from 'reactstrap';
 import { useGetAllUsers } from '../../Api/queriesAuth';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpiner from '../components/LoadingSpiner';
-import BackButton from '../components/BackButton';
 import FormModal from '../components/FormModal';
 import UpdateUserProfile from './UpdateUserProfile';
+import { BackButton } from '../components/NavigationButton';
 
 export default function UsersProfilesListe() {
   document.title = 'Liste des Profiles';

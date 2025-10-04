@@ -7,11 +7,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 
   if (!auth) return <Navigate to='/login' />;
   if (!allowedRoles.includes(auth?.user?.role)) {
-    if (auth?.user?.role === 'admin') return <Navigate to='/dashboard' />;
-    if (auth?.user?.role === 'medecin')
-      return <Navigate to='/dashboard-medecin' />;
-    if (auth?.user?.role === 'secretaire')
-      return <Navigate to='/dashboard-secretaire' />;
+    if (auth?.user?.role === 'admin') return <Navigate to='/home' />;
   }
 
   // Sinon l'utilisateur est authentifié et a le rôle autorisé, afficher les pages

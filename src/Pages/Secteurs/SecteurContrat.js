@@ -72,7 +72,7 @@ export default function SecteurContrat() {
                           Nombre:{' '}
                           <span className='text-warning'>
                             {' '}
-                            {contratData?.length}{' '}
+                            {filteredContrat?.length}{' '}
                           </span>
                         </p>
                       </Col>

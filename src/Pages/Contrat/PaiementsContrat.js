@@ -14,8 +14,12 @@ import { connectedUserRole } from '../Authentication/userInfos';
 import { useParams } from 'react-router-dom';
 import PaiementForm from '../Paiements/PaiementForm';
 import { useOneContrat } from '../../Api/queriesContrat';
-import BackButton from '../components/BackButton';
 import ReçuPaiement from '../Paiements/ReçuPaiement';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 
 export default function PaiementsContrat() {
   const contrat = useParams();
@@ -56,7 +60,11 @@ export default function PaiementsContrat() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Contrat' breadcrumbItem='Paiements' />
-          <BackButton />
+          <div className='d-flex justify-content-center align-items-center gap-4'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>{' '}
           {/* -------------------------- */}
           <FormModal
             form_modal={form_modal}
@@ -73,7 +81,6 @@ export default function PaiementsContrat() {
               />
             }
           />
-
           <ReçuPaiement
             show_modal={show_modal}
             tog_show_modal={tog_show_modal}
@@ -144,7 +151,6 @@ export default function PaiementsContrat() {
                               <th>Remise</th>
                               <th>Total après remise</th>
                               <th>Net Payé</th>
-                              <th>Reliquat</th>
                               <th>Action</th>
                             </tr>
                           </thead>
