@@ -296,39 +296,6 @@ const AppartementForm = ({
       <Row>
         <Col md='6'>
           <FormGroup>
-            <Label htmlFor='isAvailable' className='d-block'>
-              Disponibilité
-            </Label>
-            <div className='d-flex justify-content-center align-items-center'>
-              <Input
-                type='checkbox'
-                name='isAvailable'
-                // checked={validation.values.isAvailable}
-                className={`form-control border-1 border-dark  ${validation.values.isAvailable ? 'bg-success' : 'bg-light'}`}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.isAvailable || true}
-                invalid={
-                  validation.touched.isAvailable &&
-                  validation.errors.isAvailable
-                    ? true
-                    : false
-                }
-              />
-              {validation.touched.isAvailable &&
-              validation.errors.isAvailable ? (
-                <FormFeedback type='invalid'>
-                  {validation.errors.isAvailable}
-                </FormFeedback>
-              ) : null}
-              <span className='ms-2 mt-1 text-center'>
-                {validation.values.isAvailable ? 'Oui' : 'Non'}{' '}
-              </span>
-            </div>
-          </FormGroup>
-        </Col>
-        <Col md='6'>
-          <FormGroup>
             <Label htmlFor='etat' className='d-block'>
               Etat d'Appartement
             </Label>
@@ -338,7 +305,9 @@ const AppartementForm = ({
                 type='checkbox'
                 name='etat'
                 // checked={validation.values.etat}
-                className={`form-control border-1 border-dark  ${validation.values.etat ? 'bg-success' : 'bg-light'}`}
+                className={`form-control border-1 border-dark  ${
+                  validation.values.etat ? 'bg-success' : 'bg-light'
+                }`}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
                 invalid={

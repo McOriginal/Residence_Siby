@@ -3,7 +3,6 @@ import {
   Card,
   CardBody,
   CardFooter,
-  CardTitle,
   Col,
   Container,
   DropdownItem,
@@ -89,16 +88,18 @@ export default function Secteur() {
 
           {dataError && (
             <div className='text-danger text-center my-4'>
-              <h6>
+              <h6 className='text-danger'>
                 Oh..Oh....une erreur c'est produit veuillez actualisez la page
               </h6>
             </div>
           )}
-          {secteurData?.length ===0 &&<h5 className='text-center my-4'>Aucun Secteur Disponible </h5>}
+          {secteurData?.length === 0 && (
+            <h5 className='text-center my-4'>Aucun Secteur Disponible </h5>
+          )}
 
           {loadingData && <LoadingSpiner />}
           {!dataError && !loadingData && (
-            <Row className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
+            <Row className='d-flex flex-wrap mt-4 gap-4 justify-content-center align-items-center'>
               {secteurData?.length > 0 &&
                 secteurData?.map((item) => (
                   <Col key={item?._id} sm={4} md={5}>
