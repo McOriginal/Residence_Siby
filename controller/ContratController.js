@@ -38,48 +38,85 @@ exports.createContrat = async (req, res) => {
 };
 
 // Mettre à jour un Contrat
+
 exports.updateContrat = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-   const oldContrat = await Contrat.findById(req.params.id)
-
-
-   
-   if(req.body.appartement !== oldContrat.appartement.toString()){
-    const appartement = await Appartement.findById(req.body.appartement)
-
-    if(appartement.isAvailable === false){
-      return res.status(400).json({message: "Cet Appartement n'est pas disponible"})
+    const oldContrat = await Contrat.findById(req.params.id).session(session);
+    if (!oldContrat) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Contrat non trouvé" });
     }
-   }
 
-    //  Si il n y a pas d'erreur on met ajour
+    const appartement = await Appartement.findById(req.body.appartement).session(session);
+    if (!appartement) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Appartement non trouvé" });
+    }
+
+    // Vérification si changement d'appartement et que le nouvel appart est indisponible
+    if (
+      req.body.appartement !== oldContrat.appartement.toString() &&
+      appartement.isAvailable === false
+    ) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: "Cet Appartement n'est pas disponible" });
+    }
+
+    // Mise à jour du contrat
     const updated = await Contrat.findByIdAndUpdate(
       req.params.id,
-      {
-        ...req.body,
-      },
+      { ...req.body },
       {
         new: true,
         runValidators: true,
-        context: 'query',
+        context: "query",
+        session,
       }
     );
 
-    if(updated.endDate > new Date()){
-      
-      // Mettre l'appartement en indisponible
-  return   await Appartement.findByIdAndUpdate(
-      req.body.appartement,
-      { isAvailable: false },
-      { new: true }
-    );
- 
+    // 🔑 Si l'appartement a changé => libérer l'ancien
+    if (req.body.appartement !== oldContrat.appartement.toString()) {
+      await Appartement.findByIdAndUpdate(
+        oldContrat.appartement,
+        { isAvailable: true },
+        { session }
+      );
     }
-  
+
+    // Met à jour la dispo du nouvel appart
+    if (new Date(updated.endDate) > new Date()) {
+      // contrat actif => appart occupé
+      await Appartement.findByIdAndUpdate(
+        updated.appartement,
+        { isAvailable: false },
+        { session }
+      );
+    } else {
+      // contrat expiré => appart dispo
+      await Appartement.findByIdAndUpdate(
+        updated.appartement,
+        { isAvailable: true },
+        { session }
+      );
+    }
+
+    // ✅ Commit la transaction
+    await session.commitTransaction();
+    session.endSession();
+
     return res.status(200).json(updated);
   } catch (err) {
-    console.log(err)
-    return res.status(400).json({ status: 'error', message: err.message });
+    // ❌ Rollback en cas d'erreur
+    await session.abortTransaction();
+    session.endSession();
+    console.log(err);
+    return res.status(400).json({ status: "error", message: err.message });
   }
 };
 
@@ -120,26 +157,31 @@ exports.getContrat = async (req, res) => {
 // Supprimer un Contrat
 exports.deleteContrat = async (req, res) => {
   try {
-  const contrat=  await Contrat.findByIdAndDelete(req.params.id);
+    const session = await mongoose.startSession()
+    session.startTransaction();
+  const contrat=  await Contrat.findByIdAndDelete(req.params.id,{session});
 
     await Appartement.findByIdAndUpdate(
      contrat.appartement._id,
       { isAvailable: true },
-      { new: true }
+      { new: true ,session}
     );
-const paiements = await Paiement.find();
+const paiements = await Paiement.find().session(session);
 
 if(paiements){
     for(const pai of paiements){
-      await Paiement.findByIdAndDelete(pai._id);
+      await Paiement.findByIdAndDelete(pai._id,{session});
     }
     }
 
-
+await session.commitTransaction();
+session.endSession();
     return res
       .status(200)
       .json({ status: 'success', message: 'Contrat supprimé avec succès' });
   } catch (err) {
+    session.abortTransaction();
+    session.endSession();
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Secteur = require('../models/SecteurModel');
 const Contrat = require('../models/ContratModel');
 const Appartement = require('../models/AppartementModel');
+const Paiement = require('../models/PaiementModel')
 const textValidation = require('./regexValidation');
 
 // Créer un Fournisseur
@@ -145,12 +146,67 @@ exports.getSecteur = async (req, res) => {
 
 // Supprimer un Secteur
 exports.deleteSecteur = async (req, res) => {
+  const session = await mongoose.startSession()
+  session.startTransaction();
   try {
-    await Secteur.findByIdAndDelete(req.params.id);
+
+    const secteurID = req.params.id
+    // On met à jours la disponibilité de tous les APPARTEMENTS  lié aux CONTRAT
+const apparts = await Appartement.find({secteur:secteurID }).session(session);
+
+if(!apparts){
+  session.abortTransaction();
+  session.endSession()
+  return res.status(400).json({message: "Aucun n'Appartement disponible dans ce Secteur"})
+}
+
+
+for (const app of apparts){
+ 
+    // Avant de Supprimer le CLIENT on vérrifie si il n'y pas des CONTRATS lié à ce CLIENT
+    const contrats = await Contrat.find({appartement: app._id}).session(session);
+
+    if(contrats){    
+      // SI il y'a des CONTRAT alors on Supprime tous les CONTRAT liés
+    for(const cont of contrats){
+
+      // On Vérifie dans la boucle si il n'y a pas des PAIEMENTS liés aux CONTRATS
+      const paiements = await Paiement.find({contrat:cont._id}).session(session)
+     
+      if(paiements){
+       
+      // Si ce le cas alors on supprimer tous les PAIEMENTS liés
+for(const paie of paiements){
+  await Paiement.findByIdAndDelete(paie._id,{session})
+}
+}
+
+// ensuite on supprime le CONTRAT
+await Contrat.findByIdAndDelete(cont._id,{session});
+
+
+  }
+    }
+
+await Appartement.findByIdAndDelete(app._id,{session})
+}
+
+
+
+    await Secteur.findByIdAndDelete(req.params.id,{session});
+
+    
+await session.commitTransaction();
+session.endSession()
+
     return res
       .status(200)
       .json({ status: 'success', message: 'Secteur supprimé avec succès' });
+
+
   } catch (err) {
+    session.abortTransaction();
+    session.endSession();
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };

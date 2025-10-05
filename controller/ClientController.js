@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const Client = require('../models/ClientModel');
+const Contrat = require('../models/ContratModel');
+const Paiement = require('../models/PaiementModel')
+const Appartement = require('../models/AppartementModel')
 const textValidation = require('./regexValidation');
 
 // Créer un Fournisseur
@@ -112,12 +115,55 @@ exports.getClient = async (req, res) => {
 
 // Supprimer un Client
 exports.deleteClient = async (req, res) => {
+  const session = await mongoose.startSession()
+  session.startTransaction();
   try {
-    await Client.findByIdAndDelete(req.params.id);
+
+    // Avant de Supprimer le CLIENT on vérrifie si il n'y pas des CONTRATS lié à ce CLIENT
+    const clientContrat = await Contrat.find({client:req.params.id}).session(session);
+
+    if(clientContrat){
+    
+    // SI il y'a des CONTRAT alors on Supprime tous les CONTRAT liés
+    for(const cont of clientContrat){
+
+      // On Vérifie dans la boucle si il n'y a pas des PAIEMENTS liés aux CONTRATS
+      const clientPaiem = await Paiement.find({contrat:cont._id}).session(session)
+      if(clientPaiem){
+      // Si ce le cas alors on supprimer tous les PAIEMENTS liés
+for(const paie of clientPaiem){
+  await Paiement.findByIdAndDelete(paie._id,{session})
+}
+      }
+    }
+
+
+// On met à jours la disponibilité de tous les APPARTEMENTS  lié aux CONTRAT
+const apparts = await Appartement.find({_id: cont.appartement}).session(session);
+
+
+for (const app of apparts){
+  await Appartement.findByIdAndUpdate(app._id,{isAvailable:true},{session})
+}
+
+
+// ensuite on supprime le CONTRAT
+await Contrat.findByIdAndDelete(cont._id,{session});
+
+}
+
+// Et pour finir on supprime le CLIENT
+    await Client.findByIdAndDelete(req.params.id, {session});
+
+await session.commitTransaction();
+session.endSession()
+
     return res
       .status(200)
       .json({ status: 'success', message: 'Client supprimé avec succès' });
   } catch (err) {
+    session.abortTransaction()
+    session.endSession()
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };
