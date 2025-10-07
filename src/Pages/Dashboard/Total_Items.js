@@ -66,7 +66,7 @@ const TotalAppartement = () => {
           ></i>
 
           <h3 className='text-info'>{appartement?.length}</h3>
-          <h5>Appartemens</h5>
+          <h5>Appartements</h5>
         </Card>
       )}
     </div>
@@ -124,7 +124,7 @@ const TotalContrat = () => {
           ></i>
 
           <h3 className='text-info'>{contrat?.length}</h3>
-          <h5>Contrat</h5>
+          <h5>Contrats</h5>
         </Card>
       )}
     </div>

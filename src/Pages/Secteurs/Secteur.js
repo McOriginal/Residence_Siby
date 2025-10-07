@@ -13,7 +13,8 @@ import {
 } from 'reactstrap';
 import FormModal from '../components/FormModal';
 import SecteurForm from './SecteurForm';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../../Auth/AuthContext';
 import { useAllSecteur, useDeleteSecteur } from '../../Api/queriesSecteurs';
 import LoadingSpiner from '../components/LoadingSpiner';
 import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
@@ -23,6 +24,7 @@ import { useAllAppartement } from '../../Api/queriesAppartement';
 import { DashboardButton } from '../components/NavigationButton';
 
 export default function Secteur() {
+  const { logout } = useContext(AuthContext);
   const [form_modal, setForm_modal] = useState(false);
   const [secteurToUpdate, setSecteurToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Secteur');
@@ -84,6 +86,9 @@ export default function Secteur() {
             </Button>
 
             <DashboardButton />
+            <Button onClick={() => logout()} color='danger'>
+              Déconnecter
+            </Button>
           </div>
 
           {dataError && (

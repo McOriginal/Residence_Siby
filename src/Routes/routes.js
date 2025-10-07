@@ -6,7 +6,6 @@ import Dashboard from '../Pages/Dashboard';
 
 // Import Authentication pages
 import Login from '../Pages/Authentication/Login';
-import ForgetPasswordPage from '../Pages/Authentication/ForgetPassword';
 import Register from '../Pages/Authentication/Register';
 import UserProfile from '../Pages/Authentication/user-profile';
 
@@ -14,8 +13,6 @@ import UserProfile from '../Pages/Authentication/user-profile';
 import PaiementsListe from '../Pages/Paiements/PaiementsListe.js';
 import DepenseListe from '../Pages/Depenses/DepenseListe.js';
 import UpdatePassword from '../Pages/Authentication/UpdatePassword.js';
-
-import ResetPassword from '../Pages/Authentication/ResetPassword.js';
 
 import UsersProfilesListe from '../Pages/Authentication/UsersProfilesListe.js';
 import ProfileDetail from '../Pages/Authentication/ProfileDetail.js';
@@ -27,6 +24,7 @@ import PaiementsContrat from '../Pages/Contrat/PaiementsContrat.js';
 import ContractDocument from '../Pages/Contrat/ContratDocument.js';
 import SelectedSecteur from '../Pages/Secteurs/SelectedSecteur.js';
 import AllAppartements from '../Pages/Appartements/AllAppartements.js';
+import InitialPage from '../Pages/InitialPage/InitialPage.js';
 
 // Routes pour les ADMINS
 const authProtectedRoutes = [
@@ -94,6 +92,7 @@ const noSideBarRoutes = [
   { path: '/depenses', component: <DepenseListe /> },
 
   // { path: '/register', component: <Register /> },
+  { path: '/initial_page', component: <InitialPage /> },
 ];
 
 const publicRoutes = [
@@ -102,8 +101,6 @@ const publicRoutes = [
   // Authentication Page
   { path: '/register', component: <Register /> },
   { path: '/login', component: <Login /> },
-  { path: '/forgotPassword', component: <ForgetPasswordPage /> },
-  { path: '/resetPassword', component: <ResetPassword /> },
 ];
 
 export { authProtectedRoutes, noSideBarRoutes, publicRoutes };

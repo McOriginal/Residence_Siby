@@ -81,7 +81,7 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
-              navigate('/home');
+              navigate('/initial_page');
               window.location.reload();
 
               // -----------------------
@@ -154,7 +154,7 @@ const Login = () => {
                         <Row>
                           <Col md={12}>
                             <div className='mb-4'>
-                              <Label className='form-label'>Email</Label>
+                              <Label className='form-label '>Email</Label>
                               <Input
                                 name='email'
                                 className='form-control border-1 border-dark'

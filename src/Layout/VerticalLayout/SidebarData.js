@@ -42,14 +42,14 @@ const SidebarData = [
     isMainMenu: true,
   },
   {
-    label: 'Paiements / Entrée',
+    label: 'Paiements',
     icon: 'fas fa-dollar-sign',
     isHasArrow: true,
     url: '/paiements',
   },
   {
-    label: 'Depense / Sortie',
-    icon: 'fas fa-euro-sign',
+    label: 'Depenses',
+    icon: ' ri-exchange-dollar-line',
     isHasArrow: true,
     url: '/depenses',
   },

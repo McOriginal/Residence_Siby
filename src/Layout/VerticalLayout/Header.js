@@ -14,8 +14,8 @@ import {
 import ProfileMenu from '../../components/Common/TopbarDropdown/ProfileMenu';
 import {
   companyLittleName,
-  companyLogo,
-  companyOwnerName,
+  companyServices2,
+  logo_small,
 } from '../../Pages/CompanyInfo/CompanyInfo';
 
 const Header = (props) => {
@@ -60,46 +60,27 @@ const Header = (props) => {
     <React.Fragment>
       <header id='page-topbar'>
         <div className='navbar-header'>
-          <div className='d-flex'>
-            <div
-              className='navbar-brand-box text-center pt-5 mb-4'
-              style={{ backgroundColor: ' #F7F4EA' }}
-            >
-              <span>
-                <img
-                  src={companyLogo}
-                  style={{
-                    width: '60px',
-                    // marginBottom: '10px',
-                  }}
-                  alt='logo'
-                />
-                {window.screen.width >= 998 && (
-                  <h5 className='text-info'>{companyLittleName}</h5>
-                )}
+          <div className='d-flex align-items-center '>
+            <div className='navbar-brand-box text-center  bg-light'>
+              <span className='logo-sm'>
+                <img src={logo_small} alt='logo' height='64' />
               </span>
             </div>
 
             <button
               type='button'
-              className='btn btn-sm px-3 font-size-24 header-item waves-effect  d-flex justify-content-center bg-info text-white align-self-center mx-3 pt-3'
+              className='btn btn-sm px-3 font-size-24 header-item waves-effect  '
               id='vertical-menu-btn'
               onClick={() => {
                 tToggle();
               }}
             >
-              <i className='ri-menu-2-line align-middle'></i>
+              <i className='fas fa-align-justify align-middle text-warning'></i>
             </button>
-
-            <p
-              className='d-flex justify-content-center align-items-center fw-bold font-size-16'
-              style={{
-                color: ' #27548A',
-              }}
-            >
-              {companyLittleName} |
-              <span className=' ms-2 text-warning'> {companyOwnerName}</span>
-            </p>
+          </div>
+          <div className='d-none d-md-block d-flex flex-column justify-content-center align-items-center text-center'>
+            <h3 className='text-info fw-bold'>{companyLittleName}</h3>
+            <p className='text-warning'>{companyServices2}</p>
           </div>
 
           <div className='d-flex'>
@@ -117,20 +98,6 @@ const Header = (props) => {
             </div>
 
             <ProfileMenu />
-
-            <div
-              className='dropdown d-inline-block'
-              onClick={() => {
-                props.showRightSidebarAction(!props.showRightSidebar);
-              }}
-            >
-              <button
-                type='button'
-                className='btn header-item noti-icon right-bar-toggle waves-effect'
-              >
-                <i className='mdi mdi-cog'></i>
-              </button>
-            </div>
           </div>
         </div>
       </header>

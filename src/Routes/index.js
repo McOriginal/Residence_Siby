@@ -10,15 +10,8 @@ import { layoutTypes } from '../constants/layout';
 // layouts
 import NonAuthLayout from '../Layout/NonAuthLayout';
 import VerticalLayout from '../Layout/VerticalLayout/index';
-import HorizontalLayout from '../Layout/HorizontalLayout/index';
 
-import {
-  authProtectedRoutes,
-  noSideBarRoutes,
-  publicRoutes,
-  sharedRoutes,
-  usersRoutes,
-} from './routes';
+import { authProtectedRoutes, noSideBarRoutes, publicRoutes } from './routes';
 
 import { createSelector } from 'reselect';
 import PrivateRoute from '../Auth/PrivateRoutes';
@@ -31,9 +24,7 @@ const getLayout = (layoutType) => {
     case layoutTypes.VERTICAL:
       Layout = VerticalLayout;
       break;
-    case layoutTypes.HORIZONTAL:
-      Layout = HorizontalLayout;
-      break;
+
     default:
       break;
   }

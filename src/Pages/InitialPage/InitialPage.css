@@ -1,0 +1,113 @@
+.initial-page {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(
+    135deg,
+    #ff7eb3,
+    #ff758c,
+    #5a189a,
+    #00b4d8,
+    #240046
+  );
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Animation du fond dégradé */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Conteneur principal */
+.container {
+  text-align: center;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* ---- Texte avec dégradé animé ---- */
+.welcome-text,
+.service {
+  background: linear-gradient(
+    90deg,
+    #ff758c,
+    #5a189a,
+    #3c096c,
+    #ffffff,
+    #ff7eb3
+  );
+  box-shadow: 0px 0px 20px #ffffff;
+  background-size: 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradient 6s ease-in-out infinite;
+}
+
+/* Animation du dégradé du texte */
+@keyframes textGradient {
+  0% {
+    background-position: 0%;
+  }
+  50% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: 0%;
+  }
+}
+
+/* Style spécifique du titre */
+.welcome-text {
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  padding: 3rem 0;
+  animation: slideIn 1.5s ease-out, textGradient 3s ease-in-out infinite;
+}
+
+/* Sous-titre */
+.service {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  animation: fadeIn 3s ease-in-out, textGradient 3s ease-in-out infinite;
+}
+
+/* Image */
+.init_img {
+  width: 300px;
+}
+
+/* Autres animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

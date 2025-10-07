@@ -1,4 +1,5 @@
 import companyLogo from '../../assets/images/logo.png';
+import logo_small from '../../assets/images/logo_small.png';
 import outil_1 from '../../assets/images/outil (1).png';
 import outil_2 from '../../assets/images/outil (2).png';
 import outil_3 from '../../assets/images/outil (3).png';
@@ -33,6 +34,7 @@ const companyTel = '+223 71-76-11-11 / 61-76-11-11';
 
 export {
   companyLogo,
+  logo_small,
   companyName,
   companyLittleName,
   companyServices1,
