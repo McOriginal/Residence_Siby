@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
-import { useParams } from 'react-router-dom';
 import LoadingSpiner from '../components/LoadingSpiner';
 import {
   capitalizeWords,
@@ -50,7 +49,7 @@ export default function AllAppartements() {
               <Card>
                 <CardBody>
                   <Row className='d-flex justify-content-between align-items-center g-4 mb-3'>
-                    <Col>
+                    <Col md={6}>
                       {filterAppartement?.length > 0 && (
                         <p className='text-center font-size-15 mt-2'>
                           Appartements Total:{' '}
@@ -61,7 +60,7 @@ export default function AllAppartements() {
                         </p>
                       )}
                     </Col>
-                    <Col className='col-sm'>
+                    <Col md={6} className='col-sm'>
                       <div className='d-flex justify-content-sm-end gap-2'>
                         {searchTerm !== '' && (
                           <Button

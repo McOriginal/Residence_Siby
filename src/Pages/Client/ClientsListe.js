@@ -80,7 +80,7 @@ export default function ClientListe() {
                 <CardBody>
                   <div id='clientsList'>
                     <Row className='g-4 mb-3'>
-                      <Col className='col-sm-auto'>
+                      <Col md={4} className='col-sm-auto'>
                         <div className='d-flex gap-1'>
                           <Button
                             color='info'
@@ -96,16 +96,16 @@ export default function ClientListe() {
                           </Button>
                         </div>
                       </Col>
-                      <Col>
+                      <Col md={4}>
                         <p className='text-center font-size-15 mt-2'>
                           Total Clients:{' '}
-                          <span className='text-warning'>
+                          <span className='badge bg-warning'>
                             {' '}
                             {filteredClient?.length}{' '}
                           </span>
                         </p>
                       </Col>
-                      <Col className='col-sm'>
+                      <Col md={4} className='col-sm'>
                         <div className='d-flex justify-content-sm-end gap-2'>
                           {searchTerm !== '' && (
                             <Button

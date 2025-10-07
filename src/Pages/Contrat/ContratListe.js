@@ -106,7 +106,7 @@ export default function ContratListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
-          <div className='d-flex justify-content-center align-items-center gap-4'>
+          <div className='d-flex flex-wrap justify-content-center align-items-center gap-4'>
             <BackButton />
             <DashboardButton />
             <HomeButton />
@@ -134,16 +134,16 @@ export default function ContratListe() {
                 <CardBody>
                   <div id='clientsList'>
                     <Row className='g-4 mb-3'>
-                      <Col>
+                      <Col md={6}>
                         <p className='text-center font-size-15 mt-2'>
                           Nombre:{' '}
-                          <span className='text-warning'>
+                          <span className='badge bg-warning'>
                             {' '}
                             {contratData?.length}{' '}
                           </span>
                         </p>
                       </Col>
-                      <Col className='col-sm'>
+                      <Col md={6} className='col-sm'>
                         <div className='d-flex justify-content-sm-end gap-2'>
                           {searchTerm !== '' && (
                             <Button

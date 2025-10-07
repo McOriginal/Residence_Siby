@@ -83,7 +83,7 @@ export default function UsersProfilesListe() {
                               onClick={() =>
                                 navigate(`/userProfileDetails/${user._id}`)
                               }
-                              className='btn btn-primary btn-sm mx-1'
+                              className='btn btn-info btn-sm mx-1'
                             >
                               Détails
                             </button>

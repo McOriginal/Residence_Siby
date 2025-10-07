@@ -93,7 +93,7 @@ export default function ClientContratListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
-          <div className='d-flex justify-content-center align-items-center gap-4'>
+          <div className='d-flex flex-wrap justify-content-center align-items-center gap-4'>
             <BackButton />
             <DashboardButton />
             <HomeButton />

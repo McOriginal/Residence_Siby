@@ -60,7 +60,7 @@ export default function PaiementsContrat() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Contrat' breadcrumbItem='Paiements' />
-          <div className='d-flex justify-content-center align-items-center gap-4'>
+          <div className='d-flex flex-wrap justify-content-center align-items-center gap-4'>
             <BackButton />
             <DashboardButton />
             <HomeButton />

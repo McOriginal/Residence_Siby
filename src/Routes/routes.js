@@ -37,8 +37,6 @@ const authProtectedRoutes = [
     component: <Navigate to='/home' />,
   },
 
-  { path: '/appartements', component: <AllAppartements /> },
-
   // Profile
   { path: '/userprofile', component: <UserProfile /> },
 
@@ -76,6 +74,7 @@ const authProtectedRoutes = [
 const noSideBarRoutes = [
   { path: '/home', component: <Secteur /> },
   { path: '/secteur/:id', component: <SelectedSecteur /> },
+  { path: '/appartements', component: <AllAppartements /> },
 
   { path: '/clients', component: <ClientListe /> },
 

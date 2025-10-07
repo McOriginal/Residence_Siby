@@ -7,7 +7,6 @@ import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useAllDepenses, useDeleteDepense } from '../../Api/queriesDepense';
 import DepenseForm from './DepenseForm';
-import { connectedUserBoutique } from '../Authentication/userInfos';
 import {
   BackButton,
   DashboardButton,
@@ -93,7 +92,7 @@ export default function DepenseListe() {
                 <CardBody>
                   <div id='depenseList'>
                     <Row className='g-4 mb-3'>
-                      <Col className='col-sm-auto'>
+                      <Col md={6} className='col-sm-auto'>
                         <div className='d-flex gap-1'>
                           <Button
                             color='info'
@@ -110,7 +109,7 @@ export default function DepenseListe() {
                         </div>
                       </Col>
 
-                      <Col className='col-sm'>
+                      <Col md={6} className='col-sm'>
                         <div className='d-flex justify-content-sm-end gap-2'>
                           {searchTerm !== '' && (
                             <Button
@@ -135,7 +134,7 @@ export default function DepenseListe() {
                     <div className='d-flex justify-content-around mt-4 flex-wrap'>
                       <h6 className=''>
                         Total Depensés:{' '}
-                        <span className='text-danger'>
+                        <span className='badge bg-danger'>
                           {formatPrice(sumTotalExpense)} F{' '}
                         </span>
                       </h6>

@@ -21,7 +21,6 @@ import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useNavigate } from 'react-router-dom';
 import { useAllAppartement } from '../../Api/queriesAppartement';
-import { DashboardButton } from '../components/NavigationButton';
 
 export default function Secteur() {
   const { logout } = useContext(AuthContext);
@@ -85,7 +84,6 @@ export default function Secteur() {
               Ajouter un Secteur
             </Button>
 
-            <DashboardButton />
             <Button onClick={() => logout()} color='danger'>
               Déconnecter
             </Button>

@@ -27,6 +27,7 @@ import {
   companyLogo,
   companyName,
   companyOwnerName,
+  companyServices2,
 } from '../CompanyInfo/CompanyInfo';
 
 const Login = () => {
@@ -136,7 +137,7 @@ const Login = () => {
                             borderRadius: '5px',
                           }}
                         >
-                          {companyOwnerName}
+                          {companyServices2}
                         </h6>
                         <p className='my-3 text-center'>
                           Entrez vos coordonnées pour vous connecter à votre

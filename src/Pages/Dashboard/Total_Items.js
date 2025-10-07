@@ -33,7 +33,7 @@ const TotalSecteur = () => {
           className='d-flex gap-3  flex-column justify-content-center align-items-center'
         >
           <i
-            className=' fas fa-bezier-curve text-info'
+            className='fas fa-bezier-curve text-info'
             style={{ fontSize: '50px' }}
           ></i>
 
@@ -47,9 +47,13 @@ const TotalSecteur = () => {
 
 const TotalAppartement = () => {
   const { data: appartement, isLoading: loading, error } = useAllAppartement();
+  const navigate = useNavigate();
 
   return (
-    <div>
+    <div
+      onClick={() => navigate('/appartements')}
+      style={{ cursor: 'pointer' }}
+    >
       {loading && <LoadingSpiner />}
       {!error && !loading && (
         <Card
