@@ -52,10 +52,11 @@ const contratSchema = new mongoose.Schema(
       time: true
     },
     
-    // document: {
-    //   type: File,
-    //   required: true,
-    // },
+    statut: {
+      type: Boolean,
+      default: true,
+      required: true,
+    },
     appartement: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

@@ -127,7 +127,7 @@ exports.getOneAppartement = async (req, res) => {
 };
 
 // Supprimer un Produit
-exports.deleteProduitById = async (req, res) => {
+exports.deleteAppartement = async (req, res) => {
   try {
     await Appartement.findByIdAndDelete(req.params.id);
     return res

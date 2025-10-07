@@ -24,6 +24,15 @@ exports.createClient = async (req, res) => {
       });
     }
 
+    const existingClient = await Client.findOne({phoneNumber: req.body.phoneNumber}); 
+
+    if(existingClient){
+      return res.status(400).json({
+        status: 'error',
+        message: "Ce Numéro de Téléphone existe déjà ",
+      });
+    }
+
     // Crée un nouveau professeur
     const newClient = await Client.create({
       firstName: lowerFirstName,
@@ -63,6 +72,14 @@ exports.updateClient = async (req, res) => {
       });
     }
 
+    const existingClient = await Client.findOne({phoneNumber: req.body.phoneNumber, _id:{$ne:req.params.id}}); 
+
+    if(existingClient){
+      return res.status(400).json({
+        status: 'error',
+        message: "Ce Numéro de Téléphone existe déjà ",
+      });
+    }
     //  Si il n y a pas d'erreur on met ajour
     const updated = await Client.findByIdAndUpdate(
       req.params.id,
@@ -81,6 +98,7 @@ exports.updateClient = async (req, res) => {
   
     return res.status(200).json(updated);
   } catch (err) {
+    console.log(err)
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };

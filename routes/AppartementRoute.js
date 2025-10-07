@@ -23,7 +23,7 @@ router.get('/getAppartement/:id', appartement.getOneAppartement);
 router.put('/updateAppartement/:id', appartement.updateAppartement);
 
 // supprimer un Appartement
-router.delete('/deleteAppartement/:id', appartement.deleteProduitById);
+router.delete('/deleteAppartement/:id', appartement.deleteAppartement);
 
 // Supprimer toutes les Appartement
 router.delete('/deleteAllAppartement', appartement.deleteAllAppartement);

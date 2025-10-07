@@ -11,6 +11,15 @@ router.post(
   contratController.createContrat
 );
 
+// Créer un Contrat
+router.post(
+  '/reloadContrat',
+  userController.authMiddleware,
+  contratController.reloadContrat
+);
+
+router.post('/stopeContrat',contratController.stopContrat);
+
 // Afficher toutes les Contrats
 router.get('/getAllContrats', contratController.getAllContrat);
 
