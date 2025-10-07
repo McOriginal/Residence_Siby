@@ -26,6 +26,7 @@ import ClientContratListe from '../Pages/Client/ClientContratListe.js';
 import PaiementsContrat from '../Pages/Contrat/PaiementsContrat.js';
 import ContractDocument from '../Pages/Contrat/ContratDocument.js';
 import SelectedSecteur from '../Pages/Secteurs/SelectedSecteur.js';
+import AllAppartements from '../Pages/Appartements/AllAppartements.js';
 
 // Routes pour les ADMINS
 const authProtectedRoutes = [
@@ -37,6 +38,8 @@ const authProtectedRoutes = [
     exact: true,
     component: <Navigate to='/home' />,
   },
+
+  { path: '/appartements', component: <AllAppartements /> },
 
   // Profile
   { path: '/userprofile', component: <UserProfile /> },

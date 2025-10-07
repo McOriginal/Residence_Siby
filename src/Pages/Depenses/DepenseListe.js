@@ -8,6 +8,11 @@ import { deleteButton } from '../components/AlerteModal';
 import { useAllDepenses, useDeleteDepense } from '../../Api/queriesDepense';
 import DepenseForm from './DepenseForm';
 import { connectedUserBoutique } from '../Authentication/userInfos';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 
 export default function DepenseListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -61,7 +66,11 @@ export default function DepenseListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Transaction' breadcrumbItem='Depense' />
-
+          <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>
           {/* -------------------------- */}
           <FormModal
             form_modal={form_modal}

@@ -9,6 +9,11 @@ import {
 } from '../components/capitalizeFunction';
 import { useAllPaiements } from '../../Api/queriesPaiement';
 import ReçuPaiement from './ReçuPaiement';
+import {
+  BackButton,
+  DashboardButton,
+  HomeButton,
+} from '../components/NavigationButton';
 
 export default function PaiementsListe() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
@@ -55,7 +60,11 @@ export default function PaiementsListe() {
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Transaction' breadcrumbItem='Paiements' />
-
+          <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
+            <BackButton />
+            <DashboardButton />
+            <HomeButton />
+          </div>
           {/* -------------------- */}
           <ReçuPaiement
             show_modal={show_modal}

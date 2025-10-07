@@ -16,16 +16,22 @@ const SidebarData = [
     url: '/dashboard',
   },
   {
-    label: 'Client',
-    icon: 'fas fa-user',
+    label: 'Clients',
+    icon: 'fas fa-users',
     isHasArrow: true,
     url: '/clients',
   },
   {
-    label: 'Contrat',
-    icon: 'fas fa-file',
+    label: 'Contrats',
+    icon: 'fas fa-receipt',
     isHasArrow: true,
     url: '/contrats',
+  },
+  {
+    label: 'Appartements',
+    icon: 'mdi mdi-home-circle',
+    isHasArrow: true,
+    url: '/appartements',
   },
 
   // --------------------------------------

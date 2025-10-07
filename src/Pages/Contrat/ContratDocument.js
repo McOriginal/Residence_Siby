@@ -96,7 +96,7 @@ export default function ContractDocument() {
               >
                 CONTRAT DE LOCATION
               </h1>
-              <div style={{ marginBottom: '5%' }}>
+              <div style={{ marginBottom: '2%' }}>
                 <RecuHeader />
               </div>
               <p>
@@ -116,7 +116,7 @@ export default function ContractDocument() {
                 <strong>Contact:</strong> {companyTel}{' '}
               </p>
 
-              <h5 className='my-3'>ET</h5>
+              <h5 className='my-2'>ET</h5>
 
               <p>
                 <strong> Mr/Mme :</strong>{' '}

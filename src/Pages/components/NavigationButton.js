@@ -19,7 +19,10 @@ const HomeButton = () => {
     <Button
       color='info'
       className='my-2 text-light'
-      onClick={() => navigate('/home')}
+      onClick={() => {
+        navigate('/home');
+        localStorage.removeItem('selectedSecteur');
+      }}
     >
       <i className='bx bx-home me-1' />
       Accueil

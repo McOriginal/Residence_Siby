@@ -50,7 +50,7 @@ const ClientForm = ({ clientToEdit, tog_form_modal }) => {
 
       if (clientToEdit) {
         updateClient(
-          { id: clientToEdit._id, ...values },
+          { id: clientToEdit._id, data: values },
           {
             onSuccess: () => {
               successMessageAlert('Données mise à jour avec succès');

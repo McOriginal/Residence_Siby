@@ -4,7 +4,6 @@ import LoadingSpiner from '../components/LoadingSpiner';
 import { useNavigate } from 'react-router-dom';
 import { useAllSecteur } from '../../Api/queriesSecteurs';
 import { useAllAppartement } from '../../Api/queriesAppartement';
-import { homeImg } from '../CompanyInfo/CompanyInfo';
 import { useAllClient } from '../../Api/queriesClient';
 import { useAllContrat } from '../../Api/queriesContrat';
 
@@ -76,9 +75,10 @@ const TotalAppartement = () => {
 
 const TotalClient = () => {
   const { data: clients, isLoading: loading, error } = useAllClient();
+  const navigate = useNavigate();
 
   return (
-    <div>
+    <div style={{ cursor: 'pointer' }} onClick={() => navigate('/clients')}>
       {loading && <LoadingSpiner />}
       {!error && !loading && (
         <Card
@@ -104,9 +104,10 @@ const TotalClient = () => {
 
 const TotalContrat = () => {
   const { data: contrat, isLoading: loading, error } = useAllContrat();
+  const navigate = useNavigate();
 
   return (
-    <div>
+    <div onClick={() => navigate('/contrats')} style={{ cursor: 'pointer' }}>
       {loading && <LoadingSpiner />}
       {!error && !loading && (
         <Card

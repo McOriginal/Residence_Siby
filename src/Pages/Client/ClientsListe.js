@@ -173,8 +173,8 @@ export default function ClientListe() {
                                       navigate(`/client/${client?._id}`)
                                     }
                                   >
-                                    <u>contrat</u>
-                                    <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info'>
+                                    <u>Contrat</u>
+                                    <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning'>
                                       {formatPrice(clientContrat(client) || 0)}
                                     </span>
                                   </button>

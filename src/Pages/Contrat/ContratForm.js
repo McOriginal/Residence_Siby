@@ -16,24 +16,36 @@ import {
   successMessageAlert,
 } from '../components/AlerteModal';
 import LoadingSpiner from '../components/LoadingSpiner';
-import { useCreateContrat, useUpdateContrat } from '../../Api/queriesContrat';
+import {
+  useCreateContrat,
+  useReloadContrat,
+  useUpdateContrat,
+} from '../../Api/queriesContrat';
 import { useAllAppartement } from '../../Api/queriesAppartement';
 import { formatPrice } from '../components/capitalizeFunction';
 
-const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
+const ContratForm = ({
+  contratToEdit,
+  clientId,
+  contratToReload,
+  tog_form_modal,
+}) => {
   const { mutate: createContrat } = useCreateContrat();
+  const { mutate: reloadContrat } = useReloadContrat();
+  const { mutate: updateContrat } = useUpdateContrat();
   const {
     data: appartment,
     isLoading: loadingAppart,
     error: errorAppart,
   } = useAllAppartement();
-  const { mutate: updateContrat } = useUpdateContrat();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const storage = localStorage.getItem('selectedSecteur');
   const secteurStorage = JSON.parse(storage);
   const secteurAppartement = appartment?.filter(
-    (item) => item?.secteur?._id === secteurStorage?._id
+    (item) =>
+      item?.secteur?._id === secteurStorage?._id && item.isAvailable === true
   );
 
   // Form validation
@@ -42,21 +54,27 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
     enableReinitialize: true,
 
     initialValues: {
-      client: contratToEdit?.client?._id || clientId,
-      appartement: contratToEdit?.appartement?._id || undefined,
-      heure: contratToEdit?.heure || 0,
-      jour: contratToEdit?.jour || 0,
-      semaine: contratToEdit?.semaine || 0,
-      mois: contratToEdit?.mois || 0,
+      client:
+        contratToEdit?.client?._id || contratToReload?.client?._id || clientId,
+      appartement:
+        contratToEdit?.appartement?._id ||
+        contratToReload?.appartement?._id ||
+        undefined,
+      heure: contratToEdit?.heure || contratToReload?.heure || 0,
+      jour: contratToEdit?.jour || contratToReload?.jour || 0,
+      semaine: contratToEdit?.semaine || contratToReload?.semaine || 0,
+      mois: contratToEdit?.mois || contratToReload?.mois || 0,
       startDate:
         contratToEdit?.startDate.substring(0, 10) ||
         new Date().toISOString().substring(0, 10),
       endDate:
         contratToEdit?.endDate.substring(0, 10) ||
         new Date().toISOString().substring(0, 10),
-      amount: contratToEdit?.amount || undefined,
-      reduction: contratToEdit?.reduction || undefined,
-      totalAmount: contratToEdit?.totalAmount || undefined,
+      amount: contratToEdit?.amount || contratToReload?.amount || undefined,
+      reduction:
+        contratToEdit?.reduction || contratToReload?.reduction || undefined,
+      totalAmount:
+        contratToEdit?.totalAmount || contratToReload?.totalAmount || undefined,
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -89,6 +107,29 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
                   err?.message ||
                   'Erreur lors de la mise à jour'
               );
+              setIsLoading(false);
+            },
+          }
+        );
+      }
+
+      // Si c'est pour Renouveller
+      if (contratToReload) {
+        reloadContrat(
+          { contrat: contratToReload?._id, ...values },
+          {
+            onSuccess: () => {
+              successMessageAlert('Contrat Renouvellée avec succès');
+              setIsLoading(false);
+              resetForm();
+              tog_form_modal();
+            },
+            onError: (err) => {
+              const errorMessage =
+                err?.response?.data?.message ||
+                err?.message ||
+                "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+              errorMessageAlert(errorMessage);
               setIsLoading(false);
             },
           }
@@ -200,12 +241,22 @@ const ContratForm = ({ contratToEdit, clientId, tog_form_modal }) => {
                     : false
                 }
               >
-                <option value=''>Sélectionner un Appartement</option>
-                {secteurAppartement?.map((item) => (
-                  <option value={item?._id} key={item?._id}>
-                    {formatPrice(item.appartementNumber)}{' '}
+                {contratToReload && (
+                  <option value={contratToReload?.appartement?._id}>
+                    {contratToReload?.appartement?.appartementNumber}{' '}
                   </option>
-                ))}
+                )}
+
+                {!contratToReload && (
+                  <option value=''>Sélectionner un Appartement</option>
+                )}
+
+                {!contratToReload &&
+                  secteurAppartement?.map((item) => (
+                    <option value={item?._id} key={item?._id}>
+                      {formatPrice(item.appartementNumber)}{' '}
+                    </option>
+                  ))}
               </Input>
               {validation.touched.appartement &&
               validation.errors.appartement ? (

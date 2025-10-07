@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('authUser');
+    localStorage.clear();
     setAuth(null);
     navigate('/login'); // Redirection vers la page de connexion
   };

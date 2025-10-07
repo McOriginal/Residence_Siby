@@ -11,6 +11,26 @@ export const useCreateContrat = () => {
   });
 };
 
+// Renouveller un Contrats
+export const useReloadContrat = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) => api.post('/contrats/reloadContrat', data),
+    onSuccess: () => queryClient.invalidateQueries(['contrats']),
+  });
+};
+
+// Stoper un Contrats
+export const useStopeContrat = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) => api.post('/contrats/stopeContrat', data),
+    onSuccess: () => queryClient.invalidateQueries(['contrats']),
+  });
+};
+
 // Obtenir une Contrat
 export const useAllContrat = () =>
   useQuery({

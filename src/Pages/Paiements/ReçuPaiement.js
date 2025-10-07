@@ -180,25 +180,25 @@ const ReçuPaiement = ({
                     <h6>Durée: </h6>
                     {selectedPaiement?.contrat?.mois > 0 && (
                       <CardText>
-                        ( {formatPrice(selectedPaiement?.contrat?.mois || 0)}){' '}
+                        ( {formatPrice(selectedPaiement?.contrat?.mois || 0)} ){' '}
                         <strong> Mois</strong>
                       </CardText>
                     )}
                     {selectedPaiement?.contrat?.semaine > 0 && (
                       <CardText>
-                        ({formatPrice(selectedPaiement?.contrat?.semaine || 0)}){' '}
-                        <strong> Semaine</strong>
+                        ( {formatPrice(selectedPaiement?.contrat?.semaine || 0)}{' '}
+                        ) <strong> Semaine</strong>
                       </CardText>
                     )}
                     {selectedPaiement?.contrat?.jour > 0 && (
                       <CardText>
-                        ( {formatPrice(selectedPaiement?.contrat?.jour || 0)}){' '}
+                        ( {formatPrice(selectedPaiement?.contrat?.jour || 0)} ){' '}
                         <strong> Jour</strong>
                       </CardText>
                     )}
                     {selectedPaiement?.contrat?.heure > 0 && (
                       <CardText>
-                        ({formatPrice(selectedPaiement?.contrat?.heure || 0)}){' '}
+                        ( {formatPrice(selectedPaiement?.contrat?.heure || 0)} ){' '}
                         <strong> Heure</strong>
                       </CardText>
                     )}

@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
-import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+  UncontrolledDropdown,
+} from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import FormModal from '../components/FormModal';
 import LoadingSpiner from '../components/LoadingSpiner';
 import { formatPrice } from '../components/capitalizeFunction';
-import { deleteButton } from '../components/AlerteModal';
-import { useAllContrat, useDeleteContrat } from '../../Api/queriesContrat';
+import {
+  deleteButton,
+  errorMessageAlert,
+  successMessageAlert,
+} from '../components/AlerteModal';
+import {
+  useAllContrat,
+  useDeleteContrat,
+  useStopeContrat,
+} from '../../Api/queriesContrat';
 import ContratForm from '../Contrat/ContratForm';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useOneClient } from '../../Api/queriesClient';
@@ -17,11 +36,14 @@ import {
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
-  const { mutate: deleteContrat, isDeleting } = useDeleteContrat();
+  const { mutate: deleteContrat } = useDeleteContrat();
+  const { mutate: stopeContrat } = useStopeContrat();
   const { data: clientInfo } = useOneClient(client.id);
   const [form_modal, setForm_modal] = useState(false);
   const [contratToUpdate, setContratToUpdate] = useState(null);
+  const [contratToReload, setContratToReload] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Contrat');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   // State de Rechercher
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +58,35 @@ export default function ClientContratListe() {
   }
 
   const today = new Date().toISOString().substring(0, 10);
+
+  const handleStopeContrat = async (contrat) => {
+    setIsSubmitting(true);
+    try {
+      await stopeContrat(contrat, {
+        onSuccess: () => {
+          successMessageAlert('Contrat Arrêté avec succès');
+          setIsSubmitting(false);
+        },
+        onError: (err) => {
+          const errorMessage =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+          errorMessageAlert(errorMessage);
+          setIsSubmitting(false);
+        },
+      });
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+      errorMessageAlert(errorMessage);
+      setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -58,6 +109,7 @@ export default function ClientContratListe() {
               <ContratForm
                 contratToEdit={contratToUpdate}
                 clientId={clientInfo?._id}
+                contratToReload={contratToReload}
                 tog_form_modal={tog_form_modal}
               />
             }
@@ -77,6 +129,7 @@ export default function ClientContratListe() {
                             id='create-btn'
                             onClick={() => {
                               setContratToUpdate(null);
+                              setContratToReload(null);
                               tog_form_modal();
                             }}
                           >
@@ -115,7 +168,10 @@ export default function ClientContratListe() {
                     )}
                     {isLoading && <LoadingSpiner />}
 
-                    <div className='table-responsive table-card mt-3 mb-1'>
+                    <div
+                      className='table-responsive table-card mt-3'
+                      style={{ minHeight: 350 }}
+                    >
                       {!filteredContrat?.length && !isLoading && !error && (
                         <div className='text-center text-mutate'>
                           Aucun Contrat pour ce Clients !
@@ -123,11 +179,12 @@ export default function ClientContratListe() {
                       )}
                       {!error && filteredContrat?.length > 0 && !isLoading && (
                         <table
-                          className='table align-middle table-nowrap table-hover'
+                          className='table align-middle table-nowrap table-hover '
                           id='fournisseurTable'
                         >
                           <thead className='table-light'>
                             <tr className='text-center'>
+                              <th>Statut</th>
                               <th>N° d'Appartement</th>
                               <th>Secteur</th>
                               <th>Date D'Entrée</th>
@@ -145,15 +202,24 @@ export default function ClientContratListe() {
                             </tr>
                           </thead>
 
-                          <tbody className='list form-check-all text-center'>
+                          <tbody className='list  text-center'>
                             {filteredContrat?.map((contrat) => (
                               <tr key={contrat?._id} className='text-center'>
-                                <th className='badge bg-secondary  rounded rounded-pill text-center text-light'>
+                                <td
+                                  className={` text-light ${
+                                    contrat?.statut ? 'bg-success' : 'bg-danger'
+                                  }`}
+                                >
+                                  {contrat?.statut ? 'En cours' : 'Terminé'}
+                                </td>
+                                <td className='badge bg-info  rounded rounded-pill text-center text-light'>
                                   {formatPrice(
                                     contrat?.appartement?.appartementNumber
-                                  )}{' '}
-                                </th>
-                                <td>{contrat?.appartement?.secteur?.adresse}</td>
+                                  )}
+                                </td>
+                                <td>
+                                  {contrat?.appartement?.secteur?.adresse}
+                                </td>
                                 <td>
                                   {new Date(
                                     contrat.startDate
@@ -164,7 +230,23 @@ export default function ClientContratListe() {
                                     year: 'numeric',
                                   })}{' '}
                                 </td>
-                                <td className={`${contrat.endDate > today ? 'text-success' : contrat.endDate < today ? 'text-danger' :  contrat.endDate === today ? 'text-warning' : ''}`}>
+                                <td
+                                  className={`${
+                                    new Date(contrat.endDate)
+                                      .toISOString()
+                                      .substring(0, 10) > today
+                                      ? 'text-success'
+                                      : new Date(contrat.endDate)
+                                          .toISOString()
+                                          .substring(0, 10) < today
+                                      ? 'text-danger'
+                                      : new Date(contrat.endDate)
+                                          .toISOString()
+                                          .substring(0, 10) === today
+                                      ? 'text-warning'
+                                      : ''
+                                  }`}
+                                >
                                   {new Date(contrat.endDate).toLocaleDateString(
                                     'fr-Fr',
                                     {
@@ -187,37 +269,83 @@ export default function ClientContratListe() {
                                 </td>
 
                                 <td className='text-center'>
-                                  <div className='d-flex justify-content-center align-items-center gap-2'>
-                                    <div className='edit'>
-                                      <button
-                                        className='btn btn-sm btn-warning'
-                                        onClick={() => {
-                                          navigate(`/contrat/${contrat._id}`);
-                                        }}
+                                  {isSubmitting && <LoadingSpiner />}
+                                  {!isSubmitting && (
+                                    <UncontrolledDropdown className='dropdown d-inline-block'>
+                                      <DropdownToggle
+                                        className='btn btn-info text-light btn-sm'
+                                        tag='button'
                                       >
-                                        <i className='fas fa-dollar-sign text-white'></i>
-                                      </button>
-                                    </div>
-                                    <div>
-                                      <button
-                                        className='btn btn-sm btn-success edit-item-btn'
-                                        onClick={() => {
-                                          setFormModalTitle(
-                                            'Modifier les données'
-                                          );
-                                          setContratToUpdate(contrat);
-                                          tog_form_modal();
-                                        }}
-                                      >
-                                        <i className='ri-pencil-fill text-white'></i>
-                                      </button>
-                                    </div>
-                                    {isDeleting && <LoadingSpiner />}
-                                    {!isDeleting && (
-                                      <div>
-                                        <button
-                                          className='btn btn-sm btn-danger remove-item-btn'
+                                        <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
+                                      </DropdownToggle>
+                                      <DropdownMenu className='dropdown-menu-end'>
+                                        <DropdownItem
+                                          className='edit-item-btn  text-info'
                                           onClick={() => {
+                                            navigate(
+                                              `/contrat/document/${contrat._id}`
+                                            );
+                                          }}
+                                        >
+                                          <i className='fas fa-book-open align-center me-2 '></i>
+                                          Contrat
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          className='edit-item-btn  text-warning'
+                                          onClick={() => {
+                                            navigate(`/contrat/${contrat._id}`);
+                                          }}
+                                        >
+                                          <i className='fas fa-dollar-sign align-center me-2 '></i>
+                                          Paiement
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          className='edit-item-btn  text-secondary'
+                                          onClick={() => {
+                                            setFormModalTitle(
+                                              'Modifier les données'
+                                            );
+                                            setContratToUpdate(contrat);
+                                            tog_form_modal();
+                                          }}
+                                        >
+                                          <i className='ri-pencil-fill align-bottom me-2 '></i>
+                                          Modifier
+                                        </DropdownItem>
+                                        {!contrat?.statut && (
+                                          <DropdownItem
+                                            className='edit-item-btn  text-info'
+                                            onClick={() => {
+                                              setFormModalTitle(
+                                                'Renouveler le Contrat'
+                                              );
+                                              setContratToUpdate(null);
+                                              setContratToReload(contrat);
+                                              tog_form_modal();
+                                            }}
+                                          >
+                                            <i className='fas fa-sync align-center me-2 '></i>
+                                            Renouveller
+                                          </DropdownItem>
+                                        )}
+
+                                        {contrat.statut && (
+                                          <DropdownItem
+                                            className='remove-item-btn text-danger '
+                                            tag={'button'}
+                                            onClick={() => {
+                                              handleStopeContrat(contrat);
+                                            }}
+                                          >
+                                            {' '}
+                                            <i className='fas fa-ban align-center me-2 '></i>{' '}
+                                            Stoper{' '}
+                                          </DropdownItem>
+                                        )}
+                                        <DropdownItem
+                                          className='remove-item-btn text-danger '
+                                          onClick={() => {
+                                            setIsSubmitting(true);
                                             deleteButton(
                                               contrat._id,
                                               contrat.firstName +
@@ -225,13 +353,16 @@ export default function ClientContratListe() {
                                                 contrat.lastName,
                                               deleteContrat
                                             );
+                                            setIsSubmitting(false);
                                           }}
                                         >
-                                          <i className='ri-delete-bin-fill text-white'></i>
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
+                                          {' '}
+                                          <i className='ri-delete-bin-fill align-bottom me-2 '></i>{' '}
+                                          Supprimer{' '}
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                  )}
                                 </td>
                               </tr>
                             ))}
