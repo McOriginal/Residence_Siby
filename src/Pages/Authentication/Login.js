@@ -72,7 +72,7 @@ const Login = () => {
           // Afficher un message de succès ou une alerte
           successMessageAlert('Conneté avec succès !');
           // Redirection vers le tableau de bord
-          navigate('/initial_page');
+          // navigate('/initial_page');
 
           setTimeout(() => {
             try {
