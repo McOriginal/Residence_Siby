@@ -74,24 +74,24 @@ const Login = () => {
           // Redirection vers le tableau de bord
           navigate('/initial_page');
 
-          setTimeout(() => {
-            try {
-              const authUser = localStorage.getItem('authUser');
-              const dataParse = JSON.parse(authUser);
-              const role = dataParse?.user?.role;
+          // setTimeout(() => {
+          try {
+            const authUser = localStorage.getItem('authUser');
+            const dataParse = JSON.parse(authUser);
+            const role = dataParse?.user?.role;
 
-              if (!role) {
-                return errorMessageAlert('Rôle utilisateur introuvable.');
-              }
-
-              navigate('/initial_page');
-              window.location.reload();
-
-              // -----------------------
-            } catch (err) {
-              errorMessageAlert('Erreur de redirection.');
+            if (!role) {
+              return errorMessageAlert('Rôle utilisateur introuvable.');
             }
-          }, 2000);
+
+            navigate('/initial_page');
+            window.location.reload();
+
+            // -----------------------
+          } catch (err) {
+            errorMessageAlert('Erreur de redirection.');
+          }
+          // }, 2000);
         },
         onError: (error) => {
           setIsLoading(false);
