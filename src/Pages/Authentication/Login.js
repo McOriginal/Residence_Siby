@@ -72,6 +72,7 @@ const Login = () => {
           // Afficher un message de succès ou une alerte
           successMessageAlert('Conneté avec succès !');
           // Redirection vers le tableau de bord
+
           setTimeout(() => {
             try {
               const authUser = localStorage.getItem('authUser');
@@ -82,8 +83,8 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
+              window.location.reload();
               navigate('/initial_page');
-              // window.location.reload();
 
               // -----------------------
             } catch (err) {
