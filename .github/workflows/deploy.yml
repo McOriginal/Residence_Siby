@@ -3,7 +3,7 @@ name: Déploiement sur Render
 on:
   push:
     branches:
-      - Main
+      - main
 
 jobs:
   deploy:
