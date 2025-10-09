@@ -72,6 +72,7 @@ const Login = () => {
           // Afficher un message de succès ou une alerte
           successMessageAlert('Conneté avec succès !');
           // Redirection vers le tableau de bord
+          navigate('/initial_page');
 
           setTimeout(() => {
             try {
@@ -83,8 +84,8 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
-              window.location.reload();
               navigate('/initial_page');
+              window.location.reload();
 
               // -----------------------
             } catch (err) {
