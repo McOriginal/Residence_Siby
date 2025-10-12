@@ -98,6 +98,7 @@ exports.getAllAppartements = async (req, res) => {
       // Alors on met isAvailable à true pour l'appartement concerné
       for (const contrat of contrats) {
         if (contrat.endDate < new Date()) {
+          await Contrat.findByIdAndUpdate(contrat._id,{statut: false});
          // Mettre l'appartement en indisponible
    await Appartement.findByIdAndUpdate(
     contrat.appartement?._id,

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Contrat = require('../models/ContratModel');
 const Appartement = require('../models/AppartementModel');
-const Paiement = require('../models/PaiementModel')
+const Paiement = require('../models/PaiementModel');
+const Rental = require('../models/RentalModel');
 const textValidation = require('./regexValidation');
 
 // Ajouter un Contrat
@@ -10,14 +11,31 @@ exports.createContrat = async (req, res) => {
   session.startTransaction();
   try {
 
-    const appartement = await Appartement.findById(req.body.appartement).session(session)
+    const existAppartement = await Appartement.findById(req.body.appartement).session(session)
 
  
-    if(appartement.isAvailable === false){
+    if(existAppartement.isAvailable === false){
    await   session.abortTransaction()
       session.endSession()
       return res.status(400).json({message: "Cette Appartement n'est pas disponible"})
     }
+
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+    
+    const existingRental = await Rental.findOne({
+      appartement: existAppartement._id,
+      rentalDate: { $gte: startDate, $lte: endDate },
+    }).session(session);
+    
+
+    if(existingRental){
+      console.log('Rental Exist')
+      await   session.abortTransaction()
+      session.endSession()
+      return res.status(400).json({message: `Cette Appartement est reservée le: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')}`})
+    }
+
 
       const newContrat = await Contrat.create(
         [{
@@ -29,7 +47,7 @@ exports.createContrat = async (req, res) => {
   );
      // Mettre l'appartement en indisponible
      await Appartement.findByIdAndUpdate(
-      appartement,
+     existAppartement._id,
       { isAvailable: false },
       { new: true ,session}
     );
@@ -38,6 +56,7 @@ exports.createContrat = async (req, res) => {
     session.endSession()
     return res.status(201).json(newContrat);
   } catch (e) {
+    console.log(e)
    await session.abortTransaction()
     session.endSession()
     return res.status(409).json({
@@ -62,22 +81,43 @@ exports.updateContrat = async (req, res) => {
       return res.status(404).json({ message: "Contrat non trouvé" });
     }
 
-    const appartement = await Appartement.findById(req.body.appartement).session(session);
-    if (!appartement) {
+    
+    const isDifferent =req.body.appartement.toString() !== oldContrat.appartement.toString() ;
+    
+if(isDifferent){
+    const existAppartement = await Appartement.findById(req.body.appartement).session(session);
+
+    if (!existAppartement) {
       await session.abortTransaction();
       session.endSession();
       return res.status(404).json({ message: "Appartement non trouvé" });
     }
 
     // Vérification si changement d'appartement et que le nouvel appart est indisponible
-    if (
-      req.body.appartement !== oldContrat.appartement.toString() &&
-      appartement.isAvailable === false
-    ) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ message: "Cette Appartement n'est pas disponible" });
+
+      if (existAppartement.isAvailable === false) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(400).json({ message: "Cette Appartement n'est pas disponible" });
+      }
+}
+
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+    
+    const existingRental = await Rental.findOne({
+      appartement: req.body.appartement,
+      rentalDate: { $gte: startDate, $lte: endDate },
+    }).session(session);
+    
+
+    if( existingRental){
+      await   session.abortTransaction()
+      session.endSession()
+      return res.status(400).json({message: `Cette Appartement est reservée le: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')}`})
     }
+
+  
 
     // Mise à jour du contrat
     const updatedContrat = await Contrat.findByIdAndUpdate(
@@ -91,33 +131,25 @@ exports.updateContrat = async (req, res) => {
       }
     );
 
+
     if (req.body.appartement !== oldContrat.appartement.toString()) {
       await Appartement.findByIdAndUpdate(
         oldContrat.appartement,
         { isAvailable: true },
         { session }
       );
-    }
-
-    if (updatedContrat.statut === true) {
-      // contrat actif => appart occupé
+    
       await Appartement.findByIdAndUpdate(
-        updated.appartement,
+        updatedContrat.appartement,
         { isAvailable: false },
         { session }
       );
-    } else {
-      await Appartement.findByIdAndUpdate(
-        updated.appartement,
-        { isAvailable: true },
-        { session }
-      );
-    }
-
+    } 
+    
     await session.commitTransaction();
     session.endSession();
 
-    return res.status(200).json(updated);
+    return res.status(200).json(updatedContrat);
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
@@ -134,6 +166,7 @@ exports.reloadContrat = async (req, res) => {
   const session = await mongoose.startSession()
   session.startTransaction()
   try {
+    
     
     const oldContrat = await Contrat.findById(req.body.contrat).session(session);
 
@@ -155,7 +188,7 @@ exports.reloadContrat = async (req, res) => {
       const newContrat = await Contrat.create(
         [
           {
-      
+      statut: true,
       user: req.user.id,
       ...req.body,
     }
@@ -169,10 +202,12 @@ exports.reloadContrat = async (req, res) => {
       { new: true,session }
     );
  
+  
     await session.commitTransaction()
     session.endSession()
     return res.status(201).json(newContrat);
   } catch (e) {
+    console.log(e)
     await session.abortTransaction()
     session.endSession()
     return res.status(409).json({

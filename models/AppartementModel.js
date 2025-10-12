@@ -6,7 +6,7 @@ const appartementSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-    }, // Ex: Nom de produit
+    },
 
     appartementNumber: {
       type: Number,
@@ -16,6 +16,7 @@ const appartementSchema = new mongoose.Schema(
     heurePrice: {
       type: Number,
       required: true,
+      default: 0,
       trim: true,
     },
     dayPrice: {

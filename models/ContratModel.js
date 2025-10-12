@@ -28,7 +28,6 @@ const contratSchema = new mongoose.Schema(
     startDate: {
       type: Date,
       required: true,
-      default: new Date(),
       trim: true,
     },
     endDate: {
@@ -50,6 +49,10 @@ const contratSchema = new mongoose.Schema(
       type: Number,
       required: true,
       time: true
+    },
+    comission: {
+      type: Number,
+      default: 0,
     },
     
     statut: {
