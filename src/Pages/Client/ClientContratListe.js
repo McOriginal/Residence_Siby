@@ -35,6 +35,7 @@ import {
 } from '../components/NavigationButton';
 import ReservationListe from '../Reservation/ReservationListe';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
+import Swal from 'sweetalert2';
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -62,32 +63,61 @@ export default function ClientContratListe() {
   const today = new Date().toISOString().substring(0, 10);
 
   const handleStopeContrat = async (contrat) => {
-    setIsSubmitting(true);
-    try {
-      await stopeContrat(contrat, {
-        onSuccess: () => {
-          successMessageAlert('Contrat Arrêté avec succès');
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success ms-2',
+        cancelButton: 'btn btn-danger me-2',
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: `Êtes-vous sûr de vouloir mettre fin au Contrat de ?:`,
+        text: contrat?.client?.firstName + ' ' + contrat.client.lastName,
+        icon: 'question',
+        iconColor: 'red',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          setIsSubmitting(true);
+
+          try {
+            stopeContrat(contrat, {
+              onSuccess: () => {
+                successMessageAlert('Contrat Arrêté avec succès');
+                setIsSubmitting(false);
+              },
+              onError: (err) => {
+                const errorMessage =
+                  err?.response?.data?.message ||
+                  err?.message ||
+                  "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+                errorMessageAlert(errorMessage);
+                setIsSubmitting(false);
+              },
+            });
+          } catch (e) {
+            const errorMessage =
+              e?.response?.data?.message ||
+              e?.message ||
+              "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+            errorMessageAlert(errorMessage);
+            setIsSubmitting(false);
+          }
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire({
+            title: 'Exécution Annulée',
+            icon: 'error',
+          });
           setIsSubmitting(false);
-        },
-        onError: (err) => {
-          const errorMessage =
-            err?.response?.data?.message ||
-            err?.message ||
-            "Oh Oh ! une erreur est survenu lors de l'enregistrement";
-          errorMessageAlert(errorMessage);
-          setIsSubmitting(false);
-        },
+        }
       });
-    } catch (error) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Oh Oh ! une erreur est survenu lors de l'enregistrement";
-      errorMessageAlert(errorMessage);
-      setIsSubmitting(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+    setIsSubmitting(false);
   };
 
   return (

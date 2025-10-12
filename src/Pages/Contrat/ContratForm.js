@@ -114,7 +114,7 @@ const ContratForm = ({
       // Si c'est pour Renouveller
       if (contratToReload) {
         return reloadContrat(
-          { contrat: contratToReload?._id, data: values },
+          { contrat: contratToReload?._id, ...values },
           {
             onSuccess: () => {
               successMessageAlert('Contrat Renouvellée avec succès');

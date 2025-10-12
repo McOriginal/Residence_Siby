@@ -1,9 +1,8 @@
-import { Button, Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row } from 'reactstrap';
 import AppartementListe from '../Appartements/AppartementListe';
 import SecteurContrat from './SecteurContrat';
 import React from 'react';
 import ContratPaiements from './ContratPaiements';
-import { useNavigate } from 'react-router-dom';
 import {
   BackButton,
   DashboardButton,

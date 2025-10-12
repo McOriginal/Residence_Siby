@@ -21,6 +21,7 @@ import {
 import LoadingSpiner from '../components/LoadingSpiner';
 import { useNavigate } from 'react-router-dom';
 import AllReservationListe from '../Reservation/AllReservationListe';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 
 const Dashboard = () => {
   document.title = `Tableau de Bord | ${companyName} `;
@@ -47,7 +48,7 @@ const Dashboard = () => {
             title='Administrateur'
             breadcrumbItem='Tabelau de Bord'
           />
-
+          <ActiveSecteur />
           <motion.div
             initial={{ opacity: 0, y: 70 }}
             animate={{ opacity: 1, y: 0 }}

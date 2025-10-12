@@ -12,6 +12,7 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 
 export default function DepenseListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -63,6 +64,7 @@ export default function DepenseListe() {
   return (
     <React.Fragment>
       <div className='page-content'>
+        <ActiveSecteur />
         <Container fluid>
           <Breadcrumbs title='Transaction' breadcrumbItem='Depense' />
           <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>

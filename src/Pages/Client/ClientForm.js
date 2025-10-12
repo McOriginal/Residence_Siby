@@ -32,6 +32,7 @@ const ClientForm = ({ clientToEdit, tog_form_modal }) => {
     initialValues: {
       firstName: clientToEdit?.firstName || '',
       lastName: clientToEdit?.lastName || '',
+      pieceNumber: clientToEdit?.pieceNumber || '',
       phoneNumber: clientToEdit?.phoneNumber || undefined,
     },
     validationSchema: Yup.object({
@@ -42,6 +43,7 @@ const ClientForm = ({ clientToEdit, tog_form_modal }) => {
       lastName: Yup.string()
         .matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Veillez Entrez une valeur correct !')
         .required('Ce champ Prénom est obligatoire'),
+      pieceNumber: Yup.string().required('Ce champ Prénom est obligatoire'),
       phoneNumber: Yup.number().required('Ce champ est obligatoire'),
     }),
 
@@ -158,7 +160,32 @@ const ClientForm = ({ clientToEdit, tog_form_modal }) => {
         </Col>
       </Row>
       <Row>
-        <Col md='12'>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='pieceNumber'>Numéro du Pièce d'identité</Label>
+            <Input
+              name='pieceNumber'
+              placeholder="Entrez le numéro du pièce d'identité..."
+              type='tel'
+              className='form-control border-1 border-dark'
+              id='pieceNumber'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.pieceNumber || ''}
+              invalid={
+                validation.touched.pieceNumber && validation.errors.pieceNumber
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.pieceNumber && validation.errors.pieceNumber ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.pieceNumber}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='6'>
           <FormGroup className='mb-3'>
             <Label htmlFor='phoneNumber'>Téléphone</Label>
             <Input

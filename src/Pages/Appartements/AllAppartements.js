@@ -14,6 +14,7 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 
 export default function AllAppartements() {
   // Recuperer la Liste des Appartement
@@ -34,6 +35,7 @@ export default function AllAppartements() {
   return (
     <React.Fragment>
       <div className='page-content'>
+        <ActiveSecteur />
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem="Liste d'Appartements" />
 

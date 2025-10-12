@@ -14,6 +14,7 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 
 export default function PaiementsListe() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
@@ -58,6 +59,7 @@ export default function PaiementsListe() {
   return (
     <React.Fragment>
       <div className='page-content'>
+        <ActiveSecteur />
         <Container fluid>
           <Breadcrumbs title='Transaction' breadcrumbItem='Paiements' />
           <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>

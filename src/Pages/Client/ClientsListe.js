@@ -18,6 +18,7 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 
 export default function ClientListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -51,6 +52,7 @@ export default function ClientListe() {
   return (
     <React.Fragment>
       <div className='page-content'>
+        <ActiveSecteur />
         <Container fluid>
           <Breadcrumbs title='Secteurs' breadcrumbItem='List des Client' />
           <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
@@ -153,6 +155,7 @@ export default function ClientListe() {
                               <th style={{ width: '20px' }}></th>
                               <th>Nom</th>
                               <th>Prénom</th>
+                              <th>Pièce d'identité</th>
 
                               <th>Téléphone</th>
 
@@ -181,6 +184,7 @@ export default function ClientListe() {
                                 </td>
                                 <td>{capitalizeWords(client.firstName)} </td>
                                 <td>{capitalizeWords(client.lastName)} </td>
+                                <td>{client.pieceNumber} </td>
 
                                 <td>{formatPhoneNumber(client.phoneNumber)}</td>
 
