@@ -52,7 +52,7 @@ const AppartementForm = ({
     validationSchema: Yup.object({
       name: Yup.string().required('Ce champ est obligatoire'),
       appartementNumber: Yup.number().required('Ce champ est obligatoire'),
-      heurePrice: Yup.number().required('Ce champ est obligatoire'),
+      heurePrice: Yup.number(),
       dayPrice: Yup.number().required('Ce champ est obligatoire'),
       weekPrice: Yup.number().required('Ce champ est obligatoire'),
       mounthPrice: Yup.number().required('Ce champ est obligatoire'),
@@ -115,13 +115,21 @@ const AppartementForm = ({
 
   useEffect(() => {
     const hPrice = validation.values.heurePrice;
+    const dPrice = validation.values.dayPrice;
 
-    if (hPrice === 0 || !hPrice) return;
+    if (hPrice > 0) {
+      validation.setFieldValue('dayPrice', hPrice * 24);
+      validation.setFieldValue('weekPrice', hPrice * 24 * 7);
+      validation.setFieldValue('mounthPrice', hPrice * 24 * 7 * 4);
+    }
 
-    validation.setFieldValue('dayPrice', hPrice * 24);
-    validation.setFieldValue('weekPrice', hPrice * 24 * 7);
-    validation.setFieldValue('mounthPrice', hPrice * 24 * 7 * 4);
-  }, [validation.values.heurePrice]);
+    if (dPrice > 0) {
+      validation.setFieldValue('weekPrice', dPrice * 7);
+      validation.setFieldValue('mounthPrice', dPrice * 30);
+    }
+
+    return;
+  }, [validation.values.heurePrice, validation.values.dayPrice]);
 
   return (
     <Form
@@ -188,7 +196,7 @@ const AppartementForm = ({
       <Row>
         <Col md='6'>
           <FormGroup className='mb-3'>
-            <Label htmlFor='heurePrice'>Prix par Heure</Label>
+            <Label htmlFor='heurePrice'>Prix / Heure</Label>
             <Input
               name='heurePrice'
               placeholder='Entrez un prix / Heure'
@@ -214,7 +222,7 @@ const AppartementForm = ({
         </Col>
         <Col md='6'>
           <FormGroup className='mb-3'>
-            <Label htmlFor='dayPrice'>Prix par Jour</Label>
+            <Label htmlFor='dayPrice'>Prix / Jour</Label>
             <Input
               name='dayPrice'
               placeholder='Entrez un prix / Jour'
@@ -242,7 +250,7 @@ const AppartementForm = ({
       <Row>
         <Col md='6'>
           <FormGroup className='mb-3'>
-            <Label htmlFor='weekPrice'>Prix par Semaine</Label>
+            <Label htmlFor='weekPrice'>Prix / Semaine</Label>
             <Input
               name='weekPrice'
               placeholder='Entrez un prix / Semaine'
@@ -268,7 +276,7 @@ const AppartementForm = ({
         </Col>
         <Col md='6'>
           <FormGroup>
-            <Label htmlFor='mounthPrice'>Prix par Mois</Label>
+            <Label htmlFor='mounthPrice'>Prix / Mois</Label>
             <Input
               type='number'
               min={1}

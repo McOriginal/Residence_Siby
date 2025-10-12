@@ -1,0 +1,312 @@
+import {
+  Button,
+  Col,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+} from 'reactstrap';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import { useState } from 'react';
+import {
+  errorMessageAlert,
+  successMessageAlert,
+} from '../components/AlerteModal';
+import LoadingSpiner from '../components/LoadingSpiner';
+import { useAllAppartement } from '../../Api/queriesAppartement';
+import { formatPrice } from '../components/capitalizeFunction';
+import { useCreateRental, useUpdateRental } from '../../Api/queriesReservation';
+
+const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
+  const { mutate: createRental } = useCreateRental();
+  const { mutate: updateRental } = useUpdateRental();
+  const {
+    data: appartment,
+    isLoading: loadingAppart,
+    error: errorAppart,
+  } = useAllAppartement();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const storage = localStorage.getItem('selectedSecteur');
+  const secteurStorage = JSON.parse(storage);
+  const secteurAppartement = appartment?.filter(
+    (item) => item?.secteur?._id === secteurStorage?._id
+  );
+  // Form validation
+  const validation = useFormik({
+    // enableReinitialize : use this flag when initial values needs to be changed
+    enableReinitialize: true,
+
+    initialValues: {
+      client: reservationToEdit?.client?._id || clientId,
+      appartement: reservationToEdit?.appartement?._id || undefined,
+      heure: reservationToEdit?.heure || 0,
+      jour: reservationToEdit?.jour || 0,
+      semaine: reservationToEdit?.semaine || 0,
+      mois: reservationToEdit?.mois || 0,
+      rentalDate: reservationToEdit?.rentalDate.substring(0, 10) || undefined,
+    },
+    validationSchema: Yup.object({
+      appartement: Yup.string().required('Ce Champ est Obligatoire'),
+      heure: Yup.number(),
+      jour: Yup.number(),
+      semaine: Yup.number(),
+      mois: Yup.number(),
+      rentalDate: Yup.date().required('Ce champ est obligatoire'),
+    }),
+
+    onSubmit: (values, { resetForm }) => {
+      setIsLoading(true);
+
+      if (reservationToEdit) {
+        updateRental(
+          { id: reservationToEdit._id, data: values },
+          {
+            onSuccess: () => {
+              successMessageAlert('Mise à jour avec succès');
+              setIsLoading(false);
+              tog_form_modal();
+            },
+            onError: (err) => {
+              errorMessageAlert(
+                err?.response?.data?.message ||
+                  err?.message ||
+                  'Erreur lors de la mise à jour'
+              );
+              setIsLoading(false);
+            },
+          }
+        );
+      }
+
+      // Sinon on créer un nouveau
+      else {
+        createRental(values, {
+          onSuccess: () => {
+            successMessageAlert('Enregistrée avec succès');
+            setIsLoading(false);
+            resetForm();
+            tog_form_modal();
+          },
+          onError: (err) => {
+            const errorMessage =
+              err?.response?.data?.message ||
+              err?.message ||
+              "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+            errorMessageAlert(errorMessage);
+            setIsLoading(false);
+          },
+        });
+      }
+      setTimeout(() => {
+        if (isLoading) {
+          errorMessageAlert('Une erreur est survenue. Veuillez réessayer !');
+          setIsLoading(false);
+        }
+      }, 10000);
+    },
+  });
+
+  return (
+    <Form
+      className='needs-validation'
+      onSubmit={(e) => {
+        e.preventDefault();
+        validation.handleSubmit();
+        return false;
+      }}
+    >
+      <Row>
+        {loadingAppart && <LoadingSpiner />}
+        {!loadingAppart && errorAppart && secteurAppartement?.length === 0 && (
+          <h6 className='text-center text-warning'>
+            Aucun Appartement dans le Secteur {secteurStorage?.secteurNumber}
+          </h6>
+        )}
+        {!loadingAppart && !errorAppart && secteurAppartement?.length > 0 && (
+          <Col md='12'>
+            <FormGroup className='mb-3'>
+              <Label htmlFor='appartement'>N° d'Appartement</Label>
+              <Input
+                name='appartement'
+                placeholder='appartement...'
+                type='select'
+                className='form-control border-1 border-dark'
+                id='appartement'
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.appartement || ''}
+                invalid={
+                  validation.touched.appartement &&
+                  validation.errors.appartement
+                    ? true
+                    : false
+                }
+              >
+                <option value=''>Sélectionner un Appartement</option>
+
+                {secteurAppartement?.map((item) => (
+                  <option value={item?._id} key={item?._id}>
+                    {formatPrice(item.appartementNumber)}{' '}
+                  </option>
+                ))}
+              </Input>
+              {validation.touched.appartement &&
+              validation.errors.appartement ? (
+                <FormFeedback type='invalid'>
+                  {validation.errors.appartement}
+                </FormFeedback>
+              ) : null}
+            </FormGroup>
+          </Col>
+        )}
+      </Row>
+      <h6 className='my-3 text-info'>Duréer de Séjour</h6>
+      <Row>
+        <Col md='3'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='heure'>Heure</Label>
+            <Input
+              name='heure'
+              placeholder='Heure...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='heure'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.heure || ''}
+              invalid={
+                validation.touched.heure && validation.errors.heure
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.heure && validation.errors.heure ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.heure}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='3'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='jour'>Jour</Label>
+            <Input
+              name='jour'
+              placeholder='Jour...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='jour'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.jour || ''}
+              invalid={
+                validation.touched.jour && validation.errors.jour ? true : false
+              }
+            />
+            {validation.touched.jour && validation.errors.jour ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.jour}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='3'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='semaine'> Semaine</Label>
+            <Input
+              name='semaine'
+              placeholder='Semaine...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='semaine'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.semaine || ''}
+              invalid={
+                validation.touched.semaine && validation.errors.semaine
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.semaine && validation.errors.semaine ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.semaine}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='3'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='mois'>Mois</Label>
+            <Input
+              name='mois'
+              placeholder='Mois...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='mois'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.mois || ''}
+              invalid={
+                validation.touched.mois && validation.errors.mois ? true : false
+              }
+            />
+            {validation.touched.mois && validation.errors.mois ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.mois}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='rentalDate'>Date de Reservation</Label>
+            <Input
+              name='rentalDate'
+              placeholder="Entrez la date d'Entrée..."
+              type='date'
+              min={new Date().toISOString().substring(0, 10)}
+              className='form-control border-1 border-dark'
+              id='rentalDate'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.rentalDate || ''}
+              invalid={
+                validation.touched.rentalDate && validation.errors.rentalDate
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.rentalDate && validation.errors.rentalDate ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.rentalDate}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+      </Row>
+
+      <div className='d-grid text-center mt-4'>
+        {isLoading && <LoadingSpiner />}
+        {!isLoading && (
+          <Button color='success' type='submit'>
+            Enregisrer
+          </Button>
+        )}
+      </div>
+    </Form>
+  );
+};
+
+export default ReservationForm;

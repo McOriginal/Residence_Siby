@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Card, CardBody, Col, Container, Row } from 'reactstrap';
-import Breadcrumbs from '../../components/Common/Breadcrumb';
 import LoadingSpiner from '../components/LoadingSpiner';
 import {
   capitalizeWords,
@@ -45,8 +44,6 @@ export default function ContratPaiements() {
     <React.Fragment>
       <div className='page-content'>
         <Container fluid>
-          <Breadcrumbs title='Secteur' breadcrumbItem='Paiements' />
-
           {/* -------------------- */}
           <ReçuPaiement
             show_modal={show_modal}
@@ -60,6 +57,8 @@ export default function ContratPaiements() {
               <Card>
                 <CardBody>
                   <div id='paiementsList'>
+                    <h3 className='text-center fw-bold'>Paiements</h3>
+
                     <h6 className='text-end'>
                       Montant Total:{' '}
                       <span className='text-info'>

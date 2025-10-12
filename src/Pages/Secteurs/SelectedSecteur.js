@@ -1,4 +1,4 @@
-import { Button, Container } from 'reactstrap';
+import { Button, Col, Container, Row } from 'reactstrap';
 import AppartementListe from '../Appartements/AppartementListe';
 import SecteurContrat from './SecteurContrat';
 import React from 'react';
@@ -9,29 +9,35 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import SecteurReservationListe from './SecteurReservationListe';
 
 export default function SelectedSecteur() {
-  const navigate = useNavigate();
   return (
     <React.Fragment>
-      <div className='page-content bg-primary'>
+      <div className='page-content bg-light'>
         <Container fluid={true}>
           <div className='d-flex justify-content-center align-items-center gap-4'>
             <BackButton />
             <DashboardButton />
             <HomeButton />
           </div>
-          <div style={{ height: '400px' }}>
-            <AppartementListe />
-          </div>
+          <Row>
+            <Col sm={12} style={{ height: '700px' }}>
+              <AppartementListe />
+            </Col>
 
-          <div style={{ height: '400px', margin: '10% 0' }}>
-            <SecteurContrat />
-          </div>
+            <Col sm={12} style={{ height: '400px', margin: '10% 0' }}>
+              <SecteurContrat />
+            </Col>
 
-          <div style={{ height: '400px', margin: '10% 0' }}>
-            <ContratPaiements />
-          </div>
+            <Col sm={12} style={{ height: '400px', margin: '10% 0' }}>
+              <SecteurReservationListe />
+            </Col>
+
+            <Col sm={12} style={{ height: '400px', margin: '10% 0' }}>
+              <ContratPaiements />
+            </Col>
+          </Row>
         </Container>
       </div>
     </React.Fragment>

@@ -98,7 +98,7 @@ export default function AppartementListe() {
                       <i className='fas fa-plus'></i> Ajouter
                     </Button>
                   </Col>
-                  <Row className='d-flex justify-content-between align-items-center g-4 mb-3'>
+                  <Row className='d-flex justify-content-between align-items-center gap-4 mb-3'>
                     <Col>
                       {filterAppartement?.length > 0 && (
                         <p className='text-center font-size-15 mt-2'>
@@ -119,7 +119,10 @@ export default function AppartementListe() {
                     )}
                     {isLoading && <LoadingSpiner />}
 
-                    <div className='table-responsive table-card mt-3 mb-1'>
+                    <div
+                      className='table-responsive table-card mt-3 mb-1'
+                      style={{ minHeight: 350 }}
+                    >
                       {!filterAppartement?.length && !isLoading && !error && (
                         <div className='text-center text-mutate'>
                           Aucun Appartement dans ce Secteur !

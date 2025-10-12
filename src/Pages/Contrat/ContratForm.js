@@ -45,9 +45,9 @@ const ContratForm = ({
   const secteurStorage = JSON.parse(storage);
   const secteurAppartement = appartment?.filter(
     (item) =>
-      item?.secteur?._id === secteurStorage?._id && item.isAvailable === true
+      item?.secteur?._id === secteurStorage?._id &&
+      (item.isAvailable || item?._id === contratToEdit?.appartement?._id)
   );
-
   // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -64,17 +64,14 @@ const ContratForm = ({
       jour: contratToEdit?.jour || contratToReload?.jour || 0,
       semaine: contratToEdit?.semaine || contratToReload?.semaine || 0,
       mois: contratToEdit?.mois || contratToReload?.mois || 0,
-      startDate:
-        contratToEdit?.startDate.substring(0, 10) ||
-        new Date().toISOString().substring(0, 10),
-      endDate:
-        contratToEdit?.endDate.substring(0, 10) ||
-        new Date().toISOString().substring(0, 10),
+      startDate: contratToEdit?.startDate.substring(0, 10) || undefined,
+      endDate: contratToEdit?.endDate.substring(0, 10) || undefined,
       amount: contratToEdit?.amount || contratToReload?.amount || undefined,
       reduction:
         contratToEdit?.reduction || contratToReload?.reduction || undefined,
       totalAmount:
         contratToEdit?.totalAmount || contratToReload?.totalAmount || undefined,
+      comission: contratToEdit?.comission || undefined,
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -85,15 +82,16 @@ const ContratForm = ({
       startDate: Yup.date().required('Ce champ est obligatoire'),
       endDate: Yup.date().required('Ce champ est obligatoire'),
       totalAmount: Yup.number(),
-      amount: Yup.number(),
+      amount: Yup.number().required('Ce Champ est Obligatoire'),
       reduction: Yup.number(),
+      comission: Yup.number(),
     }),
 
     onSubmit: (values, { resetForm }) => {
       setIsLoading(true);
 
       if (contratToEdit) {
-        updateContrat(
+        return updateContrat(
           { id: contratToEdit._id, data: values },
           {
             onSuccess: () => {
@@ -115,8 +113,8 @@ const ContratForm = ({
 
       // Si c'est pour Renouveller
       if (contratToReload) {
-        reloadContrat(
-          { contrat: contratToReload?._id, ...values },
+        return reloadContrat(
+          { contrat: contratToReload?._id, data: values },
           {
             onSuccess: () => {
               successMessageAlert('Contrat Renouvellée avec succès');
@@ -136,11 +134,11 @@ const ContratForm = ({
         );
       }
 
-      // Sinon on créer un nouveau étudiant
+      // Sinon on créer un nouveau Contrat
       else {
         createContrat(values, {
           onSuccess: () => {
-            successMessageAlert('Contrat enregistrée avec succès');
+            successMessageAlert('Contrat Enregistrée avec succès');
             setIsLoading(false);
             resetForm();
             tog_form_modal();
@@ -201,6 +199,8 @@ const ContratForm = ({
     validation.values.mois,
   ]);
 
+  const date = new Date();
+
   return (
     <Form
       className='needs-validation'
@@ -213,6 +213,9 @@ const ContratForm = ({
       <h6 className='text-info text-end'>
         Total: {formatPrice(validation.values.amount || 0)}
         {' F '}
+      </h6>
+      <h6 className='text-success text-end'>
+        Après remise: {formatPrice(validation.values.totalAmount || 0)} F{' '}
       </h6>
       <Row>
         {loadingAppart && <LoadingSpiner />}
@@ -247,7 +250,7 @@ const ContratForm = ({
                   </option>
                 )}
 
-                {!contratToReload && (
+                {!contratToReload && !contratToEdit && (
                   <option value=''>Sélectionner un Appartement</option>
                 )}
 
@@ -380,9 +383,17 @@ const ContratForm = ({
               placeholder="Entrez la date d'Entrée..."
               type='date'
               min={new Date().toISOString().substring(0, 10)}
+              max={new Date(date.setDate(date.getDate() + 1))
+                .toISOString()
+                .substring(0, 10)}
               className='form-control border-1 border-dark'
               id='startDate'
-              onChange={validation.handleChange}
+              onChange={(e) => {
+                validation.handleChange(e);
+                if (validation.values.endDate < e.target.value) {
+                  validation.setFieldValue('endDate', e.target.value);
+                }
+              }}
               onBlur={validation.handleBlur}
               value={validation.values.startDate || ''}
               invalid={
@@ -405,7 +416,10 @@ const ContratForm = ({
               name='endDate'
               placeholder='Entrez La date de fin du contrat'
               type='date'
-              min={new Date().getTime()}
+              min={
+                validation.values.startDate ||
+                new Date().toISOString().substring(0, 10)
+              }
               className='form-control border-1 border-dark'
               id='endDate'
               onChange={validation.handleChange}
@@ -428,6 +442,32 @@ const ContratForm = ({
       <Row>
         <Col md='6'>
           <FormGroup className='mb-3'>
+            <Label htmlFor='amount'>Montant</Label>
+            <Input
+              name='amount'
+              placeholder='Montant exacte du contrat...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='amount'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.amount || undefined}
+              invalid={
+                validation.touched.amount && validation.errors.amount
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.amount && validation.errors.amount ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.amount}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
             <Label htmlFor='reduction'>Reduction / Remise</Label>
             <Input
               name='reduction'
@@ -435,7 +475,7 @@ const ContratForm = ({
               type='number'
               min={0}
               max={validation.values.amount}
-              className='form-control border-1 border-dark'
+              className='form-control border-1 border-dark text-danger'
               id='reduction'
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
@@ -453,16 +493,34 @@ const ContratForm = ({
             ) : null}
           </FormGroup>
         </Col>
-        <Col className='d-flex justify-content-center align-items-center'>
-          <div>
-            <h6 className='text-warning text-center'>
-              Total : {formatPrice(validation.values.amount || 0)} F{' '}
-            </h6>
-            <h6 className='text-info text-center'>
-              Total après remise:{' '}
-              {formatPrice(validation.values.totalAmount || 0)} F{' '}
-            </h6>
-          </div>
+      </Row>
+      <Row>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='comission'>Comission</Label>
+            <Input
+              name='comission'
+              placeholder='Entrez la comission sur le contrat...'
+              type='number'
+              min={0}
+              max={validation.values.totalAmount}
+              className='form-control border-1 border-dark'
+              id='comission'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.comission || undefined}
+              invalid={
+                validation.touched.comission && validation.errors.comission
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.comission && validation.errors.comission ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.comission}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
         </Col>
       </Row>
 

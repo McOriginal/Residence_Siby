@@ -250,7 +250,7 @@ export default function ContratListe() {
                                 </td>
                                 <td
                                   className={`${
-                                    new Date(contrat?.endDate)
+                                    new Date(contrat.endDate)
                                       .toISOString()
                                       .substring(0, 10) > today
                                       ? 'text-success'
@@ -324,6 +324,7 @@ export default function ContratListe() {
                                               'Modifier les données'
                                             );
                                             setContratToUpdate(contrat);
+                                            setContratToReload(null);
                                             tog_form_modal();
                                           }}
                                         >

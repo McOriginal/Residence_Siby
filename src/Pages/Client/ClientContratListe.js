@@ -33,6 +33,7 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
+import ReservationListe from '../Reservation/ReservationListe';
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -92,7 +93,7 @@ export default function ClientContratListe() {
     <React.Fragment>
       <div className='page-content'>
         <Container fluid>
-          <Breadcrumbs title='Secteurs' breadcrumbItem='List des Contrat' />
+          <Breadcrumbs title='Client' breadcrumbItem='List des Contrat' />
           <div className='d-flex flex-wrap justify-content-center align-items-center gap-4'>
             <BackButton />
             <DashboardButton />
@@ -306,6 +307,7 @@ export default function ClientContratListe() {
                                               'Modifier les données'
                                             );
                                             setContratToUpdate(contrat);
+                                            setContratToReload(null);
                                             tog_form_modal();
                                           }}
                                         >
@@ -376,6 +378,9 @@ export default function ClientContratListe() {
             </Col>
           </Row>
         </Container>
+
+        {/* Reservation */}
+        <ReservationListe />
       </div>
     </React.Fragment>
   );

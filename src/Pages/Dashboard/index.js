@@ -20,6 +20,7 @@ import {
 } from '../components/capitalizeFunction';
 import LoadingSpiner from '../components/LoadingSpiner';
 import { useNavigate } from 'react-router-dom';
+import AllReservationListe from '../Reservation/AllReservationListe';
 
 const Dashboard = () => {
   document.title = `Tableau de Bord | ${companyName} `;
@@ -249,6 +250,8 @@ const Dashboard = () => {
               </Card>
             </Col>
           </Row>
+
+          <AllReservationListe />
         </Container>
       </div>
     </React.Fragment>

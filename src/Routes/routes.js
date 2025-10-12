@@ -25,6 +25,7 @@ import ContractDocument from '../Pages/Contrat/ContratDocument.js';
 import SelectedSecteur from '../Pages/Secteurs/SelectedSecteur.js';
 import AllAppartements from '../Pages/Appartements/AllAppartements.js';
 import InitialPage from '../Pages/InitialPage/InitialPage.js';
+import ReservationListe from '../Pages/Reservation/ReservationListe.js';
 
 // Routes pour les ADMINS
 const authProtectedRoutes = [
@@ -82,6 +83,8 @@ const noSideBarRoutes = [
 
   { path: '/contrats', component: <ContratListe /> },
 
+  { path: '/reservations', component: <ReservationListe /> },
+
   { path: '/contrat/:id', component: <PaiementsContrat /> },
 
   { path: '/contrat/document/:id', component: <ContractDocument /> },
@@ -90,7 +93,7 @@ const noSideBarRoutes = [
 
   { path: '/depenses', component: <DepenseListe /> },
 
-  // { path: '/register', component: <Register /> },
+  { path: '/register', component: <Register /> },
   { path: '/initial_page', component: <InitialPage /> },
 ];
 
@@ -98,7 +101,7 @@ const publicRoutes = [
   // { path: '/unauthorized', component: <Unauthorized /> },
 
   // Authentication Page
-  { path: '/register', component: <Register /> },
+  // { path: '/register', component: <Register /> },
   { path: '/login', component: <Login /> },
 ];
 

@@ -183,8 +183,7 @@ export default function Secteur() {
                               : 'bg-danger'
                           }`}
                         >
-                          {formatPrice(availableAppartements(item, true))}{' '}
-                          Disponible
+                          {formatPrice(availableAppartements(item, true))} Libre
                         </span>
                       </CardBody>
                       <CardFooter className='d-flex justify-content-end align-items-center'>
