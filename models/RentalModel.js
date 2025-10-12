@@ -31,6 +31,11 @@ const rentalSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    rentalEndDate: {
+        type: Date,
+        required: true,
+        trim: true,
+    },
     
 appartement: {
     type: mongoose.Schema.Types.ObjectId,

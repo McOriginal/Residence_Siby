@@ -11,24 +11,41 @@ exports.createRental = async (req, res) => {
   try {
 
 const reservationDate =new Date(req.body.rentalDate);
+const reservationEndDate =new Date(req.body.rentalEndDate);
 
 
-    const existingContrat = await Contrat.findOne({appartement: req.body.appartement}).session(session)
+    const existingContrat = await Contrat.findOne({
+      appartement: req.body.appartement,
+   $or:[
+    {
+      startDate: { $lte: reservationEndDate},
+    endDate: {$gte: reservationDate},
+  }
+   ]
+    }).session(session)
  
     
-    if(existingContrat &&  existingContrat.endDate >= reservationDate ){
-
+    if(existingContrat){
       await   session.abortTransaction()
       session.endSession()
       return res.status(400).json({message: `Un Contrat serai en cours du: ${new Date(existingContrat.startDate).toLocaleDateString('fr-Fr')} au ${new Date(existingContrat.endDate).toLocaleDateString('fr-Fr')}`})
     }
 
-    const existingRental = await Rental.findOne({rentalDate: reservationDate}).session(session);
+    const existingRental = await Rental.findOne({
+      appartement: req.body.appartement,
+      $or:[
+        {
+          rentalDate: { $lte:reservationEndDate},
+          rentalEndDate: {$gte: reservationDate},
+        }
+      ]
+    }).session(session);
 
-    if(existingRental ){
+
+    if(existingRental){
       await   session.abortTransaction()
       session.endSession()
-      return res.status(400).json({message: `Il y'a déjà une reservation le: ${new Date(reservationDate).toLocaleDateString('fr-Fr')}`})
+      return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
     }
 
       const newRental = await Rental.create(
@@ -65,25 +82,52 @@ exports.updateRental = async (req, res) => {
   try {
    
 const reservationDate =new Date(req.body.rentalDate);
+const reservationEndDate =new Date(req.body.rentalEndDate);
 
 
-const existingContrat = await Contrat.findOne({appartement: req.body.appartement, _id:{$ne:req.params.id}}).session(session)
+// ----------------------------------------------
+// ---------- CONTRAT
+// ----------------------------------------------
+
+    const existingContrat = await Contrat.findOne({
+      appartement: req.body.appartement,
+   $or:[
+    {
+      startDate: { $lte: reservationEndDate},
+    endDate: {$gte: reservationDate},
+  }
+   ]
+    }).session(session)
+ 
+    
+    if(existingContrat){
+      await   session.abortTransaction()
+      session.endSession()
+      return res.status(400).json({message: `Un Contrat serai en cours du: ${new Date(existingContrat.startDate).toLocaleDateString('fr-Fr')} au ${new Date(existingContrat.endDate).toLocaleDateString('fr-Fr')}`})
+    }
 
 
-if(existingContrat &&  existingContrat.endDate >= reservationDate ){
+    
+// ----------------------------------------------
+// ---------- RENTAL
+// ----------------------------------------------
+    const existingRental = await Rental.findOne({
+      _id: {$ne: req.params.id},
+      appartement: req.body.appartement,
+      $or:[
+        {
+          rentalDate: { $lte:reservationEndDate},
+          rentalEndDate: {$gte: reservationDate},
+        }
+      ]
+    }).session(session);
 
-  await   session.abortTransaction()
-  session.endSession()
-  return res.status(400).json({message: `Un Contrat serai en cours du: ${new Date(existingContrat.startDate).toLocaleDateString('fr-Fr')} au ${new Date(existingContrat.endDate).toLocaleDateString('fr-Fr')}`})
-}
 
-const existingRental = await Rental.findOne({rentalDate: reservationDate, _id:{$ne:req.params.id}}).session(session);
-
-if(existingRental ){
-  await   session.abortTransaction()
-  session.endSession()
-  return res.status(400).json({message: `Il y'a déjà une reservation le: ${new Date(reservationDate).toLocaleDateString('fr-Fr')}`})
-}
+    if(existingRental){
+      await   session.abortTransaction()
+      session.endSession()
+      return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
+    }
 
 
 
@@ -121,7 +165,7 @@ exports.getAllRental = async (req, res) => {
   try {
     const result = await Rental.find()
     .populate('client')
-      .populate('appartement')
+      .populate({path:'appartement', populate:{path: 'secteur'}})
       .populate('user')
       .sort({ rentalDate: -1 })
   
@@ -137,7 +181,7 @@ exports.getRental = async (req, res) => {
   try {
     const result = await Rental.findById(req.params.id)
     .populate('client')
-    .populate('appartement')
+    .populate({path:'appartement', populate:{path: 'secteur'}})
     .populate('user');
     res.status(200).json(result);
 
@@ -150,20 +194,16 @@ exports.getRental = async (req, res) => {
 // Supprimer un Rental
 exports.deleteRental = async (req, res) => {
   try {
-    const session = await mongoose.startSession()
-    session.startTransaction();
-  const Rental=  await Rental.findByIdAndDelete(req.params.id,{session});
+    
+  await Rental.findByIdAndDelete(req.params.id);
 
-await session.commitTransaction();
-session.endSession();
     return res
       .status(200)
       .json({ status: 'success', message: 'Reservation supprimé avec succès' });
 
 
   } catch (err) {
-    session.abortTransaction();
-    session.endSession();
+  console.log(err)
     return res.status(400).json({ status: 'error', message: err.message });
   }
 };

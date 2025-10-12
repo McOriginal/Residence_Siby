@@ -15,7 +15,6 @@ const appartementSchema = new mongoose.Schema(
     },
     heurePrice: {
       type: Number,
-      required: true,
       default: 0,
       trim: true,
     },

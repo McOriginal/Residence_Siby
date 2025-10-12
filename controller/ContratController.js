@@ -11,6 +11,9 @@ exports.createContrat = async (req, res) => {
   session.startTransaction();
   try {
 
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+
     const existAppartement = await Appartement.findById(req.body.appartement).session(session)
 
  
@@ -20,22 +23,26 @@ exports.createContrat = async (req, res) => {
       return res.status(400).json({message: "Cette Appartement n'est pas disponible"})
     }
 
-    const startDate = new Date(req.body.startDate)
-    const endDate = new Date(req.body.endDate)
-    
-    const existingRental = await Rental.findOne({
-      appartement: existAppartement._id,
-      rentalDate: { $gte: startDate, $lte: endDate },
-    }).session(session);
-    
-
-    if(existingRental){
-      console.log('Rental Exist')
-      await   session.abortTransaction()
-      session.endSession()
-      return res.status(400).json({message: `Cette Appartement est reservée le: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')}`})
+     
+// ----------------------------------------------
+// ---------- RENTAL
+// ----------------------------------------------
+const existingRental = await Rental.findOne({
+  appartement: existAppartement._id,
+  $or:[
+    {
+      rentalDate: { $lte:endDate},
+      rentalEndDate: {$gte: startDate},
     }
+  ]
+}).session(session);
 
+
+if(existingRental){
+  await   session.abortTransaction()
+  session.endSession()
+  return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
+}
 
       const newContrat = await Contrat.create(
         [{
@@ -74,6 +81,15 @@ exports.updateContrat = async (req, res) => {
   session.startTransaction();
 
   try {
+
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+    
+
+
+// ----------------------------------------------
+// ---------- CONTRAT
+// ----------------------------------------------
     const oldContrat = await Contrat.findById(req.params.id).session(session);
     if (!oldContrat) {
       await session.abortTransaction();
@@ -102,22 +118,31 @@ if(isDifferent){
       }
 }
 
-    const startDate = new Date(req.body.startDate)
-    const endDate = new Date(req.body.endDate)
-    
-    const existingRental = await Rental.findOne({
-      appartement: req.body.appartement,
-      rentalDate: { $gte: startDate, $lte: endDate },
-    }).session(session);
-    
-
-    if( existingRental){
-      await   session.abortTransaction()
-      session.endSession()
-      return res.status(400).json({message: `Cette Appartement est reservée le: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')}`})
-    }
+ 
+// ----------------------------------------------
+// ---------- RENTAL
+// ---------------------------------------------- 
+ 
 
   
+const existingRental = await Rental.findOne({
+  appartement: req.body.appartement,
+  $or:[
+    {
+      rentalDate: { $lte:endDate},
+      rentalEndDate: {$gte: startDate},
+    }
+  ]
+}).session(session);
+
+
+if(existingRental){
+  await   session.abortTransaction()
+  session.endSession()
+  return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
+}
+
+
 
     // Mise à jour du contrat
     const updatedContrat = await Contrat.findByIdAndUpdate(
