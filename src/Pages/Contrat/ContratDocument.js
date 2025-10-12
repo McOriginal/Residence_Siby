@@ -3,7 +3,7 @@ import html2pdf from 'html2pdf.js';
 
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-
+import { ToWords } from 'to-words';
 import {
   companyAdresse,
   companyName,
@@ -53,6 +53,22 @@ export default function ContractDocument() {
       .save()
       .catch((err) => console.error('Error generating PDF:', err));
   };
+  const start = new Date(selectedContrat?.startDate);
+  const end = new Date(selectedContrat?.endDate);
+
+  // Différence en millisecondes
+  const diffInMs = end - start;
+
+  // Conversion en jours
+  const countDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  const toWords = new ToWords({
+    localeCode: 'fr-FR',
+    converterOptions: {
+      currency: false,
+      ignoreDecimal: false,
+    },
+  });
 
   return (
     <div className='page-content'>
@@ -99,40 +115,50 @@ export default function ContractDocument() {
               <div style={{ marginBottom: '2%' }}>
                 <RecuHeader />
               </div>
-              <p>
-                {' '}
-                <strong> Entre les soussignés : </strong> {companyName}
-              </p>
-              <p>
-                {' '}
-                <strong> Représenter par : </strong> {companyOwnerName}{' '}
-              </p>
-              <p>
-                <strong>Adresse: </strong>
-                {companyAdresse}{' '}
-              </p>
-              <p>
-                {' '}
-                <strong>Contact:</strong> {companyTel}{' '}
-              </p>
+              <div className='d-flex flex-nowrap justify-content-around align-items-center'>
+                <div>
+                  <p>
+                    {' '}
+                    <strong> Entre les soussignés : </strong> {companyName}
+                  </p>
+                  <p>
+                    {' '}
+                    <strong> Représenter par : </strong> {companyOwnerName}{' '}
+                  </p>
+                  <p>
+                    <strong>Adresse: </strong>
+                    {companyAdresse}{' '}
+                  </p>
+                  <p>
+                    {' '}
+                    <strong>Contact:</strong> {companyTel}{' '}
+                  </p>
+                </div>
 
-              <h5 className='my-2'>ET</h5>
+                <h5 className='my-2'>ET</h5>
 
-              <p>
-                <strong> Mr/Mme :</strong>{' '}
-                {capitalizeWords(
-                  selectedContrat?.client?.firstName +
-                    ' ' +
-                    selectedContrat?.client?.lastName
-                )}
-              </p>
-              <p>
-                <strong>
-                  {' '}
-                  Contact:{' '}
-                  {formatPhoneNumber(selectedContrat?.client?.phoneNumber)}{' '}
-                </strong>
-              </p>
+                <div>
+                  <p>
+                    <strong> Mr/Mme :</strong>{' '}
+                    {capitalizeWords(
+                      selectedContrat?.client?.firstName +
+                        ' ' +
+                        selectedContrat?.client?.lastName
+                    )}
+                  </p>
+                  <p>
+                    <strong> Contact: </strong>
+                    {formatPhoneNumber(
+                      selectedContrat?.client?.phoneNumber
+                    )}{' '}
+                  </p>
+                  <p>
+                    <strong> N° de Pièce: </strong>
+                    {formatPhoneNumber(selectedContrat?.client?.pieceNumber) ||
+                      '--------'}
+                  </p>
+                </div>
+              </div>
 
               <CardBody>
                 <h6 className='text-center'>
@@ -178,22 +204,9 @@ export default function ContractDocument() {
                   <p>
                     Le présent contrat est conclu pour une durée de:{' '}
                     <strong>
-                      {selectedContrat?.mois > 0 &&
-                        formatPrice(selectedContrat?.mois) + ' mois - '}{' '}
-                    </strong>{' '}
-                    <strong>
-                      {selectedContrat?.semaine > 0 &&
-                        formatPrice(selectedContrat?.semaine) +
-                          ' semaine - '}{' '}
-                    </strong>{' '}
-                    <strong>
-                      {selectedContrat?.jour > 0 &&
-                        formatPrice(selectedContrat?.jour) + ' jour - et '}{' '}
-                    </strong>{' '}
-                    <strong>
-                      {selectedContrat?.heur > 0 &&
-                        formatPrice(selectedContrat?.heure) + '  heure'}{' '}
-                    </strong>{' '}
+                      {countDays}
+                      {countDays > 1 ? ' jours' : ' jour'}
+                    </strong>
                   </p>
                   <p>
                     Il prendra effet à compter du :{' '}
@@ -275,13 +288,12 @@ export default function ContractDocument() {
                   <p>
                     {' '}
                     <strong>
-                      Somme en chiffres:{' '}
+                      Somme en Lettres:{' '}
                       <mark>
-                        {formatPrice(selectedContrat?.appartement?.heurePrice)}{' '}
-                        F
+                        {formatPrice(toWords.convert(selectedContrat?.amount))}{' '}
+                        F CFA
                       </mark>{' '}
                     </strong>{' '}
-                    par jour{' '}
                   </p>
                   <p>
                     {' '}
@@ -290,15 +302,16 @@ export default function ContractDocument() {
                       <mark>{formatPrice(selectedContrat?.amount)} F</mark>{' '}
                     </strong>{' '}
                   </p>
-                  {selectedContrat?.reduction > 0 && (
-                    <p>
-                      {' '}
-                      <strong>
-                        Avec une Remise de :{' '}
-                        <mark>{formatPrice(selectedContrat?.reduction)} F</mark>{' '}
-                      </strong>{' '}
-                    </p>
-                  )}
+
+                  <p>
+                    {' '}
+                    <strong>
+                      Avec une Remise de :{' '}
+                      <mark>
+                        {formatPrice(selectedContrat?.reduction || 0)} F
+                      </mark>{' '}
+                    </strong>{' '}
+                  </p>
                   {selectedContrat?.totalAmount > 0 && (
                     <p>
                       {' '}
@@ -433,7 +446,7 @@ export default function ContractDocument() {
                 </h6>
                 <div
                   className='d-flex justify-content-between align-items-center'
-                  style={{ margin: '15% auto' }}
+                  style={{ margin: '5px auto' }}
                 >
                   <h4> LE BAILLEUR</h4>
                   <h4> LE LOCATAIRE</h4>
