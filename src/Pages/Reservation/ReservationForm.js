@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   errorMessageAlert,
   successMessageAlert,
@@ -49,6 +49,8 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       semaine: reservationToEdit?.semaine || 0,
       mois: reservationToEdit?.mois || 0,
       rentalDate: reservationToEdit?.rentalDate.substring(0, 10) || undefined,
+      rentalEndDate:
+        reservationToEdit?.rentalEndDate.substring(0, 10) || undefined,
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -57,6 +59,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       semaine: Yup.number(),
       mois: Yup.number(),
       rentalDate: Yup.date().required('Ce champ est obligatoire'),
+      rentalEndDate: Yup.date().required('Ce champ est obligatoire'),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -110,6 +113,41 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       }, 10000);
     },
   });
+
+  // utiliser useEffet pour sélectionner automatique la date de fin lorsqu'on choisi la date de début et la durée
+  useEffect(() => {
+    if (validation.values.rentalDate) {
+      const startDate = new Date(validation.values.rentalDate);
+      let endDate = new Date(startDate);
+
+      if (validation.values.heure) {
+        endDate.setHours(
+          endDate.getHours() + parseInt(validation.values.heure)
+        );
+      }
+      if (validation.values.jour) {
+        endDate.setDate(endDate.getDate() + parseInt(validation.values.jour));
+      }
+      if (validation.values.semaine) {
+        endDate.setDate(
+          endDate.getDate() + parseInt(validation.values.semaine) * 7
+        );
+      }
+      if (validation.values.mois) {
+        endDate.setMonth(endDate.getMonth() + parseInt(validation.values.mois));
+      }
+
+      // Formater la date au format YYYY-MM-DD pour l'input de type date
+      const formattedEndDate = endDate.toISOString().substring(0, 10);
+      validation.setFieldValue('rentalEndDate', formattedEndDate);
+    }
+  }, [
+    validation.values.heure,
+    validation.values.jour,
+    validation.values.semaine,
+    validation.values.mois,
+    validation.values.rentalDate,
+  ]);
 
   return (
     <Form
@@ -279,7 +317,15 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
               min={new Date().toISOString().substring(0, 10)}
               className='form-control border-1 border-dark'
               id='rentalDate'
-              onChange={validation.handleChange}
+              onChange={(e) => {
+                validation.handleChange(e);
+                if (
+                  validation.values.rentalEndDate &&
+                  e.target.value > validation.values.rentalEndDate
+                ) {
+                  validation.setFieldValue('rentalEndDate', e.target.value);
+                }
+              }}
               onBlur={validation.handleBlur}
               value={validation.values.rentalDate || ''}
               invalid={
@@ -291,6 +337,37 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
             {validation.touched.rentalDate && validation.errors.rentalDate ? (
               <FormFeedback type='invalid'>
                 {validation.errors.rentalDate}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='rentalEndDate'>Fin de Reservation</Label>
+            <Input
+              name='rentalEndDate'
+              placeholder='Entrez la date de fin...'
+              type='date'
+              min={
+                validation.values.rentalDate ||
+                new Date().toISOString().substring(0, 10)
+              }
+              className='form-control border-1 border-dark'
+              id='rentalEndDate'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.rentalEndDate || ''}
+              invalid={
+                validation.touched.rentalEndDate &&
+                validation.errors.rentalEndDate
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.rentalEndDate &&
+            validation.errors.rentalEndDate ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.rentalEndDate}
               </FormFeedback>
             ) : null}
           </FormGroup>

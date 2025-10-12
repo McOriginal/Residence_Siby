@@ -152,7 +152,8 @@ export default function ReservationListe() {
                         >
                           <thead className='table-light'>
                             <tr className='text-center'>
-                              <th>Date de Reservation</th>
+                              <th>Début</th>
+                              <th>Fin</th>
                               <th>N° d'Appartement</th>
                               <th>Secteur</th>
                               <th>Client</th>
@@ -169,18 +170,28 @@ export default function ReservationListe() {
                           <tbody className='list form-check-all text-center'>
                             {filteredRental?.map((item) => (
                               <tr key={item?._id} className='text-center'>
+                                <td>
+                                  {new Date(
+                                    item?.rentalDate
+                                  ).toLocaleDateString('fr-Fr', {
+                                    weekday: 'short',
+                                    day: '2-digit',
+                                    month: 'numeric',
+                                    year: 'numeric',
+                                  })}
+                                </td>
                                 <td
                                   className={` text-light ${
-                                    new Date(item?.rentalDate) > new Date()
+                                    new Date(item?.rentalEndDate) > new Date()
                                       ? 'bg-warning'
-                                      : new Date(item?.rentalDate) ===
+                                      : new Date(item?.rentalEndDate) ===
                                         new Date()
                                       ? 'bg-success'
                                       : 'bg-danger'
                                   }`}
                                 >
                                   {new Date(
-                                    item?.rentalDate
+                                    item?.rentalEndDate
                                   ).toLocaleDateString('fr-Fr', {
                                     weekday: 'short',
                                     day: '2-digit',

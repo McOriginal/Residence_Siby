@@ -189,16 +189,19 @@ export default function AppartementListe() {
                                     {capitalizeWords(appart?.secteur?.adresse)}
                                   </td>
                                   <td>
-                                    {formatPrice(appart?.heurePrice)} {' F '}
+                                    {formatPrice(appart?.heurePrice || 0)}{' '}
+                                    {' F '}
                                   </td>
                                   <td>
-                                    {formatPrice(appart?.dayPrice)} {' F '}
+                                    {formatPrice(appart?.dayPrice || 0)} {' F '}
                                   </td>
                                   <td>
-                                    {formatPrice(appart?.weekPrice)} {' F '}
+                                    {formatPrice(appart?.weekPrice || 0)}{' '}
+                                    {' F '}
                                   </td>
                                   <td>
-                                    {formatPrice(appart?.mounthPrice)} {' F '}
+                                    {formatPrice(appart?.mounthPrice || 0)}{' '}
+                                    {' F '}
                                   </td>
 
                                   <td>

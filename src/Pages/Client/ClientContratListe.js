@@ -34,6 +34,7 @@ import {
   HomeButton,
 } from '../components/NavigationButton';
 import ReservationListe from '../Reservation/ReservationListe';
+import ActiveSecteur from '../Secteurs/ActiveSecteur';
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -91,6 +92,7 @@ export default function ClientContratListe() {
 
   return (
     <React.Fragment>
+      <ActiveSecteur />
       <div className='page-content'>
         <Container fluid>
           <Breadcrumbs title='Client' breadcrumbItem='List des Contrat' />
@@ -134,7 +136,7 @@ export default function ClientContratListe() {
                               tog_form_modal();
                             }}
                           >
-                            <i className='fas fa-file align-center me-1'></i>{' '}
+                            <i className='fas fa-plus align-center me-1'></i>{' '}
                             Nouveau Contrat
                           </Button>
                         </div>

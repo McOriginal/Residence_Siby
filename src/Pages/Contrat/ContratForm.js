@@ -162,6 +162,8 @@ const ContratForm = ({
     },
   });
 
+  // utiliser useEffet pour sélectionner automatique la date de fin lorsqu'on choisi la date de début et la durée
+
   useEffect(() => {
     const selectedAppartement = validation.values.appartement;
 
@@ -189,6 +191,16 @@ const ContratForm = ({
     const sumReduction = validation.values.reduction || 0;
     validation.setFieldValue('amount', Number(total));
     validation.setFieldValue('totalAmount', Number(total - sumReduction));
+
+    // Calcul de la date de fin
+    const startDate = validation.values.startDate;
+    if (!startDate) return;
+    const start = new Date(startDate);
+    let end = new Date(start);
+    end.setHours(end.getHours() + hValue);
+    end.setDate(end.getDate() + dayValue + weekValue * 7 + mounthValue * 30);
+    const endDateFormatted = end.toISOString().substring(0, 10);
+    validation.setFieldValue('endDate', endDateFormatted);
   }, [
     appartment,
     validation.values.reduction,
@@ -197,6 +209,7 @@ const ContratForm = ({
     validation.values.jour,
     validation.values.semaine,
     validation.values.mois,
+    validation.values.startDate,
   ]);
 
   const date = new Date();
@@ -395,7 +408,7 @@ const ContratForm = ({
                 }
               }}
               onBlur={validation.handleBlur}
-              value={validation.values.startDate || ''}
+              value={validation.values.startDate}
               invalid={
                 validation.touched.startDate && validation.errors.startDate
                   ? true
