@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/UserController');
+const contratController = require('../controller/ContratController');
 
 // Enregistrer un nouvel utilisateur
 router.post(
@@ -22,7 +23,7 @@ router.post('/sendVerifyCodePassword', userController.sendVerifyCodePassword);
 router.put('/resetPassword', userController.resetPassword);
 
 // Get All Users
-router.get('/getAllUsers', userController.getAllUsers);
+router.get('/getAllUsers', contratController.refrechContrats,userController.getAllUsers);
 
 // Get One User
 router.get('/getOneUser/:id', userController.getOneUser);

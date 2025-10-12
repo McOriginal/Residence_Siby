@@ -93,20 +93,6 @@ exports.getAllAppartements = async (req, res) => {
       .populate('user')
       .sort({ appartementNumber: 1 });
 
-      const contrats = await Contrat.find();
-      // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
-      // Alors on met isAvailable à true pour l'appartement concerné
-      for (const contrat of contrats) {
-        if (contrat.endDate < new Date()) {
-          await Contrat.findByIdAndUpdate(contrat._id,{statut: false});
-         // Mettre l'appartement en indisponible
-   await Appartement.findByIdAndUpdate(
-    contrat.appartement?._id,
-    { isAvailable: true },
-    { new: true }
-  );
-        }
-      }
   
     return res.status(200).json(appartements);
   } catch (err) {

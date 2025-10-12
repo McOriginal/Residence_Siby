@@ -88,20 +88,7 @@ exports.login = async (req, res) => {
       });
     }
 
- 
-    const contrats = await Contrat.find();
-    // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
-    // Alors on met isAvailable à true pour l'appartement concerné
-    for (const contrat of contrats) {
-      if (contrat.endDate < new Date()) {
-       // Mettre l'appartement en indisponible
- await Appartement.findByIdAndUpdate(
-  contrat.appartement._id,
-  { isAvailable: true },
-  { new: true }
-);
-      }
-    }
+
     // Retourner le token et les infos utilisateur
     res.status(200).json({
       message: 'Connexion réussie.',

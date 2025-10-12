@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/UserController');
-
+const contratController = require('../controller/ContratController');
 const secteurController = require('../controller/SecteurController');
 
 // Créer un Produit
@@ -12,7 +12,7 @@ router.post(
 );
 
 // Afficher une toutes les Secteur
-router.get('/getAllSecteurs', secteurController.getAllSecteurs);
+router.get('/getAllSecteurs', contratController.refrechContrats,secteurController.getAllSecteurs);
 
 
 

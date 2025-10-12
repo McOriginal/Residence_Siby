@@ -10,6 +10,10 @@ const clientSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pieceNumber: {
+      type: String,
+      required: true,
+    },
 
     phoneNumber: {
       type: Number,

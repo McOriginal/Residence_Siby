@@ -192,6 +192,9 @@ exports.reloadContrat = async (req, res) => {
   session.startTransaction()
   try {
     
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+    
     
     const oldContrat = await Contrat.findById(req.body.contrat).session(session);
 
@@ -203,12 +206,41 @@ exports.reloadContrat = async (req, res) => {
 
  
     const appartement = await Appartement.findById(req.body.appartement).session(session)
+
+  
  
-    if(appartement.isAvailable === false){
+    if(appartement && appartement.isAvailable === false){
       await session.abortTransaction()
       session.endSession()
       return res.status(400).json({message: "Cette Appartement n'est pas disponible"})
     }
+
+
+
+// ----------------------------------------------
+// ---------- RENTAL
+// ---------------------------------------------- 
+ 
+
+  
+const existingRental = await Rental.findOne({
+  appartement: req.body.appartement,
+  $or:[
+    {
+      rentalDate: { $lte:endDate},
+      rentalEndDate: {$gte: startDate},
+    }
+  ]
+}).session(session);
+
+
+if(existingRental){
+  await   session.abortTransaction()
+  session.endSession()
+  return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
+}
+
+
   
       const newContrat = await Contrat.create(
         [
@@ -221,13 +253,12 @@ exports.reloadContrat = async (req, res) => {
     {session},
   );
      // Mettre l'appartement en indisponible
-     await Appartement.findByIdAndUpdate(
-      appartement,
+    await Appartement.findByIdAndUpdate(
+      req.body.appartement,
       { isAvailable: false },
       { new: true,session }
     );
  
-  
     await session.commitTransaction()
     session.endSession()
     return res.status(201).json(newContrat);
@@ -301,16 +332,10 @@ exports.getAllContrat = async (req, res) => {
       .populate('appartement')
       .populate({path:'appartement', populate:'secteur'})
       .populate('user')
-      .sort({ startDate: -1 })
+      .sort({ startDate: -1, statut:-1 })
       .session(session);
 
 
-      for(const cont of contrat){
-        if(new Date(cont.endDate).toISOString().substring(0,10) === new Date().toISOString().substring(0,10)){
-          
-          await Contrat.findByIdAndUpdate(cont._id,{statut: false},{session})
-        }
-      }
 
       await session.commitTransaction()
       session.endSession()
@@ -330,16 +355,13 @@ exports.getContrat = async (req, res) => {
     .populate('appartement')
       .populate({path:'appartement', populate:'secteur'})
     .populate('user');
+
+
     if (!contrat)
       return res
         .status(404)
         .json({ status: 'error', message: 'contrat non trouvé' });
 
-
-        if(new Date(contrat.endDate).toISOString().substring(0,10) === new Date().toISOString().substring(0,10)){
-          
-          await Contrat.findByIdAndUpdate(req.params.id,{statut: false},{session})
-        }
 
     res.status(200).json(contrat);
   } catch (err) {
@@ -379,19 +401,42 @@ session.endSession();
   }
 };
 
-// ############### DELETE ALL STUDENTS ############################
-exports.deleteAllContrats = async (req, res) => {
-  try {
-    await Contrat.deleteMany({}); // Supprime tous les documents
 
-    return res.status(200).json({
-      status: 'success',
-      message: 'Tous les Contrat ont été supprimés avec succès',
-    });
+
+exports.refrechContrats = async (req, res, next) => {
+  try {
+    const contrats = await Contrat.find()
+    .populate('client')
+      .populate('appartement')
+      .populate({path:'appartement', populate:'secteur'})
+      .populate('user');
+    // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
+    // Alors on met isAvailable à true pour l'appartement concerné
+    for (const contrat of contrats) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // ignore l'heure pour comparer juste les jours
+    
+      const endDate = new Date(contrat.endDate);
+      endDate.setHours(0, 0, 0, 0);
+    
+      if (contrat.statut && endDate <= today) {
+
+        // Mettre le Statut de Contrat à FIN "false"
+        await Contrat.findByIdAndUpdate(contrat._id,{statut: false});
+
+       // Mettre l'appartement Disponible
+ await Appartement.findByIdAndUpdate(
+  contrat.appartement._id,
+  { isAvailable: true },
+  { new: true }
+);
+      }
+    }
+   next()
   } catch (e) {
     return res.status(500).json({
       status: 'error',
-      message: 'Erreur lors de la suppression des Clients',
+      message: "Erreur lors de la l'actualisation des Clients",
       error: e.message,
     });
   }

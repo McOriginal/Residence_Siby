@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/UserController');
-
+const contratController = require('../controller/ContratController');
 const appartement = require('../controller/AppartementController');
 
 // Créer un Produit
@@ -12,7 +12,7 @@ router.post(
 );
 
 // Afficher une toutes les Appartement
-router.get('/getAllAppartements', appartement.getAllAppartements);
+router.get('/getAllAppartements',contratController.refrechContrats ,appartement.getAllAppartements);
 
 
 

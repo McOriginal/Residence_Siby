@@ -92,19 +92,7 @@ exports.getAllSecteurs = async (req, res) => {
       .populate('user')
       .sort({ secteurNumber: 1 });
 
-      const contrats = await Contrat.find();
-      // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
-      // Alors on met isAvailable à true pour l'appartement concerné
-      for (const contrat of contrats) {
-        if (contrat.endDate < new Date()) {
-         // Mettre l'appartement en indisponible
-   await Appartement.findByIdAndUpdate(
-    contrat.appartement._id,
-    { isAvailable: true },
-    { new: true }
-  );
-        }
-      }
+    
     return res.status(200).json(secteurs);
   } catch (e) {
     return res.status(404).json({ e });
@@ -124,19 +112,6 @@ exports.getSecteur = async (req, res) => {
         .json({ status: 'error', message: 'Secteur non trouvé' });
 
 
-        const contrats = await Contrat.find();
-        // On verifie pour chaque CONTRAT si endDate est Inférieure à la date actuelle
-        // Alors on met isAvailable à true pour l'appartement concerné
-        for (const contrat of contrats) {
-          if (contrat.endDate < new Date()) {
-           // Mettre l'appartement en indisponible
-     await Appartement.findByIdAndUpdate(
-      contrat.appartement._id,
-      { isAvailable: true },
-      { new: true }
-    );
-          }
-        }
 
     res.status(200).json(secteur);
   } catch (err) {

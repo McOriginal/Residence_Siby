@@ -21,7 +21,7 @@ router.post(
 router.post('/stopeContrat',contratController.stopContrat);
 
 // Afficher toutes les Contrats
-router.get('/getAllContrats', contratController.getAllContrat);
+router.get('/getAllContrats',contratController.refrechContrats ,contratController.getAllContrat);
 
 // Afficher un seul Contrat
 router.get('/getContrat/:id', contratController.getContrat);
@@ -35,10 +35,6 @@ router.delete(
   contratController.deleteContrat
 );
 
-// Supprimer toutes les Contrat
-router.delete(
-  '/deleteAllContrat',
-  contratController.deleteAllContrats
-);
+
 
 module.exports = router;
