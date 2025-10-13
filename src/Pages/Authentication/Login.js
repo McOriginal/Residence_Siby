@@ -84,15 +84,14 @@ const Login = () => {
                 return errorMessageAlert('Rôle utilisateur introuvable.');
               }
 
-              // navigate('/initial_page');
-              window.location.reload();
+              navigate('/initial_page');
+              // window.location.reload();
 
               // -----------------------
             } catch (err) {
               errorMessageAlert('Erreur de redirection.');
             }
           }, 2000);
-          navigate('/initial_page');
         },
         onError: (error) => {
           setIsLoading(false);
