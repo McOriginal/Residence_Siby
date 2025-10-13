@@ -140,6 +140,12 @@ exports.deleteClient = async (req, res) => {
     // Avant de Supprimer le CLIENT on vérrifie si il n'y pas des CONTRATS lié à ce CLIENT
     const clientContrat = await Contrat.find({client:req.params.id}).session(session);
 
+    if(!clientContrat){
+      await session.abortTransaction()
+      session.endSession();
+      return res.status(404).json({message: "Aucun contrat disponible"})
+    }
+
     if(clientContrat){
     
     // SI il y'a des CONTRAT alors on Supprime tous les CONTRAT liés
