@@ -149,7 +149,7 @@ export default function Secteur() {
                                 onClick={() => {
                                   deleteButton(
                                     item?._id,
-                                    item?.name,
+                                    item?.adresse,
                                     deleteSecteur
                                   );
                                 }}

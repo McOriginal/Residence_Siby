@@ -210,6 +210,9 @@ const ContratForm = ({
     validation.values.semaine,
     validation.values.mois,
     validation.values.startDate,
+    validation.values.amount,
+    validation.values.totalAmount,
+    validation.values.reduction,
   ]);
 
   const date = new Date();
