@@ -21,15 +21,21 @@ export default function SelectedSecteur() {
             <HomeButton />
           </div>
           <Row>
-            <Col sm={12} style={{ height: '700px' }}>
+            <Col sm={12} style={{ height: '700px', overflowY: 'scroll' }}>
               <AppartementListe />
             </Col>
 
-            <Col sm={12} style={{ height: '400px', margin: '10% 0' }}>
+            <Col
+              sm={12}
+              style={{ height: '400px', overflowY: 'scroll', margin: '10% 0' }}
+            >
               <SecteurContrat />
             </Col>
 
-            <Col sm={12} style={{ height: '400px', margin: '10% 0' }}>
+            <Col
+              sm={12}
+              style={{ height: '400px', overflowY: 'scroll', margin: '10% 0' }}
+            >
               <SecteurReservationListe />
             </Col>
 
