@@ -113,6 +113,7 @@ export default function UpdateUserProfile({ selectedUser, tog_form_modal }) {
             >
               <option value=''>Sélectionner un rôle</option>
               <option value='admin'>Administrateur</option>
+              <option value='user'>Utilisateur</option>
             </Input>
             {validation.touched.role && validation.errors.role ? (
               <FormFeedback type='invalid'>

@@ -16,17 +16,13 @@ import {
 } from '../../Api/queriesAppartement';
 import FormModal from '../components/FormModal';
 import AppartementForm from './AppartementForm';
-import BackButton from '../components/NavigationButton';
 import { useOneSecteur } from '../../Api/queriesSecteurs';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function AppartementListe() {
   const secteur = useParams();
   // Recuperer la Liste des Appartement
-  const {
-    data: appartementData,
-    isLoading,
-    error,
-  } = useAllAppartement(secteur.id);
+  const { data: appartementData, isLoading, error } = useAllAppartement();
   const {
     data: selectedSecteurData,
     isLoading: secteurLoading,
@@ -87,17 +83,19 @@ export default function AppartementListe() {
                   </h5>
                 )}
                 <CardBody>
-                  <Col>
-                    <Button
-                      color='info d-flex px-4 gap-2 justify-content-center align-items-center'
-                      onClick={() => {
-                        setAppartementToUpdate(null);
-                        tog_form_modal();
-                      }}
-                    >
-                      <i className='fas fa-plus'></i> Ajouter
-                    </Button>
-                  </Col>
+                  {connectedUserRole === 'admin' && (
+                    <Col>
+                      <Button
+                        color='info d-flex px-4 gap-2 justify-content-center align-items-center'
+                        onClick={() => {
+                          setAppartementToUpdate(null);
+                          tog_form_modal();
+                        }}
+                      >
+                        <i className='fas fa-plus'></i> Ajouter
+                      </Button>
+                    </Col>
+                  )}
                   <Row className='d-flex justify-content-between align-items-center gap-4 mb-3'>
                     <Col>
                       {filterAppartement?.length > 0 && (
@@ -210,48 +208,50 @@ export default function AppartementListe() {
                                     )}
                                   </td>
 
-                                  <td>
-                                    <div className='d-flex gap-2'>
-                                      {isDeleting && <LoadingSpiner />}{' '}
-                                      {!isDeleting && (
-                                        <div className='remove'>
-                                          <button
-                                            className='btn btn-sm btn-warning remove-item-btn'
-                                            data-bs-toggle='modal'
-                                            data-bs-target='#deleteRecordModal'
-                                            onClick={(e) => {
-                                              setAppartementToUpdate(appart);
-                                              setFormModalTitle(
-                                                'Modifier le Donnée'
-                                              );
-                                              tog_form_modal();
-                                              e.stopPropagation();
-                                            }}
-                                          >
-                                            Modifier
-                                          </button>
-                                        </div>
-                                      )}
-                                      {!isDeleting && (
-                                        <div className='remove'>
-                                          <button
-                                            className='btn btn-sm btn-danger remove-item-btn'
-                                            data-bs-toggle='modal'
-                                            data-bs-target='#deleteRecordModal'
-                                            onClick={() => {
-                                              deleteButton(
-                                                appart?._id,
-                                                appart?.name,
-                                                deleteAppartement
-                                              );
-                                            }}
-                                          >
-                                            <i className='ri-delete-bin-fill text-white'></i>
-                                          </button>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </td>
+                                  {connectedUserRole === 'admin' && (
+                                    <td>
+                                      <div className='d-flex gap-2'>
+                                        {isDeleting && <LoadingSpiner />}{' '}
+                                        {!isDeleting && (
+                                          <div className='remove'>
+                                            <button
+                                              className='btn btn-sm btn-warning remove-item-btn'
+                                              data-bs-toggle='modal'
+                                              data-bs-target='#deleteRecordModal'
+                                              onClick={(e) => {
+                                                setAppartementToUpdate(appart);
+                                                setFormModalTitle(
+                                                  'Modifier le Donnée'
+                                                );
+                                                tog_form_modal();
+                                                e.stopPropagation();
+                                              }}
+                                            >
+                                              Modifier
+                                            </button>
+                                          </div>
+                                        )}
+                                        {!isDeleting && (
+                                          <div className='remove'>
+                                            <button
+                                              className='btn btn-sm btn-danger remove-item-btn'
+                                              data-bs-toggle='modal'
+                                              data-bs-target='#deleteRecordModal'
+                                              onClick={() => {
+                                                deleteButton(
+                                                  appart?._id,
+                                                  appart?.name,
+                                                  deleteAppartement
+                                                );
+                                              }}
+                                            >
+                                              <i className='ri-delete-bin-fill text-white'></i>
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </td>
+                                  )}
                                 </tr>
                               ))}
                             </tbody>

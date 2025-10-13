@@ -19,6 +19,7 @@ import {
   HomeButton,
 } from '../components/NavigationButton';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function ClientListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -82,22 +83,24 @@ export default function ClientListe() {
                 <CardBody>
                   <div id='clientsList'>
                     <Row className='g-4 mb-3'>
-                      <Col md={4} className='col-sm-auto'>
-                        <div className='d-flex gap-1'>
-                          <Button
-                            color='info'
-                            className='add-btn'
-                            id='create-btn'
-                            onClick={() => {
-                              setClientToUpdate(null);
-                              tog_form_modal();
-                            }}
-                          >
-                            <i className='fas fa-user align-center me-1'></i>{' '}
-                            Ajouter un Client
-                          </Button>
-                        </div>
-                      </Col>
+                      {connectedUserRole === 'admin' && (
+                        <Col md={4} className='col-sm-auto'>
+                          <div className='d-flex gap-1'>
+                            <Button
+                              color='info'
+                              className='add-btn'
+                              id='create-btn'
+                              onClick={() => {
+                                setClientToUpdate(null);
+                                tog_form_modal();
+                              }}
+                            >
+                              <i className='fas fa-user align-center me-1'></i>{' '}
+                              Ajouter un Client
+                            </Button>
+                          </div>
+                        </Col>
+                      )}
                       <Col md={4}>
                         <p className='text-center font-size-15 mt-2'>
                           Total Clients:{' '}
@@ -188,43 +191,45 @@ export default function ClientListe() {
 
                                 <td>{formatPhoneNumber(client.phoneNumber)}</td>
 
-                                <td className='text-center'>
-                                  <div className='d-flex justify-content-center align-items-center gap-2'>
-                                    <div>
-                                      <button
-                                        className='btn btn-sm btn-success edit-item-btn'
-                                        onClick={() => {
-                                          setFormModalTitle(
-                                            'Modifier les données'
-                                          );
-                                          setClientToUpdate(client);
-                                          tog_form_modal();
-                                        }}
-                                      >
-                                        <i className='ri-pencil-fill text-white'></i>
-                                      </button>
-                                    </div>
-                                    {isDeleting && <LoadingSpiner />}
-                                    {!isDeleting && (
-                                      <div className='remove'>
+                                {connectedUserRole === 'admin' && (
+                                  <td className='text-center'>
+                                    <div className='d-flex justify-content-center align-items-center gap-2'>
+                                      <div>
                                         <button
-                                          className='btn btn-sm btn-danger remove-item-btn'
+                                          className='btn btn-sm btn-success edit-item-btn'
                                           onClick={() => {
-                                            deleteButton(
-                                              client._id,
-                                              client.firstName +
-                                                ' ' +
-                                                client.lastName,
-                                              deleteClient
+                                            setFormModalTitle(
+                                              'Modifier les données'
                                             );
+                                            setClientToUpdate(client);
+                                            tog_form_modal();
                                           }}
                                         >
-                                          <i className='ri-delete-bin-fill text-white'></i>
+                                          <i className='ri-pencil-fill text-white'></i>
                                         </button>
                                       </div>
-                                    )}
-                                  </div>
-                                </td>
+                                      {isDeleting && <LoadingSpiner />}
+                                      {!isDeleting && (
+                                        <div className='remove'>
+                                          <button
+                                            className='btn btn-sm btn-danger remove-item-btn'
+                                            onClick={() => {
+                                              deleteButton(
+                                                client._id,
+                                                client.firstName +
+                                                  ' ' +
+                                                  client.lastName,
+                                                deleteClient
+                                              );
+                                            }}
+                                          >
+                                            <i className='ri-delete-bin-fill text-white'></i>
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </td>
+                                )}
                               </tr>
                             ))}
                           </tbody>

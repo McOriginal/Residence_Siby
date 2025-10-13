@@ -26,6 +26,7 @@ import SelectedSecteur from '../Pages/Secteurs/SelectedSecteur.js';
 import AllAppartements from '../Pages/Appartements/AllAppartements.js';
 import InitialPage from '../Pages/InitialPage/InitialPage.js';
 import ReservationListe from '../Pages/Reservation/ReservationListe.js';
+import Bilans from '../Pages/Bilans/Bilans.js';
 
 // Routes pour les ADMINS
 const authProtectedRoutes = [
@@ -54,7 +55,7 @@ const authProtectedRoutes = [
   { path: '/usersProfileListe', component: <UsersProfilesListe /> },
 
   // Raports & Bilans
-  // { path: '/bilans', component: <Bilans /> },
+  { path: '/bilans', component: <Bilans /> },
 
   // --------------------------------------------------------
 ];

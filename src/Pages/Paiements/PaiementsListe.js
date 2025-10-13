@@ -15,9 +15,11 @@ import {
   HomeButton,
 } from '../components/NavigationButton';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
+import { useAllContrat } from '../../Api/queriesContrat';
 
 export default function PaiementsListe() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
+  const { data: contrats } = useAllContrat();
   const [selectedPaiement, setSelectedPaiement] = useState(false);
   const [selectedPaiementTotalPaye, setSelectedPaiementTotalPaye] = useState(0);
   const [show_modal, setShow_modal] = useState(false);
@@ -38,8 +40,8 @@ export default function PaiementsListe() {
   }, []);
 
   // Total de commandes
-  const sumTotalAmount = filterPaiement?.reduce((curr, item) => {
-    return (curr += item?.contrat?.totalAmount);
+  const sumTotalAmount = contrats?.reduce((curr, item) => {
+    return (curr += item?.totalAmount);
   }, 0);
 
   // Total Payés
@@ -81,19 +83,19 @@ export default function PaiementsListe() {
                 <CardBody>
                   <div id='paiementsList'>
                     <h6 className='text-end'>
-                      Montant Total:{' '}
+                      Montant Total des Contrats:{' '}
                       <span className='text-info'>
                         {formatPrice(sumTotalAmount || 0)} F{' '}
                       </span>{' '}
                     </h6>
                     <h6 className='text-end'>
-                      Total Payé:{' '}
+                      Total Net Payés:{' '}
                       <span className='text-success'>
                         {formatPrice(sumTotalPaye || 0)} F{' '}
                       </span>{' '}
                     </h6>
                     <h6 className='text-end'>
-                      Reliquat:{' '}
+                      Total Reliquat:{' '}
                       <span className='text-danger'>
                         {formatPrice(sumTotalReliqua || 0)} F{' '}
                       </span>{' '}

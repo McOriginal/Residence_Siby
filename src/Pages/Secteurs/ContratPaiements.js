@@ -9,6 +9,7 @@ import {
 import { useAllPaiements } from '../../Api/queriesPaiement';
 import ReçuPaiement from '../Paiements/ReçuPaiement';
 import { useParams } from 'react-router-dom';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function ContratPaiements() {
   const param = useParams();
@@ -152,24 +153,28 @@ export default function ContratPaiements() {
                                     {' F '}
                                   </td>
 
-                                  <td>
-                                    <div className='d-flex gap-2'>
-                                      <div>
-                                        <button
-                                          className='btn btn-sm btn-secondary show-item-btn'
-                                          onClick={() => {
-                                            setSelectedPaiement(paiement?._id);
-                                            setSelectedPaiementTotalPaye(
-                                              paiement?.totalPaye
-                                            );
-                                            tog_show_modal();
-                                          }}
-                                        >
-                                          <i className='bx bx-show align-center text-white'></i>
-                                        </button>
+                                  {connectedUserRole === 'admin' && (
+                                    <td>
+                                      <div className='d-flex gap-2'>
+                                        <div>
+                                          <button
+                                            className='btn btn-sm btn-secondary show-item-btn'
+                                            onClick={() => {
+                                              setSelectedPaiement(
+                                                paiement?._id
+                                              );
+                                              setSelectedPaiementTotalPaye(
+                                                paiement?.totalPaye
+                                              );
+                                              tog_show_modal();
+                                            }}
+                                          >
+                                            <i className='bx bx-show align-center text-white'></i>
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </td>
+                                    </td>
+                                  )}
                                 </tr>
                               ))}
                           </tbody>

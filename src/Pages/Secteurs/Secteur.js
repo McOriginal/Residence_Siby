@@ -21,6 +21,7 @@ import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 import { deleteButton } from '../components/AlerteModal';
 import { useNavigate } from 'react-router-dom';
 import { useAllAppartement } from '../../Api/queriesAppartement';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function Secteur() {
   const { logout } = useContext(AuthContext);
@@ -122,42 +123,44 @@ export default function Secteur() {
                           top: 2,
                         }}
                       >
-                        <UncontrolledDropdown className='dropdown d-inline-block'>
-                          <DropdownToggle
-                            className='btn btn-soft-secondary btn-sm'
-                            tag='button'
-                          >
-                            <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
-                          </DropdownToggle>
-                          <DropdownMenu className='dropdown-menu-end'>
-                            <DropdownItem
-                              className='edit-item-btn  text-secondary'
-                              onClick={() => {
-                                setFormModalTitle('Modifier les données');
-                                setSecteurToUpdate(item);
-                                tog_form_modal();
-                              }}
+                        {connectedUserRole === 'admin' && (
+                          <UncontrolledDropdown className='dropdown d-inline-block'>
+                            <DropdownToggle
+                              className='btn btn-soft-secondary btn-sm'
+                              tag='button'
                             >
-                              <i className='ri-pencil-fill align-bottom me-2 '></i>
-                              Modifier
-                            </DropdownItem>
+                              <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
+                            </DropdownToggle>
+                            <DropdownMenu className='dropdown-menu-end'>
+                              <DropdownItem
+                                className='edit-item-btn  text-secondary'
+                                onClick={() => {
+                                  setFormModalTitle('Modifier les données');
+                                  setSecteurToUpdate(item);
+                                  tog_form_modal();
+                                }}
+                              >
+                                <i className='ri-pencil-fill align-bottom me-2 '></i>
+                                Modifier
+                              </DropdownItem>
 
-                            <DropdownItem
-                              className='remove-item-btn text-danger '
-                              onClick={() => {
-                                deleteButton(
-                                  item?._id,
-                                  item?.name,
-                                  deleteSecteur
-                                );
-                              }}
-                            >
-                              {' '}
-                              <i className='ri-delete-bin-fill align-bottom me-2 '></i>{' '}
-                              Supprimer{' '}
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
+                              <DropdownItem
+                                className='remove-item-btn text-danger '
+                                onClick={() => {
+                                  deleteButton(
+                                    item?._id,
+                                    item?.name,
+                                    deleteSecteur
+                                  );
+                                }}
+                              >
+                                {' '}
+                                <i className='ri-delete-bin-fill align-bottom me-2 '></i>{' '}
+                                Supprimer{' '}
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
+                        )}
                       </div>
                       <h5 className='text-light'>
                         Secteur N° {item.secteurNumber}

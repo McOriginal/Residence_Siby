@@ -6,6 +6,7 @@ import LoadingSpiner from '../components/LoadingSpiner';
 import FormModal from '../components/FormModal';
 import UpdateUserProfile from './UpdateUserProfile';
 import { BackButton } from '../components/NavigationButton';
+import { connectedUserRole } from './userInfos';
 
 export default function UsersProfilesListe() {
   document.title = 'Liste des Profiles';
@@ -78,28 +79,30 @@ export default function UsersProfilesListe() {
                               ? 'Administrateur'
                               : 'Utilisateur'}
                           </td>
-                          <td>
-                            <button
-                              onClick={() =>
-                                navigate(`/userProfileDetails/${user._id}`)
-                              }
-                              className='btn btn-info btn-sm mx-1'
-                            >
-                              Détails
-                            </button>
-                            {user.email !==
-                              'cissemohamedbusiness@gmail.com' && (
+                          {connectedUserRole === 'admin' && (
+                            <td>
                               <button
-                                onClick={() => {
-                                  setUser(user);
-                                  tog_form_modal();
-                                }}
-                                className='btn btn-warning btn-sm mx-1'
+                                onClick={() =>
+                                  navigate(`/userProfileDetails/${user._id}`)
+                                }
+                                className='btn btn-info btn-sm mx-1'
                               >
-                                Modifier
+                                Détails
                               </button>
-                            )}
-                          </td>
+                              {user.email !==
+                                'cissemohamedbusiness@gmail.com' && (
+                                <button
+                                  onClick={() => {
+                                    setUser(user);
+                                    tog_form_modal();
+                                  }}
+                                  className='btn btn-warning btn-sm mx-1'
+                                >
+                                  Modifier
+                                </button>
+                              )}
+                            </td>
+                          )}
                         </tr>
                       ))}
                   </tbody>

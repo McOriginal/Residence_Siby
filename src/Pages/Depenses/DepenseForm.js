@@ -17,6 +17,8 @@ import {
 import LoadingSpiner from '../components/LoadingSpiner';
 import { useCreateDepense, useUpdateDepense } from '../../Api/queriesDepense';
 import { useState } from 'react';
+import { useAllAppartement } from '../../Api/queriesAppartement';
+import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 
 const DepenseForm = ({ depenseToEdit, tog_form_modal }) => {
   // Depense Query pour créer la Depense
@@ -27,17 +29,33 @@ const DepenseForm = ({ depenseToEdit, tog_form_modal }) => {
   // State pour gérer le chargement
   const [isLoading, setIsLoading] = useState(false);
 
+  const selectedSecteur = localStorage.getItem('selectedSecteur');
+  const secteur = JSON.parse(selectedSecteur);
+
+  const {
+    data: appartementData,
+    isLoading: loadingAppartement,
+    error: appartementError,
+  } = useAllAppartement();
+
+  const filterAppartement = appartementData?.filter(
+    (item) => item?.secteur?._id === secteur?._id
+  );
+
   // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
+      secteur: depenseToEdit?.secteur?._id || secteur?._id,
+      appartement: depenseToEdit?.appartement?._id || '',
       motifDepense: depenseToEdit?.motifDepense || '',
       totalAmount: depenseToEdit?.totalAmount || undefined,
       dateOfDepense: depenseToEdit?.dateOfDepense?.substring(0, 10) || '',
     },
     validationSchema: Yup.object({
+      appartement: Yup.string().required('Ce champ est obligatoire'),
       motifDepense: Yup.string().required('Ce champ est obligatoire'),
       totalAmount: Yup.number().required('Ce champ est obligatoire'),
       dateOfDepense: Yup.string().required('Ce champ est obligatoire'),
@@ -74,22 +92,25 @@ const DepenseForm = ({ depenseToEdit, tog_form_modal }) => {
 
       // Sinon on créer un nouveau étudiant
       else {
-        createDepense(values, {
-          onSuccess: () => {
-            successMessageAlert('Depense enregistrée avec succès');
-            setIsLoading(false);
-            resetForm();
-            tog_form_modal();
-          },
-          onError: (err) => {
-            const errorMessage =
-              err?.response?.data?.message ||
-              err?.message ||
-              "Oh Oh ! une erreur est survenu lors de l'enregistrement";
-            errorMessageAlert(errorMessage);
-            setIsLoading(false);
-          },
-        });
+        createDepense(
+          { secteur: secteur?._id, ...values },
+          {
+            onSuccess: () => {
+              successMessageAlert('Depense enregistrée avec succès');
+              setIsLoading(false);
+              resetForm();
+              tog_form_modal();
+            },
+            onError: (err) => {
+              const errorMessage =
+                err?.response?.data?.message ||
+                err?.message ||
+                "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+              errorMessageAlert(errorMessage);
+              setIsLoading(false);
+            },
+          }
+        );
       }
       setTimeout(() => {
         if (isLoading) {
@@ -109,13 +130,67 @@ const DepenseForm = ({ depenseToEdit, tog_form_modal }) => {
       }}
     >
       <Row>
+        {loadingAppartement && <LoadingSpiner />}
+        {!loadingAppartement &&
+          appartementError &&
+          filterAppartement?.length === 0 && (
+            <h6 className='text-center text-warning'>
+              Aucun Appartement dans ce Secteur:{' '}
+              {capitalizeWords(secteur?.adresse)}
+            </h6>
+          )}
+        {!loadingAppartement &&
+          !appartementError &&
+          filterAppartement?.length > 0 && (
+            <Col md='12'>
+              <FormGroup className='mb-3'>
+                <Label htmlFor='appartement'>Appartement</Label>
+
+                <Input
+                  name='appartement'
+                  placeholder="Selectionner l'appartement"
+                  type='select'
+                  className='form-control border-1 border-dark'
+                  border-1
+                  border-dark
+                  id='appartement'
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.appartement || ''}
+                  invalid={
+                    validation.touched.appartement &&
+                    validation.errors.appartement
+                      ? true
+                      : false
+                  }
+                >
+                  <option value=''>Sélectionner un Appartement</option>
+
+                  {filterAppartement?.map((item) => (
+                    <option key={item?._id} value={item?._id}>
+                      {formatPrice(item?.appartementNumber)}{' '}
+                    </option>
+                  ))}
+                </Input>
+
+                {validation.touched.appartement &&
+                validation.errors.appartement ? (
+                  <FormFeedback type='invalid'>
+                    {validation.errors.appartement}
+                  </FormFeedback>
+                ) : null}
+              </FormGroup>
+            </Col>
+          )}
+      </Row>
+      <Row>
         <Col md='12'>
           <FormGroup className='mb-3'>
-            <Label htmlFor='motifDepense'>Motif de Depense</Label>
+            <Label htmlFor='motifDepense'>Motif de Dépense</Label>
 
             <Input
               name='motifDepense'
-              placeholder='Quel est la raison de ce depense'
+              placeholder='Quel est la raison de ce dépense'
               type='text'
               className='form-control border-1 border-dark'
               border-1

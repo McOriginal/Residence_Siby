@@ -38,6 +38,7 @@ import {
 } from '../components/NavigationButton';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
 import Swal from 'sweetalert2';
+import { connectedUserRole } from '../Authentication/userInfos';
 export default function ContratListe() {
   const [form_modal, setForm_modal] = useState(false);
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -235,6 +236,7 @@ export default function ContratListe() {
                               <th>Montant</th>
                               <th>Remise</th>
                               <th>Après Remise</th>
+                              <th>Comission</th>
 
                               <th>Action</th>
                             </tr>
@@ -317,104 +319,109 @@ export default function ContratListe() {
                                 <td>
                                   {formatPrice(contrat.totalAmount || 0)} F
                                 </td>
+                                <td>{formatPrice(contrat.comission || 0)} F</td>
 
-                                <td className='text-center'>
-                                  {isSubmitting && <LoadingSpiner />}
-                                  {!isSubmitting && (
-                                    <UncontrolledDropdown className='dropdown d-inline-block'>
-                                      <DropdownToggle
-                                        className='btn btn-info text-light btn-sm'
-                                        tag='button'
-                                      >
-                                        <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
-                                      </DropdownToggle>
-                                      <DropdownMenu className='dropdown-menu-end'>
-                                        <DropdownItem
-                                          className='edit-item-btn  text-info'
-                                          onClick={() => {
-                                            navigate(
-                                              `/contrat/document/${contrat._id}`
-                                            );
-                                          }}
+                                {connectedUserRole === 'admin' && (
+                                  <td className='text-center'>
+                                    {isSubmitting && <LoadingSpiner />}
+                                    {!isSubmitting && (
+                                      <UncontrolledDropdown className='dropdown d-inline-block'>
+                                        <DropdownToggle
+                                          className='btn btn-info text-light btn-sm'
+                                          tag='button'
                                         >
-                                          <i className='fas fa-book-open align-center me-2 '></i>
-                                          Contrat
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          className='edit-item-btn  text-warning'
-                                          onClick={() => {
-                                            navigate(`/contrat/${contrat._id}`);
-                                          }}
-                                        >
-                                          <i className='fas fa-dollar-sign align-center me-2 '></i>
-                                          Paiement
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          className='edit-item-btn  text-secondary'
-                                          onClick={() => {
-                                            setFormModalTitle(
-                                              'Modifier les données'
-                                            );
-                                            setContratToUpdate(contrat);
-                                            setContratToReload(null);
-                                            tog_form_modal();
-                                          }}
-                                        >
-                                          <i className='ri-pencil-fill align-bottom me-2 '></i>
-                                          Modifier
-                                        </DropdownItem>
-                                        {!contrat?.statut && (
+                                          <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
+                                        </DropdownToggle>
+                                        <DropdownMenu className='dropdown-menu-end'>
                                           <DropdownItem
                                             className='edit-item-btn  text-info'
                                             onClick={() => {
-                                              setFormModalTitle(
-                                                'Renouveler le Contrat'
+                                              navigate(
+                                                `/contrat/document/${contrat._id}`
                                               );
-                                              setContratToUpdate(null);
-                                              setContratToReload(contrat);
+                                            }}
+                                          >
+                                            <i className='fas fa-book-open align-center me-2 '></i>
+                                            Contrat
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            className='edit-item-btn  text-warning'
+                                            onClick={() => {
+                                              navigate(
+                                                `/contrat/${contrat._id}`
+                                              );
+                                            }}
+                                          >
+                                            <i className='fas fa-dollar-sign align-center me-2 '></i>
+                                            Paiement
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            className='edit-item-btn  text-secondary'
+                                            onClick={() => {
+                                              setFormModalTitle(
+                                                'Modifier les données'
+                                              );
+                                              setContratToUpdate(contrat);
+                                              setContratToReload(null);
                                               tog_form_modal();
                                             }}
                                           >
-                                            <i className='fas fa-undo align-center me-2 '></i>
-                                            Renouveller
+                                            <i className='ri-pencil-fill align-bottom me-2 '></i>
+                                            Modifier
                                           </DropdownItem>
-                                        )}
+                                          {!contrat?.statut && (
+                                            <DropdownItem
+                                              className='edit-item-btn  text-info'
+                                              onClick={() => {
+                                                setFormModalTitle(
+                                                  'Renouveler le Contrat'
+                                                );
+                                                setContratToUpdate(null);
+                                                setContratToReload(contrat);
+                                                tog_form_modal();
+                                              }}
+                                            >
+                                              <i className='fas fa-undo align-center me-2 '></i>
+                                              Renouveller
+                                            </DropdownItem>
+                                          )}
 
-                                        {contrat.statut && (
+                                          {contrat.statut && (
+                                            <DropdownItem
+                                              className='remove-item-btn text-danger '
+                                              tag={'button'}
+                                              onClick={() => {
+                                                handleStopeContrat(contrat);
+                                              }}
+                                            >
+                                              {' '}
+                                              <i className='fas fa-ban align-center me-2 '></i>{' '}
+                                              Stoper{' '}
+                                            </DropdownItem>
+                                          )}
                                           <DropdownItem
                                             className='remove-item-btn text-danger '
-                                            tag={'button'}
                                             onClick={() => {
-                                              handleStopeContrat(contrat);
+                                              setIsSubmitting(true);
+                                              deleteButton(
+                                                contrat._id,
+                                                contrat.firstName +
+                                                  ' ' +
+                                                  contrat.lastName,
+                                                deleteContrat
+                                              );
+                                              setIsSubmitting(false);
                                             }}
                                           >
                                             {' '}
-                                            <i className='fas fa-ban align-center me-2 '></i>{' '}
-                                            Stoper{' '}
+                                            <i className='ri-delete-bin-fill align-bottom me-2 '></i>{' '}
+                                            Supprimer{' '}
                                           </DropdownItem>
-                                        )}
-                                        <DropdownItem
-                                          className='remove-item-btn text-danger '
-                                          onClick={() => {
-                                            setIsSubmitting(true);
-                                            deleteButton(
-                                              contrat._id,
-                                              contrat.firstName +
-                                                ' ' +
-                                                contrat.lastName,
-                                              deleteContrat
-                                            );
-                                            setIsSubmitting(false);
-                                          }}
-                                        >
-                                          {' '}
-                                          <i className='ri-delete-bin-fill align-bottom me-2 '></i>{' '}
-                                          Supprimer{' '}
-                                        </DropdownItem>
-                                      </DropdownMenu>
-                                    </UncontrolledDropdown>
-                                  )}
-                                </td>
+                                        </DropdownMenu>
+                                      </UncontrolledDropdown>
+                                    )}
+                                  </td>
+                                )}
                               </tr>
                             ))}
                           </tbody>

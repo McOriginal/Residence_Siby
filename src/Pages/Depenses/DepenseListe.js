@@ -13,6 +13,7 @@ import {
   HomeButton,
 } from '../components/NavigationButton';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function DepenseListe() {
   const [form_modal, setForm_modal] = useState(false);
@@ -94,22 +95,24 @@ export default function DepenseListe() {
                 <CardBody>
                   <div id='depenseList'>
                     <Row className='g-4 mb-3'>
-                      <Col md={6} className='col-sm-auto'>
-                        <div className='d-flex gap-1'>
-                          <Button
-                            color='info'
-                            className='add-btn'
-                            id='create-btn'
-                            onClick={() => {
-                              setDepenseToUpdate(null);
-                              tog_form_modal();
-                            }}
-                          >
-                            <i className='fas fa-dollar-sign align-center me-1'></i>{' '}
-                            Ajouter une Dépense
-                          </Button>
-                        </div>
-                      </Col>
+                      {connectedUserRole === 'admin' && (
+                        <Col md={6} className='col-sm-auto'>
+                          <div className='d-flex gap-1'>
+                            <Button
+                              color='info'
+                              className='add-btn'
+                              id='create-btn'
+                              onClick={() => {
+                                setDepenseToUpdate(null);
+                                tog_form_modal();
+                              }}
+                            >
+                              <i className='fas fa-dollar-sign align-center me-1'></i>{' '}
+                              Ajouter une Dépense
+                            </Button>
+                          </div>
+                        </Col>
+                      )}
 
                       <Col md={6} className='col-sm'>
                         <div className='d-flex justify-content-sm-end gap-2'>
@@ -177,20 +180,16 @@ export default function DepenseListe() {
                           >
                             <thead className='table-light'>
                               <tr className='text-center '>
-                                <th data-sort='date' style={{ width: '50px' }}>
+                                <th style={{ width: '50px' }}>
                                   Date de dépense
                                 </th>
+                                <th>Appartement N°</th>
+                                <th>Secteur</th>
 
-                                <th className='sort' data-sort='motif'>
-                                  Motif de Dépense
-                                </th>
-                                <th className='sort' data-sort='totaAmount'>
-                                  Somme Dépensé
-                                </th>
+                                <th>Motif de Dépense</th>
+                                <th>Montant Dépensé</th>
 
-                                <th className='sort' data-sort='action'>
-                                  Action
-                                </th>
+                                <th>Action</th>
                               </tr>
                             </thead>
                             <tbody className='list form-check-all'>
@@ -203,6 +202,16 @@ export default function DepenseListe() {
                                       ).toLocaleDateString()}{' '}
                                     </td>
 
+                                    <td className='badge bg-info text-light'>
+                                      {formatPrice(
+                                        depense?.appartement?.appartementNumber
+                                      )}
+                                    </td>
+                                    <td>
+                                      {capitalizeWords(
+                                        depense?.secteur?.adresse
+                                      )}
+                                    </td>
                                     <td className='text-wrap'>
                                       {capitalizeWords(depense.motifDepense)}
                                     </td>
@@ -212,44 +221,46 @@ export default function DepenseListe() {
                                       {' F '}
                                     </td>
 
-                                    <td>
-                                      <div className='d-flex gap-2'>
-                                        <div className='edit'>
-                                          <button
-                                            className='btn btn-sm btn-success edit-item-btn'
-                                            onClick={() => {
-                                              setFormModalTitle(
-                                                'Modifier les données'
-                                              );
-                                              setDepenseToUpdate(depense);
-                                              tog_form_modal();
-                                            }}
-                                          >
-                                            <i className='ri-pencil-fill text-white'></i>
-                                          </button>
-                                        </div>
-                                        {isDeleting && <LoadingSpiner />}
-                                        {!isDeleting && (
-                                          <div className='remove'>
+                                    {connectedUserRole === 'admin' && (
+                                      <td>
+                                        <div className='d-flex gap-2'>
+                                          <div className='edit'>
                                             <button
-                                              className='btn btn-sm btn-danger remove-item-btn'
-                                              data-bs-toggle='modal'
-                                              data-bs-target='#deleteRecordModal'
+                                              className='btn btn-sm btn-success edit-item-btn'
                                               onClick={() => {
-                                                deleteButton(
-                                                  depense._id,
-                                                  `depense de ${depense.totalAmount} F
-                                                   `,
-                                                  deleteDepense
+                                                setFormModalTitle(
+                                                  'Modifier les données'
                                                 );
+                                                setDepenseToUpdate(depense);
+                                                tog_form_modal();
                                               }}
                                             >
-                                              <i className='ri-delete-bin-fill text-white'></i>
+                                              <i className='ri-pencil-fill text-white'></i>
                                             </button>
                                           </div>
-                                        )}
-                                      </div>
-                                    </td>
+                                          {isDeleting && <LoadingSpiner />}
+                                          {!isDeleting && (
+                                            <div className='remove'>
+                                              <button
+                                                className='btn btn-sm btn-danger remove-item-btn'
+                                                data-bs-toggle='modal'
+                                                data-bs-target='#deleteRecordModal'
+                                                onClick={() => {
+                                                  deleteButton(
+                                                    depense._id,
+                                                    `depense de ${depense.totalAmount} F
+                                                   `,
+                                                    deleteDepense
+                                                  );
+                                                }}
+                                              >
+                                                <i className='ri-delete-bin-fill text-white'></i>
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </td>
+                                    )}
                                   </tr>
                                 ))}
                             </tbody>

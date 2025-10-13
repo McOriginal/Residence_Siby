@@ -8,6 +8,7 @@ import {
 } from '../components/capitalizeFunction';
 import { useAllContrat } from '../../Api/queriesContrat';
 import { useNavigate, useParams } from 'react-router-dom';
+import { connectedUserRole } from '../Authentication/userInfos';
 export default function SecteurContrat() {
   const param = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -171,22 +172,24 @@ export default function SecteurContrat() {
                           <td>{formatPrice(contrat.reduction || 0)} F</td>
                           <td>{formatPrice(contrat.totalAmount || 0)} F</td>
 
-                          <td className='text-center'>
-                            <div className='d-flex justify-content-center align-items-center gap-2'>
-                              <div className='edit'>
-                                <button
-                                  className='btn btn-sm btn-info'
-                                  onClick={() => {
-                                    navigate(
-                                      `/contrat/document/${contrat._id}`
-                                    );
-                                  }}
-                                >
-                                  <i className='fas fa-receipt text-white'></i>
-                                </button>
+                          {connectedUserRole === 'admin' && (
+                            <td className='text-center'>
+                              <div className='d-flex justify-content-center align-items-center gap-2'>
+                                <div className='edit'>
+                                  <button
+                                    className='btn btn-sm btn-info'
+                                    onClick={() => {
+                                      navigate(
+                                        `/contrat/document/${contrat._id}`
+                                      );
+                                    }}
+                                  >
+                                    <i className='fas fa-receipt text-white'></i>
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
