@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 const depenseSchema = new mongoose.Schema(
   {
+    secteur:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Secteur',
+      required: true,
+    },
+    appartement:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Appartement',
+      required: true,
+    },
+
     totalAmount: {
       type: Number,
       required: true,

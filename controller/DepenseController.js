@@ -4,25 +4,15 @@ const textValidation = require('./regexValidation');
 // Create a new expense
 exports.createDepense = async (req, res) => {
   try {
-    const { totalAmount, motifDepense, dateOfDepense } = req.body;
+    const {  motifDepense } = req.body;
 
-    const formattedTotalAmount = Number(totalAmount);
     const formattedMotifDepense = motifDepense.toLowerCase();
-    if (!formattedTotalAmount || !motifDepense) {
-      return res
-        .status(400)
-        .json({ message: 'Le vous devez renseigner le TOTAL et le MOTIF' });
-    }
-
-    if (!textValidation.stringValidator(motifDepense)) {
-      return res.status(400).json({ message: "Motif saisie n'es pas valide." });
-    }
+  
 
     const depense = await Depense.create({
-      totalAmount: formattedTotalAmount,
       motifDepense: formattedMotifDepense,
-      dateOfDepense: dateOfDepense,
       user: req.user.id,
+      ...req.body,
     });
 
     return res.status(201).json(depense);
@@ -35,30 +25,17 @@ exports.createDepense = async (req, res) => {
 exports.updateDepense = async (req, res) => {
   try {
     const { id } = req.params;
-    const { totalAmount, motifDepense, dateOfDepense } = req.body;
+    const { motifDepense } = req.body;
     // Format and validate the input
-    const formattedTotalAmount = Number(totalAmount);
     const formattedMotifDepense = motifDepense.toLowerCase();
 
-    // Check if the required fields are provided
-    if (!formattedTotalAmount || !motifDepense) {
-      return res
-        .status(400)
-        .json({ message: 'Le vous devez renseigner le TOTAL et le MOTIF' });
-    }
-
-    // Validate the motifDepense using regex
-    if (!textValidation.stringValidator(motifDepense)) {
-      return res.status(400).json({ message: "Motif saisie n'es pas valide." });
-    }
 
     // Find the expense by ID and update it
     const depense = await Depense.findByIdAndUpdate(
       id,
       {
-        totalAmount: formattedTotalAmount,
         motifDepense: formattedMotifDepense,
-        dateOfDepense,
+        ...req.body,
       },
       { new: true }
     );
@@ -77,6 +54,8 @@ exports.updateDepense = async (req, res) => {
 exports.getAllDepenses = async (req, res) => {
   try {
     const depenses = await Depense.find()
+      .populate('secteur')
+      .populate('appartement')
       .populate('user')
       .sort({ dateOfDepense: -1 });
     return res.status(200).json(depenses);
@@ -89,7 +68,10 @@ exports.getAllDepenses = async (req, res) => {
 exports.getDepenseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const depense = await Depense.findById(id).populate('user');
+    const depense = await Depense.findById(id)
+    .populate('secteur')
+    .populate('appartement')
+    .populate('user');
 
     if (!depense) {
       return res.status(404).json({ message: 'Dépense non trouvée.' });
