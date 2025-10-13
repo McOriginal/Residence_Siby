@@ -106,7 +106,7 @@ export default function Secteur() {
             <Row className='d-flex flex-wrap mt-4 gap-4 justify-content-center align-items-center'>
               {secteurData?.length > 0 &&
                 secteurData?.map((item) => (
-                  <Col key={item?._id} sm={4} md={5}>
+                  <Col key={item?._id} md={6} lg={4}>
                     <Card
                       style={{
                         position: 'relative',
@@ -163,7 +163,7 @@ export default function Secteur() {
                         )}
                       </div>
                       <h5 className='text-light'>
-                        Secteur N° {item.secteurNumber}
+                        Secteur N° {item?.secteurNumber}
                       </h5>
 
                       <CardBody className='d-flex flex-column justify-content-center align-items-center text-light'>
@@ -171,7 +171,7 @@ export default function Secteur() {
                           {capitalizeWords(item?.adresse)}
                         </h5>
                         <span
-                          className={`mb-2 ${
+                          className={`font-size-16 mb-2 ${
                             appartements(item) > 0
                               ? 'text-success'
                               : 'text-danger'
@@ -180,7 +180,7 @@ export default function Secteur() {
                           {formatPrice(appartements(item))} Appartements
                         </span>
                         <span
-                          className={`badge ${
+                          className={`font-size-13 badge ${
                             availableAppartements(item, true) > 0
                               ? 'bg-success'
                               : 'bg-danger'
