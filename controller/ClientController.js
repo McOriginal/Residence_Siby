@@ -159,7 +159,7 @@ for(const paie of clientPaiem){
   await Paiement.findByIdAndDelete(paie._id,{session})
 }
       }
-    }
+    
 
 
 // On met à jours la disponibilité de tous les APPARTEMENTS  lié aux CONTRAT
@@ -176,6 +176,7 @@ await Contrat.findByIdAndDelete(cont._id,{session});
 
 }
 
+    }
 // Et pour finir on supprime le CLIENT
     await Client.findByIdAndDelete(req.params.id, {session});
 
@@ -186,6 +187,7 @@ session.endSession()
       .status(200)
       .json({ status: 'success', message: 'Client supprimé avec succès' });
   } catch (err) {
+    console.log(err)
     session.abortTransaction()
     session.endSession()
     return res.status(400).json({ status: 'error', message: err.message });
