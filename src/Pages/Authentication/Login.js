@@ -85,7 +85,7 @@ const Login = () => {
               }
 
               navigate('/initial_page');
-              // window.location.reload();
+              window.location.reload();
 
               // -----------------------
             } catch (err) {
