@@ -55,7 +55,6 @@ exports.getAllDepenses = async (req, res) => {
   try {
     const depenses = await Depense.find()
       .populate('secteur')
-      .populate('appartement')
       .populate('user')
       .sort({ dateOfDepense: -1 });
     return res.status(200).json(depenses);
@@ -70,7 +69,6 @@ exports.getDepenseById = async (req, res) => {
     const { id } = req.params;
     const depense = await Depense.findById(id)
     .populate('secteur')
-    .populate('appartement')
     .populate('user');
 
     if (!depense) {

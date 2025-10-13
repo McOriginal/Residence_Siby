@@ -7,11 +7,7 @@ const depenseSchema = new mongoose.Schema(
       ref: 'Secteur',
       required: true,
     },
-    appartement:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Appartement',
-      required: true,
-    },
+   
 
     totalAmount: {
       type: Number,
