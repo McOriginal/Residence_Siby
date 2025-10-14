@@ -47,7 +47,7 @@ export default function UpdateUserProfile({ selectedUser, tog_form_modal }) {
           onSuccess: () => {
             setIsLoading(false);
             // Afficher une alerte de succès ou rediriger vers la page de connexion
-            successMessageAlert('Modification Enregistré avec succès.');
+            successMessageAlert('Mise à jour avec succès.');
             // Redirection vers la page de connexion après 3 secondes
             // Utiliser setTimeout pour la redirection
             tog_form_modal();

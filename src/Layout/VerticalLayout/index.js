@@ -115,37 +115,6 @@ const Layout = (props) => {
     window.scrollTo(0, 0);
   }, []);
 
-  // ---------------------------------------------------
-  // ---------------------------------------------------
-  // Vérification de role d'utilisateur pour afficher le SIDEBAR en fonction de cela
-  const [sidebarContent, setSidebarContent] = useState();
-  const role = connectedUserRole;
-
-  useEffect(() => {
-    if (!role) return;
-
-    if (role === 'admin') {
-      setSidebarContent(
-        <Sidebar
-          theme={leftSideBarTheme}
-          type={leftSideBarType}
-          isMobile={isMobile}
-        />
-      );
-    } else if (role === 'user') {
-      setSidebarContent(
-        <SidebarUsers
-          theme={leftSideBarTheme}
-          type={leftSideBarType}
-          isMobile={isMobile}
-        />
-      );
-    }
-  }, [role, leftSideBarTheme, leftSideBarType, isMobile]);
-
-  // ---------------------------------------------------
-  // ---------------------------------------------------
-
   return (
     <React.Fragment>
       <div id='layout-wrapper'>
@@ -154,12 +123,11 @@ const Layout = (props) => {
         {/* ----------------------------------------------------- */}
         {/* ---------- Dinamyque SIDBAR Content------------------------------------ */}
 
-        {sidebarContent}
-        {/* <Sidebar
+        <Sidebar
           theme={leftSideBarTheme}
           type={leftSideBarType}
           isMobile={isMobile}
-        /> */}
+        />
 
         {/* ----------------------------------------------------- */}
 

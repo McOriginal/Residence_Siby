@@ -109,6 +109,13 @@ export default function SecteurContrat() {
                     <tbody className='list form-check-all text-center'>
                       {filteredContrat?.map((contrat) => (
                         <tr key={contrat?._id} className='text-center'>
+                          <td
+                            className={` text-light ${
+                              contrat?.statut ? 'bg-success' : 'bg-danger'
+                            }`}
+                          >
+                            {contrat?.statut ? 'En cours' : 'Terminé'}
+                          </td>
                           <th className='badge bg-info  rounded rounded-pill text-center text-light'>
                             {formatPrice(
                               contrat?.appartement?.appartementNumber

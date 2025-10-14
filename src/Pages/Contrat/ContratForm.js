@@ -162,6 +162,22 @@ const ContratForm = ({
     },
   });
 
+  // ... juste avant le 'return' de ContratForm
+
+  // const handleReductionChange = (e) => {
+  //   // 1. Laisse Formik gérer la mise à jour de 'reduction'
+  //   validation.handleChange(e);
+
+  //   // 2. Calcule et met à jour 'totalAmount' immédiatement
+  //   //    en utilisant la nouvelle valeur de réduction et la valeur ACTUELLE de 'amount'
+  //   const newReduction = Number(e.target.value) || 0;
+  //   const currentAmount = Number(validation.values.amount) || 0;
+
+  //   validation.setFieldValue('totalAmount', currentAmount - newReduction);
+  // };
+
+  // ...
+
   // utiliser useEffet pour sélectionner automatique la date de fin lorsqu'on choisi la date de début et la durée
 
   useEffect(() => {
@@ -187,10 +203,23 @@ const ContratForm = ({
       (filterAppartement.mounthPrice || 0) * mounthValue
     );
 
+    //  Nouveau total calculé
     const total = heurePrice + dayPrice + weekPrice + mounthPrice;
-    const sumReduction = validation.values.reduction || 0;
-    validation.setFieldValue('amount', Number(total));
-    validation.setFieldValue('totalAmount', Number(total - sumReduction));
+    // 🔹 Si on change d’appartement → on remet la réduction à 0
+    if (validation.values.appartement !== selectedAppartement) {
+      validation.setFieldValue('reduction', 0);
+    }
+
+    // 🔹 Récupération et application de la réduction actuelle
+    const sumReduction = Number(validation.values.reduction || 0);
+    const newTotalAmount = total - sumReduction;
+
+    // 🔹 Mettre à jour les champs calculés
+    validation.setFieldValue('amount', total);
+    validation.setFieldValue(
+      'totalAmount',
+      newTotalAmount > 0 ? newTotalAmount : 0
+    );
 
     // Calcul de la date de fin
     const startDate = validation.values.startDate;
@@ -203,16 +232,13 @@ const ContratForm = ({
     validation.setFieldValue('endDate', endDateFormatted);
   }, [
     appartment,
-    validation.values.reduction,
     validation.values.appartement,
     validation.values.heure,
     validation.values.jour,
     validation.values.semaine,
     validation.values.mois,
     validation.values.startDate,
-    validation.values.amount,
-    validation.values.totalAmount,
-    validation.values.reduction,
+    // validation.values.reduction,
   ]);
 
   const date = new Date();
@@ -231,8 +257,15 @@ const ContratForm = ({
         {' F '}
       </h6>
       <h6 className='text-success text-end'>
-        Après remise: {formatPrice(validation.values.totalAmount || 0)} F{' '}
+        Après remise:{' '}
+        {formatPrice(
+          validation.values.reduction > 0
+            ? validation.values.totalAmount
+            : validation.values.amount || 0
+        )}{' '}
+        F{' '}
       </h6>
+
       <Row>
         {loadingAppart && <LoadingSpiner />}
         {!loadingAppart && errorAppart && secteurAppartement?.length === 0 && (
@@ -467,8 +500,19 @@ const ContratForm = ({
               className='form-control border-1 border-dark'
               id='amount'
               onChange={validation.handleChange}
+              // onChange={(e) => {
+              //   validation.handleChange(e);
+              //   // Mettre à jour totalAmount lorsque amount change
+              //   const newAmount = Number(e.target.value) || 0;
+              //   const currentReduction =
+              //     Number(validation.values.reduction) || 0;
+              //   validation.setFieldValue(
+              //     'totalAmount',
+              //     newAmount - currentReduction
+              //   );
+              // }}
               onBlur={validation.handleBlur}
-              value={validation.values.amount || undefined}
+              value={validation.values.amount || ''}
               invalid={
                 validation.touched.amount && validation.errors.amount
                   ? true
@@ -493,9 +537,18 @@ const ContratForm = ({
               max={validation.values.amount}
               className='form-control border-1 border-dark text-danger'
               id='reduction'
-              onChange={validation.handleChange}
+              onChange={(e) => {
+                validation.handleChange(e);
+                const newReduction = Number(e.target.value) || 0;
+                const currentAmount = Number(validation.values.amount) || 0;
+
+                validation.setFieldValue(
+                  'totalAmount',
+                  currentAmount - newReduction
+                );
+              }}
               onBlur={validation.handleBlur}
-              value={validation.values.reduction || undefined}
+              value={validation.values.reduction || ''}
               invalid={
                 validation.touched.reduction && validation.errors.reduction
                   ? true
@@ -524,7 +577,7 @@ const ContratForm = ({
               id='comission'
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
-              value={validation.values.comission || undefined}
+              value={validation.values.comission || ''}
               invalid={
                 validation.touched.comission && validation.errors.comission
                   ? true

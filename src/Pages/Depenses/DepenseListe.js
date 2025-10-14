@@ -202,11 +202,6 @@ export default function DepenseListe() {
                                       ).toLocaleDateString()}{' '}
                                     </td>
 
-                                    <td className='badge bg-info text-light'>
-                                      {formatPrice(
-                                        depense?.appartement?.appartementNumber
-                                      )}
-                                    </td>
                                     <td>
                                       {capitalizeWords(
                                         depense?.secteur?.adresse

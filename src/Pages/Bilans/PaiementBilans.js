@@ -102,8 +102,16 @@ export default function PaiementBilans() {
                   <h3>Bilans des Paiements</h3>
                   <div className='d-flex gap-1'>
                     <DownloadTableExcel
-                      filename={`bilans de ${startDate} à ${endDate}`}
-                      sheet={`bilans de ${startDate} à ${endDate}`}
+                      filename={`bilans de ${new Date(
+                        startDate
+                      )?.toLocaleDateString('fr-Fr')} à ${new Date(
+                        endDate
+                      )?.toLocaleDateString('fr-Fr')}`}
+                      sheet={`bilans de ${new Date(
+                        startDate
+                      )?.toLocaleDateString()} à ${new Date(
+                        endDate
+                      )?.toLocaleDateString()}`}
                       currentTableRef={tableRef.current}
                     >
                       <Button color='success'>Télécharger en Excel</Button>

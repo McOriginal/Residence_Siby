@@ -5,11 +5,11 @@ export default function ActiveSecteur() {
   return (
     <div
       className='mx-auto my-3 text-light bg-dark px-3 py-2 border-1 border-light rounded'
-      style={{ width: '200px' }}
+      style={{ width: '270px' }}
     >
-      <h4 className='text-light text-center'>
+      <h5 className='text-light text-center'>
         {secteur ? secteur.adresse : 'Aucun Secteur'}
-      </h4>
+      </h5>
     </div>
   );
 }
