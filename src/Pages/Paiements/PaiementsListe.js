@@ -24,20 +24,20 @@ export default function PaiementsListe() {
   const [selectedPaiementTotalPaye, setSelectedPaiementTotalPaye] = useState(0);
   const [show_modal, setShow_modal] = useState(false);
 
-  const filterPaiement = paiementsData?.reduce((acc, item) => {
-    // Vérifie si le contrat existe déjà dans l'accumulateur
-    const existe = acc.find((it) => it?.contrat?._id === item?.contrat?._id);
+  // const filterPaiement = paiementsData?.reduce((acc, item) => {
+  //   // Vérifie si le contrat existe déjà dans l'accumulateur
+  //   const existe = acc.find((it) => it?.contrat?._id === item?.contrat?._id);
 
-    if (existe) {
-      // Si déjà présent → on additionne totalPaye
-      existe.totalPaye = (existe.totalPaye || 0) + (item.totalPaye || 0);
-    } else {
-      // Sinon → on ajoute le contrat avec son totalPaye initial
-      acc.push({ ...item, totalPaye: item.totalPaye || 0 });
-    }
+  //   if (existe) {
+  //     // Si déjà présent → on additionne totalPaye
+  //     existe.totalPaye = (existe.totalPaye || 0) + (item.totalPaye || 0);
+  //   } else {
+  //     // Sinon → on ajoute le contrat avec son totalPaye initial
+  //     acc.push({ ...item, totalPaye: item.totalPaye || 0 });
+  //   }
 
-    return acc;
-  }, []);
+  //   return acc;
+  // }, []);
 
   // Total de commandes
   const sumTotalAmount = contrats?.reduce((curr, item) => {
@@ -45,14 +45,18 @@ export default function PaiementsListe() {
   }, 0);
 
   // Total Payés
-  const sumTotalPaye = filterPaiement?.reduce((curr, item) => {
+  const sumTotalPaye = paiementsData?.reduce((curr, item) => {
     return (curr += item?.totalPaye);
   }, 0);
+  // const sumTotalPaye = filterPaiement?.reduce((curr, item) => {
+  //   return (curr += item?.totalPaye);
+  // }, 0);
 
-  const sumTotalReliqua = filterPaiement?.reduce(
-    (acc, item) => (acc += item?.contrat?.totalAmount - item?.totalPaye),
-    0
-  );
+  const sumTotalReliqua = sumTotalAmount - sumTotalPaye;
+  // const sumTotalReliqua = filterPaiement?.reduce(
+  //   (acc, item) => (acc += item?.contrat?.totalAmount - item?.totalPaye),
+  //   0
+  // );
 
   // Ouverture de Modal Reçu Paiement
   function tog_show_modal() {
@@ -61,7 +65,7 @@ export default function PaiementsListe() {
   return (
     <React.Fragment>
       <div className='page-content'>
-        <ActiveSecteur />
+        {/* <ActiveSecteur /> */}
         <Container fluid>
           <Breadcrumbs title='Transaction' breadcrumbItem='Paiements' />
           <div className='d-flex flex-wrap gap-4 justify-content-center align-items-center'>
@@ -81,6 +85,9 @@ export default function PaiementsListe() {
             <Col lg={12}>
               <Card>
                 <CardBody>
+                  <h4 className='text-center fw-bold'>
+                    Liste de tous les Paiements
+                  </h4>
                   <div id='paiementsList'>
                     <h6 className='text-end'>
                       Montant Total des Contrats:{' '}
@@ -108,12 +115,12 @@ export default function PaiementsListe() {
                     {isLoading && <LoadingSpiner />}
 
                     <div className='table-responsive table-card mt-3 mb-1'>
-                      {filterPaiement?.length === 0 && (
+                      {paiementsData?.length === 0 && (
                         <div className='text-center text-mutate'>
                           Aucun paiement trouver !
                         </div>
                       )}
-                      {!error && !isLoading && filterPaiement?.length > 0 && (
+                      {!error && !isLoading && paiementsData?.length > 0 && (
                         <table
                           className='table align-middle table-nowrap table-hover'
                           id='paiementTable'
@@ -133,8 +140,8 @@ export default function PaiementsListe() {
                           </thead>
 
                           <tbody className='list form-check-all text-center'>
-                            {filterPaiement?.length > 0 &&
-                              filterPaiement?.map((paiement) => (
+                            {paiementsData?.length > 0 &&
+                              paiementsData?.map((paiement) => (
                                 <tr key={paiement?._id}>
                                   <th scope='row'>
                                     {new Date(

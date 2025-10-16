@@ -36,6 +36,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
   const secteurAppartement = appartment?.filter(
     (item) => item?.secteur?._id === secteurStorage?._id
   );
+
   // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -43,7 +44,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
 
     initialValues: {
       client: reservationToEdit?.client?._id || clientId,
-      appartement: reservationToEdit?.appartement?._id || undefined,
+      appartement: reservationToEdit?.appartement?._id || '',
       heure: reservationToEdit?.heure || 0,
       jour: reservationToEdit?.jour || 0,
       semaine: reservationToEdit?.semaine || 0,
@@ -51,6 +52,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       rentalDate: reservationToEdit?.rentalDate.substring(0, 10) || undefined,
       rentalEndDate:
         reservationToEdit?.rentalEndDate.substring(0, 10) || undefined,
+      totalPaye: reservationToEdit?.totalPaye || '',
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -60,6 +62,9 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       mois: Yup.number(),
       rentalDate: Yup.date().required('Ce champ est obligatoire'),
       rentalEndDate: Yup.date().required('Ce champ est obligatoire'),
+      totalPaye: Yup.number()
+        .required('Le montant est obligatoire')
+        .min(0, 'Le montant ne peut pas être négatif'),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -116,6 +121,33 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
 
   // utiliser useEffet pour sélectionner automatique la date de fin lorsqu'on choisi la date de début et la durée
   useEffect(() => {
+    const selectedAppartement = validation.values.appartement;
+
+    if (!selectedAppartement) return;
+    const filterAppartement = secteurAppartement?.find(
+      (value) =>
+        value?._id === selectedAppartement &&
+        value?.secteur?._id === secteurStorage?._id
+    );
+
+    if (!filterAppartement) return;
+    const hValue = validation.values.heure || 0;
+    const dayValue = validation.values.jour || 0;
+    const weekValue = validation.values.semaine || 0;
+    const mounthValue = validation.values.mois || 0;
+
+    const heurePrice = Number((filterAppartement.heurePrice || 0) * hValue);
+    const dayPrice = Number((filterAppartement.dayPrice || 0) * dayValue);
+    const weekPrice = Number((filterAppartement.weekPrice || 0) * weekValue);
+    const mounthPrice = Number(
+      (filterAppartement.mounthPrice || 0) * mounthValue
+    );
+
+    //  Nouveau total calculé
+    const total = heurePrice + dayPrice + weekPrice + mounthPrice;
+
+    validation.setFieldValue('totalPaye', total > 0 ? total : 0);
+
     if (validation.values.rentalDate) {
       const startDate = new Date(validation.values.rentalDate);
       let endDate = new Date(startDate);
@@ -147,7 +179,10 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
     validation.values.semaine,
     validation.values.mois,
     validation.values.rentalDate,
+    validation.values.appartement,
   ]);
+
+  const today = new Date();
 
   return (
     <Form
@@ -314,7 +349,9 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
               name='rentalDate'
               placeholder="Entrez la date d'Entrée..."
               type='date'
-              min={new Date().toISOString().substring(0, 10)}
+              min={new Date(today.setDate(today.getDate() + 2))
+                .toISOString()
+                .substring(0, 10)}
               className='form-control border-1 border-dark'
               id='rentalDate'
               onChange={(e) => {
@@ -368,6 +405,34 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
             validation.errors.rentalEndDate ? (
               <FormFeedback type='invalid'>
                 {validation.errors.rentalEndDate}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md='12'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='totalPaye'>Montant Payé</Label>
+            <Input
+              name='totalPaye'
+              placeholder='Montant Payé...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='totalPaye'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.totalPaye || ''}
+              invalid={
+                validation.touched.totalPaye && validation.errors.totalPaye
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.totalPaye && validation.errors.totalPaye ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.totalPaye}
               </FormFeedback>
             ) : null}
           </FormGroup>

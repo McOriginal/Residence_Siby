@@ -161,6 +161,7 @@ export default function ReservationListe() {
                               <th>Secteur</th>
                               <th>Client</th>
                               <th>Téléphone</th>
+                              <th>Montant Payé</th>
                               <th>Mois</th>
                               <th>Semaine</th>
 
@@ -219,6 +220,7 @@ export default function ReservationListe() {
                                   {formatPhoneNumber(item?.client?.phoneNumber)}{' '}
                                 </td>
 
+                                <td>{formatPrice(item.totalPaye || 0)} F</td>
                                 <td>{formatPrice(item.mois || 0)} </td>
                                 <td>{formatPrice(item.semaine || 0)}</td>
                                 <td>{formatPrice(item.jour || 0)}</td>

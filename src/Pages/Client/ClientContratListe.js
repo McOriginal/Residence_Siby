@@ -390,9 +390,9 @@ export default function ClientContratListe() {
                                               setIsSubmitting(true);
                                               deleteButton(
                                                 contrat._id,
-                                                contrat.firstName +
+                                                contrat.client.firstName +
                                                   ' ' +
-                                                  contrat.lastName,
+                                                  contrat.client.lastName,
                                                 deleteContrat
                                               );
                                               setIsSubmitting(false);
