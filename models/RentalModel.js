@@ -36,6 +36,11 @@ const rentalSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    totalPaye: {
+        type: Number,
+        required: true,
+        trim: true,
+    },
     
 appartement: {
     type: mongoose.Schema.Types.ObjectId,
