@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { DownloadTableExcel } from 'react-export-table-to-excel';
 import LoadingSpiner from '../components/LoadingSpiner';
@@ -45,6 +45,7 @@ export default function PaiementBilans() {
       if (!selectedSecteur) return true;
       return item?.appartement?.secteur?._id === selectedSecteur;
     });
+
   // Fonction de Rechercher
   const filterPaiement = paiementsData
     ?.filter((item) => {
@@ -70,12 +71,12 @@ export default function PaiementBilans() {
     });
 
   // Total de Contrat
-  const sumTotalAmount = contrats?.reduce((curr, item) => {
+  const sumTotalAmount = filterContrat?.reduce((curr, item) => {
     return (curr += item?.totalAmount);
   }, 0);
 
   // Total de Comission
-  const sumTotalComission = contrats?.reduce((curr, item) => {
+  const sumTotalComission = filterContrat?.reduce((curr, item) => {
     return (curr += item?.comission);
   }, 0);
 
@@ -200,11 +201,11 @@ export default function PaiementBilans() {
                           <select
                             className='form-control p-2 border-1 border-warning text-info'
                             value={selectedSecteur ?? ''}
-                            onChange={(e) =>
+                            onChange={(e) => {
                               setSelectedSecteur(
                                 e.target.value === '' ? null : e.target.value
-                              )
-                            }
+                              );
+                            }}
                           >
                             <option value=''>Tous les Secteurs</option>
                             {secteursData?.map((secteur) => (
