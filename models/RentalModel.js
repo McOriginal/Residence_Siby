@@ -36,12 +36,23 @@ const rentalSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    totalAmount: {
+        type: Number,
+        required: true,
+        trim: true,
+    },
     totalPaye: {
         type: Number,
         required: true,
         trim: true,
     },
-    
+    statut:{
+      type: String,
+      enum: ['en cours',  'validée', 'annulée'],
+      default: 'en cours',
+      required: true,
+      trime: true,
+    },
 appartement: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appartement',

@@ -20,6 +20,9 @@ router.get('/getRental/:id', rentalController.getRental);
 // Mettre à jour un Rental
 router.put('/updateRental/:id', rentalController.updateRental);
 
+
+router.put('/updateRentalStatut/:id', rentalController.updateRentalStatut);
+
 // supprimer un Rental
 router.delete(
   '/deleteRental/:id',

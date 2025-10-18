@@ -131,7 +131,7 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
 
 
 
-    // Mise à jour LA RESERVATION
+    // // Mise à jour LA RESERVATION
     const result = await Rental.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
@@ -157,7 +157,18 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
 };
 
 
+exports.updateRentalStatut = async(req,res)=>{
 
+  try{
+
+    const rentalToUpdate = await Rental.findByIdAndUpdate(req.params.id,{statut: req.body.statut, rentalEndDate: new Date(),});
+
+    return res.status(201).json(rentalToUpdate);
+  }catch(err){
+console.log(err)
+    return res.status(201).json({message: "Erreur de mis à jour de statut"});
+  }
+}
 
 // Obtenir tous les Rental
 exports.getAllRental = async (req, res) => {
