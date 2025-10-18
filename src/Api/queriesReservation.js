@@ -37,6 +37,16 @@ export const useUpdateRental = () => {
   });
 };
 
+// Mettre à jour une Rental
+export const useUpdateRentalStatut = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }) =>
+      api.put(`/rentals/updateRentalStatut/${id}`, data),
+    onSuccess: () => queryClient.invalidateQueries(['rentals']),
+  });
+};
+
 // Supprimer une rentals
 export const useDeleteRental = () => {
   const queryClient = useQueryClient();

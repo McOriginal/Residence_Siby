@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+  UncontrolledDropdown,
+} from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import FormModal from '../components/FormModal';
 import LoadingSpiner from '../components/LoadingSpiner';
@@ -8,27 +19,37 @@ import {
   formatPhoneNumber,
   formatPrice,
 } from '../components/capitalizeFunction';
-import { deleteButton } from '../components/AlerteModal';
+import {
+  deleteButton,
+  errorMessageAlert,
+  successMessageAlert,
+} from '../components/AlerteModal';
 import { useParams } from 'react-router-dom';
 import {
   BackButton,
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
-import { useAllRental, useDeleteRental } from '../../Api/queriesReservation';
+import {
+  useAllRental,
+  useDeleteRental,
+  useUpdateRentalStatut,
+} from '../../Api/queriesReservation';
 import ReservationForm from './ReservationForm';
 import { connectedUserRole } from '../Authentication/userInfos';
+import Swal from 'sweetalert2';
 export default function ReservationListe() {
   const param = useParams();
   const [form_modal, setForm_modal] = useState(false);
   const { data: rentalsData, isLoading, error } = useAllRental();
-
+  const { mutate: updateRentalStatut } = useUpdateRentalStatut();
   const { mutate: deleteRental, isLoading: isDeleting } = useDeleteRental();
 
   const [rentalToUpdate, setRentalToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState(
     'Ajouter une Reservation'
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // State de Rechercher
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -49,6 +70,68 @@ export default function ReservationListe() {
   function tog_form_modal() {
     setForm_modal(!form_modal);
   }
+  const handleUpdateRentalStatut = async (rental, statut) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success ms-2',
+        cancelButton: 'btn btn-danger me-2',
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: `Êtes-vous sûr de vouloir mettre fin au Contrat de ?:`,
+        text: rental?.client?.firstName + ' ' + rental.client.lastName,
+        icon: 'question',
+        iconColor: 'red',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          setIsSubmitting(true);
+
+          try {
+            // mettre ajours uniquement le statut sans changer les restes de données
+
+            updateRentalStatut(
+              { id: rental?._id, data: { statut } },
+              {
+                onSuccess: () => {
+                  successMessageAlert('Statut mis à jour avec succès');
+                  setIsSubmitting(false);
+                },
+                onError: (err) => {
+                  const errorMessage =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+                  errorMessageAlert(errorMessage);
+                  setIsSubmitting(false);
+                },
+              }
+            );
+          } catch (e) {
+            const errorMessage =
+              e?.response?.data?.message ||
+              e?.message ||
+              "Oh Oh ! une erreur est survenu lors de l'enregistrement";
+            errorMessageAlert(errorMessage);
+            setIsSubmitting(false);
+          }
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire({
+            title: 'Exécution Annulée',
+            icon: 'error',
+          });
+          setIsSubmitting(false);
+        }
+      });
+    setIsSubmitting(false);
+  };
 
   return (
     <React.Fragment>
@@ -155,13 +238,17 @@ export default function ReservationListe() {
                         >
                           <thead className='table-light'>
                             <tr className='text-center'>
+                              <th></th>
+                              <th>Statut</th>
                               <th>Début</th>
                               <th>Fin</th>
                               <th>N° d'Appartement</th>
                               <th>Secteur</th>
                               <th>Client</th>
                               <th>Téléphone</th>
-                              <th>Montant Payé</th>
+                              <th>Montant</th>
+                              <th>Payé</th>
+                              <th>Reliquat</th>
                               <th>Mois</th>
                               <th>Semaine</th>
 
@@ -174,6 +261,59 @@ export default function ReservationListe() {
                           <tbody className='list form-check-all text-center'>
                             {filteredRental?.map((item) => (
                               <tr key={item?._id} className='text-center'>
+                                <td className='text-center'>
+                                  {isSubmitting && <LoadingSpiner />}
+                                  {!isSubmitting &&
+                                  item?.statut === 'en cours' ? (
+                                    <UncontrolledDropdown className='dropdown d-inline-block'>
+                                      <DropdownToggle
+                                        className='btn btn-info text-light btn-sm'
+                                        tag='button'
+                                      >
+                                        <i className='fas fa-ellipsis-v fs-5 text-primary'></i>
+                                      </DropdownToggle>
+                                      <DropdownMenu className='dropdown-menu-start'>
+                                        <DropdownItem
+                                          className='edit-item-btn  text-danger'
+                                          onClick={() => {
+                                            handleUpdateRentalStatut(
+                                              item,
+                                              'annulée'
+                                            );
+                                          }}
+                                        >
+                                          <i className=' far fa-calendar-times align-center me-2 '></i>
+                                          Annulée
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          className='edit-item-btn  text-success'
+                                          onClick={() => {
+                                            handleUpdateRentalStatut(
+                                              item,
+                                              'validée'
+                                            );
+                                          }}
+                                        >
+                                          <i className=' far fa-calendar-check align-center me-2 '></i>
+                                          Valider maintenant
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                  ) : (
+                                    ''
+                                  )}
+                                </td>
+                                <td
+                                  className={`${
+                                    item.statut === 'validéé'
+                                      ? 'text-success'
+                                      : item.statut === 'annulée'
+                                      ? 'text-danger'
+                                      : 'text-warning'
+                                  }`}
+                                >
+                                  {capitalizeWords(item?.statut)}
+                                </td>
                                 <td>
                                   {new Date(
                                     item?.rentalDate
@@ -220,7 +360,14 @@ export default function ReservationListe() {
                                   {formatPhoneNumber(item?.client?.phoneNumber)}{' '}
                                 </td>
 
+                                <td>{formatPrice(item.totalAmount || 0)} F</td>
                                 <td>{formatPrice(item.totalPaye || 0)} F</td>
+                                <td className='text-danger'>
+                                  {formatPrice(
+                                    item.totalAmount - item.totalPaye || 0
+                                  )}{' '}
+                                  F
+                                </td>
                                 <td>{formatPrice(item.mois || 0)} </td>
                                 <td>{formatPrice(item.semaine || 0)}</td>
                                 <td>{formatPrice(item.jour || 0)}</td>

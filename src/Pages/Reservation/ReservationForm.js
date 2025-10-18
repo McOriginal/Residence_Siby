@@ -52,7 +52,9 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       rentalDate: reservationToEdit?.rentalDate.substring(0, 10) || undefined,
       rentalEndDate:
         reservationToEdit?.rentalEndDate.substring(0, 10) || undefined,
+      totalAmount: reservationToEdit?.totalAmount || '',
       totalPaye: reservationToEdit?.totalPaye || '',
+      statut: reservationToEdit?.statut || 'en cours',
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -65,6 +67,10 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       totalPaye: Yup.number()
         .required('Le montant est obligatoire')
         .min(0, 'Le montant ne peut pas être négatif'),
+      totalAmount: Yup.number()
+        .required('Le montant est obligatoire')
+        .min(0, 'Le montant ne peut pas être négatif'),
+      statut: Yup.string().required('Le statut est obligatoire'),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -146,7 +152,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
     //  Nouveau total calculé
     const total = heurePrice + dayPrice + weekPrice + mounthPrice;
 
-    validation.setFieldValue('totalPaye', total > 0 ? total : 0);
+    validation.setFieldValue('totalAmount', total > 0 ? total : 0);
 
     if (validation.values.rentalDate) {
       const startDate = new Date(validation.values.rentalDate);
@@ -411,7 +417,33 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
         </Col>
       </Row>
       <Row>
-        <Col md='12'>
+        <Col md='6'>
+          <FormGroup className='mb-3'>
+            <Label htmlFor='totalAmount'>Montant Total</Label>
+            <Input
+              name='totalAmount'
+              placeholder='Montant Payé...'
+              type='number'
+              min={0}
+              className='form-control border-1 border-dark'
+              id='totalAmount'
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.totalAmount || ''}
+              invalid={
+                validation.touched.totalAmount && validation.errors.totalAmount
+                  ? true
+                  : false
+              }
+            />
+            {validation.touched.totalAmount && validation.errors.totalAmount ? (
+              <FormFeedback type='invalid'>
+                {validation.errors.totalAmount}
+              </FormFeedback>
+            ) : null}
+          </FormGroup>
+        </Col>
+        <Col md='6'>
           <FormGroup className='mb-3'>
             <Label htmlFor='totalPaye'>Montant Payé</Label>
             <Input

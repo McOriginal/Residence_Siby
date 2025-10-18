@@ -85,12 +85,15 @@ export default function AllReservationListe() {
                   >
                     <thead className='table-light'>
                       <tr className='text-center'>
+                        <th>Statut</th>
                         <th>Date de Reservation</th>
                         <th>N° d'Appartement</th>
                         <th>Secteur</th>
                         <th>Client</th>
                         <th>Téléphone</th>
-                        <th>Montant Payé</th>
+                        <th>Montant </th>
+                        <th> Payé</th>
+                        <th>Reliquat</th>
                         <th>Mois</th>
                         <th>Semaine</th>
 
@@ -102,6 +105,17 @@ export default function AllReservationListe() {
                     <tbody className='list form-check-all text-center'>
                       {filteredRental?.map((item) => (
                         <tr key={item?._id} className='text-center'>
+                          <td
+                            className={`${
+                              item.statut === 'validéé'
+                                ? 'text-success'
+                                : item.statut === 'annulée'
+                                ? 'text-danger'
+                                : 'text-warning'
+                            }`}
+                          >
+                            {capitalizeWords(item?.statut)}
+                          </td>
                           <td
                             className={` text-light ${
                               new Date(item?.rentalDate) > new Date()
@@ -136,7 +150,14 @@ export default function AllReservationListe() {
                             {formatPhoneNumber(item?.client?.phoneNumber)}{' '}
                           </td>
 
+                          <td>{formatPrice(item.totalAmount || 0)} F </td>
                           <td>{formatPrice(item.totalPaye || 0)} F </td>
+                          <td>
+                            {formatPrice(
+                              item.totalAmount - item.totalPaye || 0
+                            )}{' '}
+                            F{' '}
+                          </td>
                           <td>{formatPrice(item.mois || 0)} </td>
                           <td>{formatPrice(item.semaine || 0)}</td>
                           <td>{formatPrice(item.jour || 0)}</td>
