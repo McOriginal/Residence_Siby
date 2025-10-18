@@ -241,8 +241,6 @@ const ContratForm = ({
     // validation.values.reduction,
   ]);
 
-  const date = new Date();
-
   return (
     <Form
       className='needs-validation'
@@ -431,10 +429,7 @@ const ContratForm = ({
               name='startDate'
               placeholder="Entrez la date d'Entrée..."
               type='date'
-              min={new Date().toISOString().substring(0, 10)}
-              max={new Date(date.setDate(date.getDate() + 1))
-                .toISOString()
-                .substring(0, 10)}
+              max={new Date().toISOString().substring(0, 10)}
               className='form-control border-1 border-dark'
               id='startDate'
               onChange={(e) => {
