@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Rental = require('../models/RentalModel')
 const Contrat = require('../models/ContratModel');
-const Appartement = require('../models/AppartementModel');
+const Paiement = require('../models/PaiementModel');
+const Depense = require('../models/DepenseModel')
 const textValidation = require('./regexValidation');
 
 // Ajouter un Rental
@@ -48,6 +49,8 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
       return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
     }
 
+   
+
       const newRental = await Rental.create(
         [{
       
@@ -57,7 +60,22 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
     {session},
   );
      
- 
+  if(req.body.totalPaye >0 ){
+    await Paiement.create(
+      [
+        {
+          totalPaye: req.body.totalPaye,
+          paiementDate: reservationDate,
+          rental: newRental[0]._id,
+          contrat: null,
+          user: req.user.id
+        }
+      ],
+      {session},
+    )
+        }
+
+
     await session.commitTransaction()
     session.endSession()
     return res.status(201).json(newRental);
@@ -143,13 +161,27 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
       }
     );
 
+    const oldPaiement = await Paiement.findOne({rental: req.params.id}).session(session);
+
+      await Paiement.findByIdAndUpdate(
+        oldPaiement._id,
+          {
+            totalPaye: req.body.totalPaye,
+            paiementDate: reservationDate,
+           
+          },
+          {session}
+        
+      )
+          
+
 
     await session.commitTransaction();
     session.endSession();
 
     return res.status(200).json(result);
   } catch (err) {
-    await session.abortTransaction();
+    await session.abortTransactin();
     session.endSession();
     console.log(err);
     return res.status(400).json({ status: "error", message: err.message });
@@ -158,17 +190,84 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
 
 
 exports.updateRentalStatut = async(req,res)=>{
-
+const session = await mongoose.startSession()
+session.startTransaction()
   try{
 
-    const rentalToUpdate = await Rental.findByIdAndUpdate(req.params.id,{statut: req.body.statut, rentalEndDate: new Date(),});
+    const rentalId = req.body.rentalId;
 
-    return res.status(201).json(rentalToUpdate);
+    const rentalUpdate = await Rental.findById(rentalId)
+    .populate({path:'appartement', populate:{path: 'secteur'}})
+    .populate('client').session(session)
+
+
+
+if(req.body.statut === 'annulée'){
+  const paie = await Paiement.findOne({rental: rentalId})
+  .populate({path: 'rental', populate:{path:'client'}}).session(session);
+
+  const paieDate = new Date(paie.paiementDate)
+  const paieDay = new Date(paieDate.setDate(paieDate.getDate() + 5))
+  const today = new Date();
+
+  const client = rentalUpdate.client;
+const secteur = rentalUpdate.appartement.secteur
+
+
+  if(paieDay > today){
+  // if(today > paieDay){
+
+   
+const dep = await Depense.create(
+      [
+        {
+          motifDepense: `Rembourssement de reservation pour: ${client.firstName + ' - ' + client.lastName}`,
+          dateOfDepence: new Date(),
+          totalAmount: paie.totalPaye,
+secteur: secteur._id,
+rental: rentalUpdate._id,
+user: req.user.id,
+        }
+      ],
+      {session}
+    )
+    if(!dep){
+      await session.abortTransaction()
+      session.endSession()
+      return res.status(404).json({message: "Erreur de mis à jours Statut"})
+    }
+  
+}
+
+}
+
+
+
+await Rental.findByIdAndUpdate(rentalUpdate._id,
+  {
+    statut: req.body.statut,
+     rentalEndDate: new Date(),
+
+  },
+  {session}
+);
+
+await session.commitTransaction()
+session.endSession()
+
+
+    return res.status(201).json(rentalUpdate);
   }catch(err){
+    await session.abortTransaction()
+    session.endSession()
 console.log(err)
-    return res.status(201).json({message: "Erreur de mis à jour de statut"});
+    return res.status(500).json({message: "Erreur de mis à jour de statut"});
   }
 }
+
+
+
+
 
 // Obtenir tous les Rental
 exports.getAllRental = async (req, res) => {
@@ -194,8 +293,7 @@ exports.getRental = async (req, res) => {
     .populate('client')
     .populate({path:'appartement', populate:{path: 'secteur'}})
     .populate('user');
-    res.status(200).json(result);
-
+    res.status(200).json(result); 
 
   } catch (err) {
     return res.status(400).json({ status: 'error', message: err.message });

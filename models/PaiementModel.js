@@ -20,6 +20,10 @@ const paiementSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contrat',
     },
+    rental: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Rental',
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -21,7 +21,7 @@ router.get('/getRental/:id', rentalController.getRental);
 router.put('/updateRental/:id', rentalController.updateRental);
 
 
-router.put('/updateRentalStatut/:id', rentalController.updateRentalStatut);
+router.post('/updateRentalStatut', userController.authMiddleware,rentalController.updateRentalStatut);
 
 // supprimer un Rental
 router.delete(

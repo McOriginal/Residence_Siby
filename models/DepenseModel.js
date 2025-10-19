@@ -24,6 +24,11 @@ const depenseSchema = new mongoose.Schema(
       default: Date.now,
       required: true,
     },
+    rental: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
