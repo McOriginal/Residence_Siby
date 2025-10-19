@@ -106,7 +106,7 @@ export default function Secteur() {
             <Row className='d-flex flex-wrap mt-4 gap-4 justify-content-center align-items-center'>
               {secteurData?.length > 0 &&
                 secteurData?.map((item) => (
-                  <Col key={item?._id} md={6} lg={4}>
+                  <Col key={item?._id}>
                     <Card
                       style={{
                         position: 'relative',

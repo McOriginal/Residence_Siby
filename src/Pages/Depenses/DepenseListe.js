@@ -183,7 +183,6 @@ export default function DepenseListe() {
                                 <th style={{ width: '50px' }}>
                                   Date de dépense
                                 </th>
-                                <th>Appartement N°</th>
                                 <th>Secteur</th>
 
                                 <th>Motif de Dépense</th>

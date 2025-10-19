@@ -41,8 +41,7 @@ export const useUpdateRental = () => {
 export const useUpdateRentalStatut = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }) =>
-      api.put(`/rentals/updateRentalStatut/${id}`, data),
+    mutationFn: (data) => api.post('/rentals/updateRentalStatut', data),
     onSuccess: () => queryClient.invalidateQueries(['rentals']),
   });
 };

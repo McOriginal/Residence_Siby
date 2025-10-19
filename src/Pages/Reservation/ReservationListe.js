@@ -98,7 +98,7 @@ export default function ReservationListe() {
             // mettre ajours uniquement le statut sans changer les restes de données
 
             updateRentalStatut(
-              { id: rental?._id, data: { statut } },
+              { rentalId: rental?._id, statut },
               {
                 onSuccess: () => {
                   successMessageAlert('Statut mis à jour avec succès');
