@@ -31,6 +31,9 @@ const rentalSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    rentalChangeDate: {
+        type: Date,
+    },
     rentalEndDate: {
         type: Date,
         required: true,

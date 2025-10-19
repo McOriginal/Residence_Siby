@@ -43,7 +43,7 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
     }).session(session);
 
 
-    if(existingRental){
+    if(existingRental && existingRental.statut === 'en cours'){
       await   session.abortTransaction()
       session.endSession()
       return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
@@ -65,7 +65,7 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
       [
         {
           totalPaye: req.body.totalPaye,
-          paiementDate: reservationDate,
+          paiementDate: new Date(),
           rental: newRental[0]._id,
           contrat: null,
           user: req.user.id
@@ -141,7 +141,7 @@ const reservationEndDate =new Date(req.body.rentalEndDate);
     }).session(session);
 
 
-    if(existingRental){
+    if(existingRental && existingRental.statut === 'en cours'){
       await   session.abortTransaction()
       session.endSession()
       return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
@@ -247,6 +247,7 @@ await Rental.findByIdAndUpdate(rentalUpdate._id,
   {
     statut: req.body.statut,
      rentalEndDate: new Date(),
+     rentalChangeDate: new Date(),
 
   },
   {session}

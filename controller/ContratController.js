@@ -38,7 +38,7 @@ const existingRental = await Rental.findOne({
 }).session(session);
 
 
-if(existingRental){
+if(existingRental && existingRental.statut === 'en cours'){
   await   session.abortTransaction()
   session.endSession()
   return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
@@ -136,7 +136,7 @@ const existingRental = await Rental.findOne({
 }).session(session);
 
 
-if(existingRental){
+if(existingRental && existingRental.statut === 'en cours'){
   await   session.abortTransaction()
   session.endSession()
   return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
@@ -234,7 +234,7 @@ const existingRental = await Rental.findOne({
 }).session(session);
 
 
-if(existingRental){
+if(existingRental && existingRental.statut === 'en cours'){
   await   session.abortTransaction()
   session.endSession()
   return res.status(400).json({message: `Cette Appartement est reservée du: ${new Date(existingRental.rentalDate).toLocaleDateString('fr-Fr')} au  ${new Date(existingRental.rentalEndDate).toLocaleDateString('fr-Fr')}`})
@@ -335,8 +335,6 @@ exports.getAllContrat = async (req, res) => {
       .sort({ startDate: -1, statut:-1 })
       .session(session);
 
-
-
       await session.commitTransaction()
       session.endSession()
     return res.status(200).json(contrat);
@@ -381,7 +379,7 @@ exports.deleteContrat = async (req, res) => {
       { isAvailable: true },
       { new: true ,session}
     );
-const paiements = await Paiement.find().session(session);
+const paiements = await Paiement.find({contrat: contrat._id}).session(session);
 
 if(paiements){
     for(const pai of paiements){

@@ -38,14 +38,27 @@ exports.updatePaiement = async (req, res) => {
 exports.getAllPaiements = async (req, res) => {
   try {
     const paiements = await Paiement.find()
-      .populate( 'contrat')
-      .populate({path:'contrat', populate:{path:'client'}})
-      .populate({path:'contrat', populate:{path:'appartement', populate:'secteur'}})
+      .populate( {path:'contrat',
+      populate: [
+        { path: 'client' },
+        {
+          path: 'appartement',
+          populate: { path: 'secteur' }
+        }
+      ]
+    })
+    .populate({path:'rental',
+      populate:[
+        {path:'appartement'},
+        {path:'client'},
+      ]
+    })
       .populate('user')
-      .sort({ createdAt: -1 });
+      .sort({ paiementDate: -1 });
 
     return res.status(200).json(paiements);
   } catch (err) {
+    console.log(err)
     res.status(400).json({ status: 'error', message: err.message });
   }
 };
@@ -54,10 +67,23 @@ exports.getAllPaiements = async (req, res) => {
 exports.getPaiement = async (req, res) => {
   try {
     const paiements = await Paiement.findById(req.params.id)
-    .populate('contrat')
-    .populate({path:'contrat', populate:{path:'client'}})
-    .populate({path:'contrat', populate:{path:'appartement', populate:'secteur'}})
+    .populate( {path:'contrat',
+      populate: [
+        { path: 'client' },
+        {
+          path: 'appartement',
+          populate: { path: 'secteur' }
+        }
+      ]
+    })
+      .populate({path:'rental',
+        populate:[
+          {path:'appartement'},
+          {path:'client'},
+        ]
+      })
       .populate('user');
+    
 
     return res.status(200).json(paiements);
   } catch (err) {
