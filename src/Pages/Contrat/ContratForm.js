@@ -23,6 +23,7 @@ import {
 } from '../../Api/queriesContrat';
 import { useAllAppartement } from '../../Api/queriesAppartement';
 import { formatPrice } from '../components/capitalizeFunction';
+import { useAllRental } from '../../Api/queriesReservation';
 
 const ContratForm = ({
   contratToEdit,
@@ -39,6 +40,8 @@ const ContratForm = ({
     error: errorAppart,
   } = useAllAppartement();
 
+  const { data: rentals } = useAllRental();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const storage = localStorage.getItem('selectedSecteur');
@@ -48,12 +51,15 @@ const ContratForm = ({
       item?.secteur?._id === secteurStorage?._id &&
       (item.isAvailable || item?._id === contratToEdit?.appartement?._id)
   );
+
   // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
+      rental: contratToEdit?.rental || '',
+      totalGeneral: 0,
       client:
         contratToEdit?.client?._id || contratToReload?.client?._id || clientId,
       appartement:
@@ -64,14 +70,13 @@ const ContratForm = ({
       jour: contratToEdit?.jour || contratToReload?.jour || 0,
       semaine: contratToEdit?.semaine || contratToReload?.semaine || 0,
       mois: contratToEdit?.mois || contratToReload?.mois || 0,
-      startDate: contratToEdit?.startDate.substring(0, 10) || undefined,
-      endDate: contratToEdit?.endDate.substring(0, 10) || undefined,
-      amount: contratToEdit?.amount || contratToReload?.amount || undefined,
-      reduction:
-        contratToEdit?.reduction || contratToReload?.reduction || undefined,
+      startDate: contratToEdit?.startDate.substring(0, 10) || '',
+      endDate: contratToEdit?.endDate.substring(0, 10) || '',
+      amount: contratToEdit?.amount || contratToReload?.amount || '',
+      reduction: contratToEdit?.reduction || contratToReload?.reduction || '',
       totalAmount:
-        contratToEdit?.totalAmount || contratToReload?.totalAmount || undefined,
-      comission: contratToEdit?.comission || undefined,
+        contratToEdit?.totalAmount || contratToReload?.totalAmount || '',
+      comission: contratToEdit?.comission || '',
     },
     validationSchema: Yup.object({
       appartement: Yup.string().required('Ce Champ est Obligatoire'),
@@ -162,25 +167,22 @@ const ContratForm = ({
     },
   });
 
-  // ... juste avant le 'return' de ContratForm
+  const filterRental = (selecApp) => {
+    return rentals?.find((rent) => {
+      return (
+        rent?.client?._id === clientId &&
+        rent?.statut === 'validée' &&
+        rent?.rentalEndDate.substring(0, 10) ===
+          new Date().toISOString().substring(0, 10) &&
+        rent?.appartement?._id === selecApp
+      );
+    });
+  };
 
-  // const handleReductionChange = (e) => {
-  //   // 1. Laisse Formik gérer la mise à jour de 'reduction'
-  //   validation.handleChange(e);
-
-  //   // 2. Calcule et met à jour 'totalAmount' immédiatement
-  //   //    en utilisant la nouvelle valeur de réduction et la valeur ACTUELLE de 'amount'
-  //   const newReduction = Number(e.target.value) || 0;
-  //   const currentAmount = Number(validation.values.amount) || 0;
-
-  //   validation.setFieldValue('totalAmount', currentAmount - newReduction);
-  // };
-
-  // ...
-
-  // utiliser useEffet pour sélectionner automatique la date de fin lorsqu'on choisi la date de début et la durée
-
+  // ✅ Premier useEffect : quand l'appartement change, on récupère le rental
   useEffect(() => {
+    if (contratToEdit || contratToReload) return;
+
     const selectedAppartement = validation.values.appartement;
 
     if (!selectedAppartement) return;
@@ -191,55 +193,184 @@ const ContratForm = ({
     );
 
     if (!filterAppartement) return;
+
+    const rent = filterRental(selectedAppartement);
+    validation.setFieldValue('rental', rent || undefined);
+  }, [validation.values.appartement]);
+
+  // ✅ Deuxième useEffect : quand le rental est trouvé, pré-remplir les champs UNE seule fois
+  useEffect(() => {
+    if (contratToEdit || contratToReload) return;
+
+    const rentalValue = validation.values.rental;
+    if (rentalValue) {
+      // On ne met la valeur que si le champ est vide
+      if (!validation.values.heure) {
+        validation.setFieldValue('heure', rentalValue?.heure || 0);
+      }
+      if (!validation.values.jour) {
+        validation.setFieldValue('jour', rentalValue?.jour || 0);
+        validation.setFieldValue('semaine', rentalValue?.semaine || 0);
+        validation.setFieldValue('mois', rentalValue?.mois || 0);
+      }
+    }
+  }, [validation.values.rental]);
+
+  // ✅ Troisième useEffect : calculs des montants et dates
+  useEffect(() => {
+    const selectedAppartement = validation.values.appartement;
+    if (!selectedAppartement) return;
+    const filterAppartement = secteurAppartement?.find(
+      (value) =>
+        value?._id === selectedAppartement &&
+        value?.secteur?._id === secteurStorage?._id
+    );
+    if (!filterAppartement) return;
+
+    const rentalValue = validation.values.rental;
+    const rentalPayed = rentalValue?.totalPaye;
+
     const hValue = validation.values.heure || 0;
     const dayValue = validation.values.jour || 0;
     const weekValue = validation.values.semaine || 0;
     const mounthValue = validation.values.mois || 0;
 
-    const heurePrice = Number((filterAppartement.heurePrice || 0) * hValue);
-    const dayPrice = Number((filterAppartement.dayPrice || 0) * dayValue);
-    const weekPrice = Number((filterAppartement.weekPrice || 0) * weekValue);
-    const mounthPrice = Number(
-      (filterAppartement.mounthPrice || 0) * mounthValue
-    );
+    const heurePrice = (filterAppartement.heurePrice || 0) * hValue;
+    const dayPrice = (filterAppartement.dayPrice || 0) * dayValue;
+    const weekPrice = (filterAppartement.weekPrice || 0) * weekValue;
+    const mounthPrice = (filterAppartement.mounthPrice || 0) * mounthValue;
 
-    //  Nouveau total calculé
-    const total = heurePrice + dayPrice + weekPrice + mounthPrice;
-    // 🔹 Si on change d’appartement → on remet la réduction à 0
-    if (validation.values.appartement !== selectedAppartement) {
-      validation.setFieldValue('reduction', 0);
-    }
-
-    // 🔹 Récupération et application de la réduction actuelle
+    const total = heurePrice + dayPrice + weekPrice + mounthPrice || 0;
     const sumReduction = Number(validation.values.reduction || 0);
     const newTotalAmount = total - sumReduction;
 
-    // 🔹 Mettre à jour les champs calculés
     validation.setFieldValue('amount', total);
-    validation.setFieldValue(
-      'totalAmount',
-      newTotalAmount > 0 ? newTotalAmount : 0
-    );
+    validation.setFieldValue('totalAmount', newTotalAmount || 0);
+    validation.setFieldValue('totalGeneral', newTotalAmount - rentalPayed || 0);
 
-    // Calcul de la date de fin
     const startDate = validation.values.startDate;
     if (!startDate) return;
     const start = new Date(startDate);
     let end = new Date(start);
     end.setHours(end.getHours() + hValue);
     end.setDate(end.getDate() + dayValue + weekValue * 7 + mounthValue * 30);
-    const endDateFormatted = end.toISOString().substring(0, 10);
-    validation.setFieldValue('endDate', endDateFormatted);
+    validation.setFieldValue('endDate', end.toISOString().substring(0, 10));
   }, [
-    appartment,
-    validation.values.appartement,
     validation.values.heure,
     validation.values.jour,
     validation.values.semaine,
     validation.values.mois,
     validation.values.startDate,
     // validation.values.reduction,
+    validation.values.appartement,
   ]);
+
+  useEffect(() => {
+    const amount = validation.values.amount;
+    const rentalValue = validation.values.rental;
+    const rentalPayed = rentalValue?.totalPaye;
+    // const total = heurePrice + dayPrice + weekPrice + mounthPrice || 0;
+    const sumReduction = Number(validation.values.reduction || 0);
+    const newTotalAmount = amount - sumReduction;
+
+    // validation.setFieldValue('amount', total);
+    validation.setFieldValue('totalAmount', newTotalAmount || 0);
+    validation.setFieldValue('totalGeneral', newTotalAmount - rentalPayed || 0);
+  }, [
+    validation.values.reduction,
+    validation.values.amount,
+    validation.values.rental,
+  ]);
+
+  // useEffect(() => {
+  //   const selectedAppartement = validation.values.appartement;
+
+  //   if (!selectedAppartement) return;
+  //   const filterAppartement = secteurAppartement?.find(
+  //     (value) =>
+  //       value?._id === selectedAppartement &&
+  //       value?.secteur?._id === secteurStorage?._id
+  //   );
+
+  //   const rent = filterRental(selectedAppartement);
+
+  //   if (!filterAppartement) return;
+
+  //   // Renvoi le rental associé pour récupérer les éventuelles réductions
+  //   validation.setFieldValue('rental', rent || undefined);
+  //   const rentalValue = validation.values.rental;
+  //   const rentalPayed = rentalValue?.totalPaye;
+  //   const rentalAmount = rentalValue?.totalAmount;
+
+  //   //  Les durées
+
+  //   // HeurePrice
+  //   const hValue = validation.values.heure || 0;
+
+  //   // DayPrice
+  //   const dayValue = validation.values.jour || 0;
+
+  //   // WeekPrice
+  //   const weekValue = validation.values.semaine || 0;
+  //   const mounthValue = validation.values.mois || 0;
+
+  //   const heurePrice = Number((filterAppartement.heurePrice || 0) * hValue);
+  //   const dayPrice = Number((filterAppartement.dayPrice || 0) * dayValue);
+  //   const weekPrice = Number((filterAppartement.weekPrice || 0) * weekValue);
+  //   const mounthPrice = Number(
+  //     (filterAppartement.mounthPrice || 0) * mounthValue
+  //   );
+
+  //   if (rentalValue) {
+  //     // on rempli les champs de durée en fonction du rental
+  //     validation.setFieldValue('heure', rentalValue?.heure || 0);
+  //     validation.setFieldValue('jour', rentalValue?.jour || 0);
+  //     validation.setFieldValue('semaine', rentalValue?.semaine || 0);
+  //     validation.setFieldValue('mois', rentalValue?.mois || 0);
+  //   }
+  //   //  Nouveau total calculé
+  //   const total =
+  //     heurePrice + dayPrice + weekPrice + mounthPrice  || 0;
+  //   // 🔹 Si on change d’appartement → on remet la réduction à 0
+  //   if (validation.values.appartement !== selectedAppartement) {
+  //   }
+
+  //   // 🔹 Récupération et application de la réduction actuelle
+  //   const sumReduction = Number(validation.values.reduction || 0);
+  //   const newTotalAmount =
+  //     rentalAmount > 0 ? rentalAmount - sumReduction : total - sumReduction;
+
+  //   // 🔹 Mettre à jour les champs calculés
+  //   validation.setFieldValue('amount', total);
+  //   validation.setFieldValue(
+  //     'totalAmount',
+  //     newTotalAmount > 0 ? newTotalAmount : 0
+  //   );
+
+  //   // Calcul de la date de fin
+  //   const startDate = validation.values.startDate;
+  //   if (!startDate) return;
+  //   const start = new Date(startDate);
+  //   let end = new Date(start);
+  //   end.setHours(end.getHours() + hValue);
+  //   end.setDate(end.getDate() + dayValue + weekValue * 7 + mounthValue * 30);
+  //   const endDateFormatted = end.toISOString().substring(0, 10);
+  //   validation.setFieldValue('endDate', endDateFormatted);
+  // }, [
+  //   rentals,
+  //   validation.values.rental,
+  //   appartment,
+
+  //   validation.values.appartement,
+  //   validation.values.heure,
+  //   validation.values.jour,
+  //   validation.values.semaine,
+  //   validation.values.mois,
+  //   validation.values.startDate,
+  //   // validation.values.reduction,
+  // ]);
+
+  const rentalV = validation.values.rental;
 
   return (
     <Form
@@ -250,19 +381,34 @@ const ContratForm = ({
         return false;
       }}
     >
-      <h6 className='text-info text-end'>
-        Total: {formatPrice(validation.values.amount || 0)}
-        {' F '}
-      </h6>
-      <h6 className='text-success text-end'>
-        Après remise:{' '}
-        {formatPrice(
-          validation.values.reduction > 0
-            ? validation.values.totalAmount
-            : validation.values.amount || 0
-        )}{' '}
-        F{' '}
-      </h6>
+      <div className='d-flex justify-content-between align-items-center mb-3'>
+        {rentalV && (
+          <div>
+            <h6>Reservation:</h6>
+            <h6 className='text-warning'>
+              Montant: {formatPrice(rentalV?.totalAmount)}
+            </h6>
+            <h6 className='text-success '>
+              Payé: {formatPrice(rentalV?.totalPaye || 0)}
+              {' F '}
+            </h6>
+          </div>
+        )}
+        <div>
+          <h6 className='text-warning'>
+            Total Contrat: {formatPrice(validation.values.amount || 0)}
+            {' F '}
+          </h6>
+          {/* {validation.values.reduction && ( */}
+          <h6 className='text-info '>
+            Après remise: {formatPrice(validation.values.totalAmount)} F{' '}
+          </h6>
+          {/* )} */}
+          <h6 className='text-success'>
+            Total General: {formatPrice(validation.values.totalGeneral)} F
+          </h6>
+        </div>
+      </div>
 
       <Row>
         {loadingAppart && <LoadingSpiner />}
@@ -495,17 +641,6 @@ const ContratForm = ({
               className='form-control border-1 border-dark'
               id='amount'
               onChange={validation.handleChange}
-              // onChange={(e) => {
-              //   validation.handleChange(e);
-              //   // Mettre à jour totalAmount lorsque amount change
-              //   const newAmount = Number(e.target.value) || 0;
-              //   const currentReduction =
-              //     Number(validation.values.reduction) || 0;
-              //   validation.setFieldValue(
-              //     'totalAmount',
-              //     newAmount - currentReduction
-              //   );
-              // }}
               onBlur={validation.handleBlur}
               value={validation.values.amount || ''}
               invalid={
@@ -534,13 +669,13 @@ const ContratForm = ({
               id='reduction'
               onChange={(e) => {
                 validation.handleChange(e);
-                const newReduction = Number(e.target.value) || 0;
-                const currentAmount = Number(validation.values.amount) || 0;
+                // const newReduction = Number(e.target.value) || 0;
+                // const currentAmount = Number(validation.values.amount) || 0;
 
-                validation.setFieldValue(
-                  'totalAmount',
-                  currentAmount - newReduction
-                );
+                // validation.setFieldValue(
+                //   'totalAmount',
+                //   currentAmount - newReduction
+                // );
               }}
               onBlur={validation.handleBlur}
               value={validation.values.reduction || ''}

@@ -15,23 +15,16 @@ import html2pdf from 'html2pdf.js';
 
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { useOnePaiement } from '../../Api/queriesPaiement';
+import { useAllPaiements } from '../../Api/queriesPaiement';
 import { companyName } from '../CompanyInfo/CompanyInfo';
-import RecuHeader from './ReçueHeader';
+import RecuHeader from '../Paiements/ReçueHeader';
 
-const ReçuPaiement = ({
-  show_modal,
-  tog_show_modal,
-  selectedPaiementID,
-  totalPaye,
-  totalReliqua,
-  contrat,
-}) => {
-  const {
-    data: selectedPaiement,
-    error,
-    isLoading,
-  } = useOnePaiement(selectedPaiementID);
+const ReçuReservation = ({ show_modal, tog_show_modal, selectedRental }) => {
+  const { data: paiements, error, isLoading } = useAllPaiements();
+
+  const filterPaiement = paiements?.find((item) => {
+    return item.rental?._id === selectedRental?._id;
+  });
 
   const contentRef = useRef();
   const reactToPrintFn = useReactToPrint({ contentRef });
@@ -42,9 +35,9 @@ const ReçuPaiement = ({
   // ------------------------------------------
   // ------------------------------------------
   const exportPaiementToPDF = () => {
-    const element = document.getElementById('reçu_de_paiement');
+    const element = document.getElementById('reçu_de_paiement_reservation');
     const opt = {
-      filename: 'reçu_de_paiement.pdf',
+      filename: 'reçu_de_paiement_reservation.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
@@ -57,20 +50,17 @@ const ReçuPaiement = ({
       .catch((err) => console.error('Error generating PDF:', err));
   };
 
-  const client =
-    selectedPaiement?.contrat?.client || selectedPaiement?.rental?.client;
-  const appartement =
-    selectedPaiement?.contrat?.appartement ||
-    selectedPaiement?.rental?.appartement;
+  const client = selectedRental?.client;
+  const appartement = selectedRental?.appartement;
 
-  const start = new Date(contrat?.startDate);
-  const end = new Date(contrat?.endDate);
+  const start = new Date(selectedRental?.rentalDate);
+  const end = new Date(selectedRental?.rentalEndDate);
 
-  // Différence en millisecondes
-  const diffInMs = end - start;
+  // // Différence en millisecondes
+  // const diffInMs = end - start;
 
-  // Conversion en jours
-  const countDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+  // // Conversion en jours
+  // const countDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
   return (
     <Modal
@@ -116,7 +106,7 @@ const ReçuPaiement = ({
         {!error && !isLoading && (
           <div
             className='mx-5 py-3 d-flex justify-content-center'
-            id='reçu_de_paiement'
+            id='reçu_de_paiement_reservation'
           >
             <Card
               style={{
@@ -132,7 +122,7 @@ const ReçuPaiement = ({
               <RecuHeader />
               <CardBody className='mt-2'>
                 <div className='d-flex justify-content-center align-items-center flex-column'>
-                  <h5 className='mb-4'>Reçue de Paiement</h5>
+                  <h5 className='mb-4'>Reçue de Reservation</h5>
                   <p>
                     {capitalizeWords(
                       client?.firstName + ' ' + client?.lastName
@@ -155,30 +145,27 @@ const ReçuPaiement = ({
                 <div className='d-flex justify-content-around align-items-center  px-2 '>
                   <div>
                     <CardText>
-                      <strong> Date d'Entrée:</strong>{' '}
-                      {new Date(contrat?.startDate).toLocaleDateString(
-                        'fr-Fr',
-                        {
-                          weekday: 'short',
-                          day: '2-digit',
-                          month: 'numeric',
-                          year: 'numeric',
-                        }
-                      )}
-                    </CardText>
-                    <CardText>
-                      <strong> Date de Sortie:</strong>{' '}
-                      {new Date(contrat?.endDate).toLocaleDateString('fr-Fr', {
+                      <strong> Date de Reservation:</strong>{' '}
+                      {start?.toLocaleDateString('fr-Fr', {
                         weekday: 'short',
                         day: '2-digit',
                         month: 'numeric',
                         year: 'numeric',
                       })}
                     </CardText>
-                    <h6>
+                    <CardText>
+                      <strong> Date de Fin:</strong>{' '}
+                      {end?.toLocaleDateString('fr-Fr', {
+                        weekday: 'short',
+                        day: '2-digit',
+                        month: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </CardText>
+                    {/* <h6>
                       Durée: {countDays}
                       {countDays > 1 ? ' jours' : ' jour'}
-                    </h6>
+                    </h6> */}
                   </div>
                   <div
                     className='border border-1 border-dark'
@@ -188,23 +175,23 @@ const ReçuPaiement = ({
                   <div className='my-3'>
                     <CardText>
                       <strong> Montant Total: </strong>
-                      {formatPrice(contrat?.totalAmount || 0)} F
+                      {formatPrice(selectedRental?.totalAmount || 0)} F
                     </CardText>
                     <CardText>
                       <strong>Net Payé: </strong>
-                      {formatPrice(totalPaye || selectedPaiement?.totalPaye)} F
+                      {formatPrice(filterPaiement?.totalPaye)} F
                     </CardText>
                     <CardText>
                       <strong> Reliquat: </strong>
                       {formatPrice(
-                        contrat?.totalAmount - totalPaye || totalReliqua
+                        selectedRental?.totalAmount - filterPaiement?.totalPaye
                       )}{' '}
                       F
                     </CardText>
                     <CardText>
                       <strong> Date de paiement:</strong>{' '}
                       {new Date(
-                        selectedPaiement?.paiementDate
+                        filterPaiement?.paiementDate
                       ).toLocaleDateString('fr-Fr', {
                         weekday: 'long',
                         year: 'numeric',
@@ -230,4 +217,4 @@ const ReçuPaiement = ({
   );
 };
 
-export default ReçuPaiement;
+export default ReçuReservation;

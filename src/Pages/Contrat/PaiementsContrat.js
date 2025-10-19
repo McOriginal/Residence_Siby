@@ -35,7 +35,9 @@ export default function PaiementsContrat() {
 
   // Fonction de Rechercher
   const filterPaiement = paiementsData?.filter(
-    (paiement) => paiement?.contrat?._id === contrat.id
+    (paiement) =>
+      paiement?.contrat?._id === selectedContrat?._id ||
+      paiement?.rental?.appartement?._id === selectedContrat?.appartement?._id
   );
 
   // Ouverture de Modal Form
@@ -84,6 +86,7 @@ export default function PaiementsContrat() {
           <ReçuPaiement
             show_modal={show_modal}
             tog_show_modal={tog_show_modal}
+            contrat={selectedContrat}
             selectedPaiementID={selectedPaiement}
             totalReliqua={sumTotalReliqua}
           />
@@ -115,6 +118,12 @@ export default function PaiementsContrat() {
                       )}
                     </Row>
                     <h6 className='text-end'>
+                      Montant:{' '}
+                      <span className='text-info'>
+                        {formatPrice(sumTotalPaye + sumTotalReliqua || 0)} F{' '}
+                      </span>{' '}
+                    </h6>
+                    <h6 className='text-end'>
                       Total Payé:{' '}
                       <span className='text-info'>
                         {formatPrice(sumTotalPaye || 0)} F{' '}
@@ -145,13 +154,11 @@ export default function PaiementsContrat() {
                           id='paiementTable'
                         >
                           <thead className='table-light'>
-                            <tr>
+                            <tr className='text-center'>
                               <th data-sort='paiementDate'>Date de Paiement</th>
                               <th>Client</th>
                               <th>Téléphone</th>
-                              <th>Total Contrat</th>
-                              <th>Remise</th>
-                              <th>Total après remise</th>
+
                               <th>Net Payé</th>
                               <th>Action</th>
                             </tr>
@@ -159,54 +166,39 @@ export default function PaiementsContrat() {
 
                           <tbody className='list form-check-all text-center'>
                             {filterPaiement?.length > 0 &&
-                              filterPaiement?.map((paiement) => (
-                                <tr key={paiement?._id}>
-                                  <th scope='row'>
-                                    {new Date(
-                                      paiement?.paiementDate
-                                    ).toLocaleDateString()}
-                                  </th>
-                                  <td>
-                                    {capitalizeWords(
-                                      paiement?.contrat?.client.firstName +
-                                        ' ' +
-                                        paiement?.contrat?.client.lastName
-                                    )}{' '}
-                                  </td>
-                                  <td>
-                                    {formatPhoneNumber(
-                                      paiement?.contrat?.client?.phoneNumber
-                                    )}{' '}
-                                  </td>
-                                  <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.amount || 0
-                                    ) || 0}{' '}
-                                    F
-                                  </td>
-                                  <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.reduction || 0
-                                    )}{' '}
-                                    F
-                                  </td>
-                                  <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.totalAmount || 0
-                                    )}{' '}
-                                    F
-                                  </td>
+                              filterPaiement?.map((paiement) => {
+                                const client =
+                                  paiement?.contrat?.client ||
+                                  paiement?.rental?.client;
 
-                                  <td>
-                                    {formatPrice(paiement?.totalPaye || 0)}
-                                    {' F '}
-                                  </td>
-
-                                  {connectedUserRole === 'admin' && (
+                                return (
+                                  <tr
+                                    key={paiement?._id}
+                                    className='text-center'
+                                  >
+                                    <th scope='row'>
+                                      {new Date(
+                                        paiement?.paiementDate
+                                      ).toLocaleDateString()}
+                                    </th>
                                     <td>
+                                      {capitalizeWords(
+                                        client.firstName + ' ' + client.lastName
+                                      )}{' '}
+                                    </td>
+                                    <td>
+                                      {formatPhoneNumber(client?.phoneNumber)}{' '}
+                                    </td>
+
+                                    <td>
+                                      {formatPrice(paiement?.totalPaye || 0)}
+                                      {' F '}
+                                    </td>
+
+                                    <td className=''>
                                       {isDeleting && <LoadingSpiner />}
                                       {!isDeleting && (
-                                        <div className='d-flex gap-2'>
+                                        <div className='d-flex justify-content-center align-items-center gap-2'>
                                           <div>
                                             <button
                                               className='btn btn-sm btn-secondary show-item-btn'
@@ -260,9 +252,9 @@ export default function PaiementsContrat() {
                                         </div>
                                       )}
                                     </td>
-                                  )}
-                                </tr>
-                              ))}
+                                  </tr>
+                                );
+                              })}
                           </tbody>
                         </table>
                       )}

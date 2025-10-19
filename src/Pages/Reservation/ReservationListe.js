@@ -20,7 +20,6 @@ import {
   formatPrice,
 } from '../components/capitalizeFunction';
 import {
-  deleteButton,
   errorMessageAlert,
   successMessageAlert,
 } from '../components/AlerteModal';
@@ -32,19 +31,21 @@ import {
 } from '../components/NavigationButton';
 import {
   useAllRental,
-  useDeleteRental,
   useUpdateRentalStatut,
 } from '../../Api/queriesReservation';
 import ReservationForm from './ReservationForm';
 import { connectedUserRole } from '../Authentication/userInfos';
 import Swal from 'sweetalert2';
+import ReçuReservation from './ReçuReservation';
 export default function ReservationListe() {
   const param = useParams();
   const [form_modal, setForm_modal] = useState(false);
+  const [reçue_modal, setRecue_model] = useState(false);
   const { data: rentalsData, isLoading, error } = useAllRental();
   const { mutate: updateRentalStatut } = useUpdateRentalStatut();
-  const { mutate: deleteRental, isLoading: isDeleting } = useDeleteRental();
+  // const { mutate: deleteRental, isLoading: isDeleting } = useDeleteRental();
 
+  const [selectedRental, setSelectedRental] = useState(null);
   const [rentalToUpdate, setRentalToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState(
     'Ajouter une Reservation'
@@ -69,6 +70,10 @@ export default function ReservationListe() {
 
   function tog_form_modal() {
     setForm_modal(!form_modal);
+  }
+
+  function tog_reçue_modal() {
+    setRecue_model(!reçue_modal);
   }
   const handleUpdateRentalStatut = async (rental, statut) => {
     const swalWithBootstrapButtons = Swal.mixin({
@@ -143,6 +148,12 @@ export default function ReservationListe() {
             <DashboardButton />
             <HomeButton />
           </div>
+
+          <ReçuReservation
+            show_modal={reçue_modal}
+            tog_show_modal={tog_reçue_modal}
+            selectedRental={selectedRental}
+          />
           {/* -------------------------------- */}
           <FormModal
             form_modal={form_modal}
@@ -241,6 +252,7 @@ export default function ReservationListe() {
                               <th></th>
                               <th>Statut</th>
                               <th>Début</th>
+                              <th>Date de Changement</th>
                               <th>Fin</th>
                               <th>N° d'Appartement</th>
                               <th>Secteur</th>
@@ -305,7 +317,7 @@ export default function ReservationListe() {
                                 </td>
                                 <td
                                   className={`${
-                                    item.statut === 'validéé'
+                                    item.statut === 'validée'
                                       ? 'text-success'
                                       : item.statut === 'annulée'
                                       ? 'text-danger'
@@ -323,6 +335,18 @@ export default function ReservationListe() {
                                     month: 'numeric',
                                     year: 'numeric',
                                   })}
+                                </td>
+                                <td>
+                                  {item?.rentalChangeDate
+                                    ? new Date(
+                                        item?.rentalChangeDate
+                                      ).toLocaleDateString('fr-Fr', {
+                                        weekday: 'short',
+                                        day: '2-digit',
+                                        month: 'numeric',
+                                        year: 'numeric',
+                                      })
+                                    : '-------'}
                                 </td>
                                 <td
                                   className={` text-light ${
@@ -373,9 +397,20 @@ export default function ReservationListe() {
                                 <td>{formatPrice(item.jour || 0)}</td>
                                 <td>{formatPrice(item.heure || 0)}</td>
 
-                                {connectedUserRole === 'admin' && (
-                                  <td className='text-center'>
-                                    <div className='d-flex gap-2'>
+                                <td className='text-center'>
+                                  <div className='d-flex gap-2'>
+                                    <div>
+                                      <button
+                                        className='btn btn-sm btn-secondary edit-item-btn'
+                                        onClick={() => {
+                                          tog_reçue_modal();
+                                          setSelectedRental(item);
+                                        }}
+                                      >
+                                        <i className='bx bx-show text-white'></i>
+                                      </button>
+                                    </div>
+                                    {connectedUserRole === 'admin' && (
                                       <div className='edit'>
                                         <button
                                           className='btn btn-sm btn-success edit-item-btn'
@@ -390,7 +425,8 @@ export default function ReservationListe() {
                                           <i className='ri-pencil-fill text-white'></i>
                                         </button>
                                       </div>
-                                      {isDeleting && <LoadingSpiner />}
+                                    )}
+                                    {/* {isDeleting && <LoadingSpiner />}
                                       {!isDeleting && (
                                         <div className='remove'>
                                           <button
@@ -413,10 +449,9 @@ export default function ReservationListe() {
                                             <i className='ri-delete-bin-fill text-white'></i>
                                           </button>
                                         </div>
-                                      )}
-                                    </div>
-                                  </td>
-                                )}
+                                      )} */}
+                                  </div>
+                                </td>
                               </tr>
                             ))}
                           </tbody>

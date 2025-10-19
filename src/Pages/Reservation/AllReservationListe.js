@@ -87,6 +87,8 @@ export default function AllReservationListe() {
                       <tr className='text-center'>
                         <th>Statut</th>
                         <th>Date de Reservation</th>
+                        <th>Date de Changement</th>
+                        <th>Fin</th>
                         <th>N° d'Appartement</th>
                         <th>Secteur</th>
                         <th>Client</th>
@@ -116,16 +118,40 @@ export default function AllReservationListe() {
                           >
                             {capitalizeWords(item?.statut)}
                           </td>
+
+                          <td>
+                            {new Date(item?.rentalDate).toLocaleDateString(
+                              'fr-Fr',
+                              {
+                                weekday: 'short',
+                                day: '2-digit',
+                                month: 'numeric',
+                                year: 'numeric',
+                              }
+                            )}
+                          </td>
+                          <td>
+                            {item?.rentalChangeDate
+                              ? new Date(
+                                  item?.rentalChangeDate
+                                ).toLocaleDateString('fr-Fr', {
+                                  weekday: 'short',
+                                  day: '2-digit',
+                                  month: 'numeric',
+                                  year: 'numeric',
+                                })
+                              : '-------'}
+                          </td>
                           <td
                             className={` text-light ${
-                              new Date(item?.rentalDate) > new Date()
+                              new Date(item?.rentalEndDate) > new Date()
                                 ? 'bg-warning'
-                                : new Date(item?.rentalDate) === new Date()
+                                : new Date(item?.rentalEndDate) === new Date()
                                 ? 'bg-success'
                                 : 'bg-danger'
                             }`}
                           >
-                            {new Date(item?.rentalDate).toLocaleDateString(
+                            {new Date(item?.rentalEndDate).toLocaleDateString(
                               'fr-Fr',
                               {
                                 weekday: 'short',
