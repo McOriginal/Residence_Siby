@@ -204,26 +204,31 @@ session.startTransaction()
 
 if(req.body.statut === 'annulée'){
   const paie = await Paiement.findOne({rental: rentalId})
-  .populate({path: 'rental', populate:{path:'client'}}).session(session);
+  .populate({path: 'rental', 
+    populate:[
+      {path:'client'}, {path:'appartement'}
 
-  const paieDate = new Date(paie.paiementDate)
-  const paieDay = new Date(paieDate.setDate(paieDate.getDate() + 5))
-  const today = new Date();
+    ]}).session(session);
+
+  // const paieDate = new Date(paie.paiementDate)
+  // const paieDay = new Date(paieDate.setDate(paieDate.getDate() + 5))
+  // const today = new Date();
 
   const client = rentalUpdate.client;
 const secteur = rentalUpdate.appartement.secteur
+const paieAmount = paie.totalPaye
+const appartementDayPrice = paie.rental.appartement.dayPrice
+
+// On trasforme la valeur en Positif avec Math.abs()
+const returningAmount = Math.abs(paieAmount - appartementDayPrice)
 
 
-  if(paieDay > today){
-  // if(today > paieDay){
-
-   
 const dep = await Depense.create(
       [
         {
           motifDepense: `Rembourssement de reservation pour: ${client.firstName + ' - ' + client.lastName}`,
           dateOfDepence: new Date(),
-          totalAmount: paie.totalPaye,
+          totalAmount: returningAmount,
 secteur: secteur._id,
 rental: rentalUpdate._id,
 user: req.user.id,
@@ -236,8 +241,7 @@ user: req.user.id,
       session.endSession()
       return res.status(404).json({message: "Erreur de mis à jours Statut"})
     }
-  
-}
+
 
 }
 
@@ -246,9 +250,7 @@ user: req.user.id,
 await Rental.findByIdAndUpdate(rentalUpdate._id,
   {
     statut: req.body.statut,
-     rentalEndDate: new Date(),
      rentalChangeDate: new Date(),
-
   },
   {session}
 );
