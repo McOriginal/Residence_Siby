@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Client = require('../models/ClientModel');
 const Contrat = require('../models/ContratModel');
+const Rental = require('../models/RentalModel');
 const Paiement = require('../models/PaiementModel')
 const Appartement = require('../models/AppartementModel')
 const textValidation = require('./regexValidation');
@@ -177,6 +178,28 @@ await Contrat.findByIdAndDelete(cont._id,{session});
 }
 
     }
+
+
+
+    // Suppression des Reservations
+    const rentals = await Rental.find({client: req.params.id}).session(session)
+
+    if(rentals){
+     for(const rent of rentals){
+
+      const rentalPaie = await Paiement.find({rental:rent._id}).session(session)
+      if(!rentalPaie){
+        await session.abortTransaction()
+        session.endSession()
+        return res.status(404).json({message: 'Erreur de suppression, paiement non trouvée'})
+      }
+      await Paiement.findByIdAndDelete(rentalPaie._id,{session});
+     
+     
+      await Rental.findByIdAndDelete(rent._id,{session});
+     }
+    }
+
 // Et pour finir on supprime le CLIENT
     await Client.findByIdAndDelete(req.params.id, {session});
 
