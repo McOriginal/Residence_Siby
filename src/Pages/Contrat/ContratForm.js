@@ -172,8 +172,6 @@ const ContratForm = ({
       return (
         rent?.client?._id === clientId &&
         rent?.statut === 'validée' &&
-        rent?.rentalEndDate.substring(0, 10) ===
-          new Date().toISOString().substring(0, 10) &&
         rent?.appartement?._id === selecApp
       );
     });
@@ -399,14 +397,16 @@ const ContratForm = ({
             Total Contrat: {formatPrice(validation.values.amount || 0)}
             {' F '}
           </h6>
-          {/* {validation.values.reduction && ( */}
-          <h6 className='text-info '>
-            Après remise: {formatPrice(validation.values.totalAmount)} F{' '}
-          </h6>
-          {/* )} */}
-          <h6 className='text-success'>
-            Total General: {formatPrice(validation.values.totalGeneral)} F
-          </h6>
+          {validation.values.reduction && (
+            <h6 className='text-info '>
+              Après remise: {formatPrice(validation.values.totalAmount)} F{' '}
+            </h6>
+          )}
+          {validation.values.rental && (
+            <h6 className='text-success'>
+              Total General: {formatPrice(validation.values.totalGeneral)} F
+            </h6>
+          )}
         </div>
       </div>
 

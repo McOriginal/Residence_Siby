@@ -103,7 +103,7 @@ export default function Secteur() {
 
           {loadingData && <LoadingSpiner />}
           {!dataError && !loadingData && (
-            <Row className='d-flex flex-wrap mt-4 gap-4 justify-content-center align-items-center'>
+            <Row className='d-flex flex-wrap mt-4 gap-3 justify-content-center align-items-center'>
               {secteurData?.length > 0 &&
                 secteurData?.map((item) => (
                   <Col key={item?._id}>

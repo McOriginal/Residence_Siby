@@ -14,7 +14,6 @@ import {
   DashboardButton,
   HomeButton,
 } from '../components/NavigationButton';
-import ActiveSecteur from '../Secteurs/ActiveSecteur';
 import { useAllContrat } from '../../Api/queriesContrat';
 
 export default function PaiementsListe() {
@@ -62,6 +61,7 @@ export default function PaiementsListe() {
   function tog_show_modal() {
     setShow_modal(!show_modal);
   }
+
   return (
     <React.Fragment>
       <div className='page-content'>
@@ -141,76 +141,89 @@ export default function PaiementsListe() {
 
                           <tbody className='list form-check-all text-center'>
                             {paiementsData?.length > 0 &&
-                              paiementsData?.map((paiement) => (
-                                <tr key={paiement?._id}>
-                                  <th scope='row'>
-                                    {new Date(
-                                      paiement?.paiementDate
-                                    ).toLocaleDateString()}
-                                  </th>
-                                  <td>
-                                    {capitalizeWords(
-                                      paiement?.contrat?.client.firstName +
-                                        ' ' +
-                                        paiement?.contrat?.client.lastName
-                                    )}{' '}
-                                  </td>
-                                  <td>
-                                    {formatPhoneNumber(
-                                      paiement?.contrat?.client?.phoneNumber
-                                    )}{' '}
-                                  </td>
-                                  <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.amount || 0
-                                    )}{' '}
-                                    F
-                                  </td>
-                                  <td className='text-warning'>
-                                    {formatPrice(
-                                      paiement?.contrat?.reduction || 0
-                                    )}{' '}
-                                    F
-                                  </td>
-                                  <td>
-                                    {formatPrice(
-                                      paiement?.contrat?.totalAmount
-                                    ) || 0}{' '}
-                                    F
-                                  </td>
+                              paiementsData?.map((paiement) => {
+                                const client =
+                                  paiement?.contrat?.client ||
+                                  paiement?.rental?.client;
+                                const contrat =
+                                  paiement?.contrat || paiement?.rental;
+                                return (
+                                  <tr key={paiement?._id}>
+                                    <th scope='row'>
+                                      {new Date(
+                                        paiement?.paiementDate
+                                      ).toLocaleDateString()}
+                                    </th>
+                                    <td>
+                                      {capitalizeWords(
+                                        client?.firstName +
+                                          ' ' +
+                                          client?.lastName
+                                      )}{' '}
+                                    </td>
+                                    <td>
+                                      {formatPhoneNumber(client?.phoneNumber)}{' '}
+                                    </td>
+                                    <td>
+                                      {formatPrice(
+                                        contrat?.amount ||
+                                          contrat?.totalAmount ||
+                                          0
+                                      )}{' '}
+                                      F
+                                    </td>
+                                    <td className='text-warning'>
+                                      {formatPrice(
+                                        paiement?.contrat?.reduction || 0
+                                      )}{' '}
+                                      F
+                                    </td>
+                                    <td>
+                                      {formatPrice(
+                                        contrat?.amount ||
+                                          contrat?.totalAmount ||
+                                          0
+                                      )}{' '}
+                                      F
+                                    </td>
 
-                                  <td>
-                                    {formatPrice(paiement?.totalPaye)}
-                                    {' F '}
-                                  </td>
-                                  <td className='text-danger'>
-                                    {formatPrice(
-                                      paiement?.contrat?.totalAmount -
-                                        paiement?.totalPaye || 0
-                                    )}
-                                    {' F '}
-                                  </td>
+                                    <td>
+                                      {formatPrice(paiement?.totalPaye || 0)}
+                                      {' F '}
+                                    </td>
+                                    <td className='text-danger'>
+                                      {formatPrice(
+                                        contrat?.totalAmount ||
+                                          contrat?.amount -
+                                            paiement?.totalPaye ||
+                                          0
+                                      )}
+                                      {' F '}
+                                    </td>
 
-                                  <td>
-                                    <div className='d-flex gap-2'>
-                                      <div>
-                                        <button
-                                          className='btn btn-sm btn-secondary show-item-btn'
-                                          onClick={() => {
-                                            setSelectedPaiement(paiement?._id);
-                                            setSelectedPaiementTotalPaye(
-                                              paiement?.totalPaye
-                                            );
-                                            tog_show_modal();
-                                          }}
-                                        >
-                                          <i className='bx bx-show align-center text-white'></i>
-                                        </button>
+                                    <td>
+                                      <div className='d-flex gap-2'>
+                                        <div>
+                                          <button
+                                            className='btn btn-sm btn-secondary show-item-btn'
+                                            onClick={() => {
+                                              setSelectedPaiement(
+                                                paiement?._id
+                                              );
+                                              setSelectedPaiementTotalPaye(
+                                                paiement?.totalPaye
+                                              );
+                                              tog_show_modal();
+                                            }}
+                                          >
+                                            <i className='bx bx-show align-center text-white'></i>
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                           </tbody>
                         </table>
                       )}

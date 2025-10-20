@@ -44,7 +44,7 @@ export default function ContratListe() {
   const { data: contratData, isLoading, error } = useAllContrat();
   const { mutate: stopeContrat } = useStopeContrat();
 
-  const { mutate: deleteContrat } = useDeleteContrat();
+  const { mutate: deleteContrat, isLoading: isDeleting } = useDeleteContrat();
   const [contratToUpdate, setContratToUpdate] = useState(null);
   const [contratToReload, setContratToReload] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Contrat');
@@ -323,8 +323,9 @@ export default function ContratListe() {
 
                                 {connectedUserRole === 'admin' && (
                                   <td className='text-center'>
-                                    {isSubmitting && <LoadingSpiner />}
-                                    {!isSubmitting && (
+                                    {isSubmitting ||
+                                      (isDeleting && <LoadingSpiner />)}
+                                    {!isSubmitting && !isDeleting && (
                                       <UncontrolledDropdown className='dropdown d-inline-block'>
                                         <DropdownToggle
                                           className='btn btn-info text-light btn-sm'

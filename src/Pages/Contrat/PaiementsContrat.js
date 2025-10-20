@@ -183,7 +183,9 @@ export default function PaiementsContrat() {
                                     </th>
                                     <td>
                                       {capitalizeWords(
-                                        client.firstName + ' ' + client.lastName
+                                        client?.firstName +
+                                          ' ' +
+                                          client?.lastName
                                       )}{' '}
                                     </td>
                                     <td>
