@@ -3,6 +3,7 @@ const Client = require('../models/ClientModel');
 const Contrat = require('../models/ContratModel');
 const Rental = require('../models/RentalModel');
 const Paiement = require('../models/PaiementModel')
+const Depense = require('../models/DepenseModel')
 const Appartement = require('../models/AppartementModel')
 const textValidation = require('./regexValidation');
 
@@ -179,8 +180,6 @@ await Contrat.findByIdAndDelete(cont._id,{session});
 
     }
 
-
-
     // Suppression des Reservations
     const rentals = await Rental.find({client: req.params.id}).session(session)
 
@@ -193,8 +192,19 @@ await Contrat.findByIdAndDelete(cont._id,{session});
         session.endSession()
         return res.status(404).json({message: 'Erreur de suppression, paiement non trouvée'})
       }
-      await Paiement.findByIdAndDelete(rentalPaie._id,{session});
-     
+    
+      for(const pai of rentalPaie){
+        await Paiement.findByIdAndDelete(pai._id,{session});
+      }
+
+      const rentalDepe = await Depense.find({rental:rent._id}).session(session)
+      if(rentalDepe){
+       for(const dep of rentalDepe){
+
+         await Depense.findByIdAndDelete(dep._id,{session});
+       }
+        
+      }
      
       await Rental.findByIdAndDelete(rent._id,{session});
      }

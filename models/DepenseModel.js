@@ -26,7 +26,7 @@ const depenseSchema = new mongoose.Schema(
     },
     rental: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Rental',
       
     },
     user: {
