@@ -20,6 +20,7 @@ import {
   formatPrice,
 } from '../components/capitalizeFunction';
 import {
+  deleteButton,
   errorMessageAlert,
   successMessageAlert,
 } from '../components/AlerteModal';
@@ -31,6 +32,7 @@ import {
 } from '../components/NavigationButton';
 import {
   useAllRental,
+  useDeleteRental,
   useUpdateRentalStatut,
 } from '../../Api/queriesReservation';
 import ReservationForm from './ReservationForm';
@@ -43,7 +45,7 @@ export default function ReservationListe() {
   const [reçue_modal, setRecue_model] = useState(false);
   const { data: rentalsData, isLoading, error } = useAllRental();
   const { mutate: updateRentalStatut } = useUpdateRentalStatut();
-  // const { mutate: deleteRental, isLoading: isDeleting } = useDeleteRental();
+  const { mutate: deleteRental, isLoading: isDeleting } = useDeleteRental();
 
   const [selectedRental, setSelectedRental] = useState(null);
   const [rentalToUpdate, setRentalToUpdate] = useState(null);
@@ -426,30 +428,30 @@ export default function ReservationListe() {
                                         </button>
                                       </div>
                                     )}
-                                    {/* {isDeleting && <LoadingSpiner />}
-                                      {!isDeleting && (
-                                        <div className='remove'>
-                                          <button
-                                            className='btn btn-sm btn-danger remove-item-btn'
-                                            data-bs-toggle='modal'
-                                            data-bs-target='#deleteRecordModal'
-                                            onClick={() => {
-                                              deleteButton(
-                                                item._id,
-                                                `La Reservation de ${
-                                                  item?.client?.firstName +
-                                                  ' ' +
-                                                  item?.client.lastName
-                                                } 
+                                    {isDeleting && <LoadingSpiner />}
+                                    {!isDeleting && (
+                                      <div className='remove'>
+                                        <button
+                                          className='btn btn-sm btn-danger remove-item-btn'
+                                          data-bs-toggle='modal'
+                                          data-bs-target='#deleteRecordModal'
+                                          onClick={() => {
+                                            deleteButton(
+                                              item._id,
+                                              `La Reservation de ${
+                                                item?.client?.firstName +
+                                                ' ' +
+                                                item?.client.lastName
+                                              } 
                                                                                      `,
-                                                deleteRental
-                                              );
-                                            }}
-                                          >
-                                            <i className='ri-delete-bin-fill text-white'></i>
-                                          </button>
-                                        </div>
-                                      )} */}
+                                              deleteRental
+                                            );
+                                          }}
+                                        >
+                                          <i className='ri-delete-bin-fill text-white'></i>
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                 </td>
                               </tr>

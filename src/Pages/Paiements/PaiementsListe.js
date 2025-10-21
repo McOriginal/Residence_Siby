@@ -15,10 +15,17 @@ import {
   HomeButton,
 } from '../components/NavigationButton';
 import { useAllContrat } from '../../Api/queriesContrat';
+import FormModal from '../components/FormModal';
+import PaiementForm from './PaiementForm';
+import { connectedUserRole } from '../Authentication/userInfos';
 
 export default function PaiementsListe() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
   const { data: contrats } = useAllContrat();
+  const [paiementToUpdate, setPaiementToUpdate] = useState(null);
+  const [formModalTitle, setFormModalTitle] = useState('Nouveau Paiement');
+  const [form_modal, setForm_modal] = useState(false);
+
   const [selectedPaiement, setSelectedPaiement] = useState(false);
   const [selectedPaiementTotalPaye, setSelectedPaiementTotalPaye] = useState(0);
   const [show_modal, setShow_modal] = useState(false);
@@ -62,6 +69,11 @@ export default function PaiementsListe() {
     setShow_modal(!show_modal);
   }
 
+  // Ouverture de Modal Form
+  function tog_form_modal() {
+    setForm_modal(!form_modal);
+  }
+
   return (
     <React.Fragment>
       <div className='page-content'>
@@ -73,6 +85,23 @@ export default function PaiementsListe() {
             <DashboardButton />
             <HomeButton />
           </div>
+
+          {/* -------------------------- */}
+          <FormModal
+            form_modal={form_modal}
+            setForm_modal={setForm_modal}
+            tog_form_modal={tog_form_modal}
+            modal_title={formModalTitle}
+            size='md'
+            bodyContent={
+              <PaiementForm
+                paiementToEdit={paiementToUpdate}
+                // totalContratAmount={selectedContrat?.totalAmount}
+                // totalReliqua={sumTotalReliqua}
+                tog_form_modal={tog_form_modal}
+              />
+            }
+          />
           {/* -------------------- */}
           <ReçuPaiement
             show_modal={show_modal}
@@ -219,6 +248,22 @@ export default function PaiementsListe() {
                                             <i className='bx bx-show align-center text-white'></i>
                                           </button>
                                         </div>
+                                        {connectedUserRole === 'admin' && (
+                                          <div className='edit mx-2'>
+                                            <button
+                                              className='btn btn-sm btn-success edit-item-btn'
+                                              onClick={() => {
+                                                setFormModalTitle(
+                                                  'Modifier les données'
+                                                );
+                                                setPaiementToUpdate(paiement);
+                                                tog_form_modal();
+                                              }}
+                                            >
+                                              <i className='ri-pencil-fill text-white'></i>
+                                            </button>
+                                          </div>
+                                        )}
                                       </div>
                                     </td>
                                   </tr>

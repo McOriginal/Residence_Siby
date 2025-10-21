@@ -49,7 +49,6 @@ const PaiementForm = ({
       totalPaye: paiementToEdit?.totalPaye || undefined,
     },
     validationSchema: Yup.object({
-      contrat: Yup.string().required('Ce champ est obligatoire'),
       paiementDate: Yup.date().required('Ce champ est obligatoire'),
       totalPaye: Yup.number()
         .positive('Vous devez entrez une valeur positive')
@@ -120,17 +119,23 @@ const PaiementForm = ({
         return false;
       }}
     >
-      <h6 className='text-end'>
-        Total Contrat{': '}
-        <span className='text-info'>
-          {formatPrice(totalContratAmount)}
-          {' F'}
-        </span>{' '}
-      </h6>
-      <h6 className='text-end'>
-        Reliquat{': '}
-        <span className='text-danger'>{formatPrice(totalReliqua)} </span>{' '}
-      </h6>
+      {!paiementToEdit && (
+        <div>
+          <h6 className='text-end'>
+            Total Contrat{': '}
+            <span className='text-info'>
+              {formatPrice(totalContratAmount)}
+              {' F'}
+            </span>{' '}
+          </h6>
+          <h6 className='text-end'>
+            Reliquat{': '}
+            <span className='text-danger'>
+              {formatPrice(totalReliqua)}{' '}
+            </span>{' '}
+          </h6>
+        </div>
+      )}
       <Row>
         <Col md='12'>
           <FormGroup className='mb-3'>
