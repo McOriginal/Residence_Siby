@@ -210,9 +210,6 @@ if(req.body.statut === 'annulée'){
 
     ]}).session(session);
 
-  // const paieDate = new Date(paie.paiementDate)
-  // const paieDay = new Date(paieDate.setDate(paieDate.getDate() + 5))
-  // const today = new Date();
 
   const client = rentalUpdate.client;
 const secteur = rentalUpdate.appartement.secteur
@@ -305,16 +302,52 @@ exports.getRental = async (req, res) => {
 
 // Supprimer un Rental
 exports.deleteRental = async (req, res) => {
+  const session = await mongoose.startSession()
+session.startTransaction()
+
   try {
     
-  await Rental.findByIdAndDelete(req.params.id);
+    const rentalId = req.params.id
 
+    const rentalUpdate = await Rental.findById(rentalId)
+    .populate({path:'appartement', populate:{path: 'secteur'}})
+    .populate('client').session(session)
+
+
+    const paie = await Paiement.findOne({rental: rentalId})
+    .populate({path: 'rental', 
+      populate:[
+        {path:'client'}, {path:'appartement'}
+  
+      ]}).session(session);
+
+
+    if(paie){
+
+await Paiement.findByIdAndDelete(paie._id,{session});
+
+      }    
+
+      const dep = await Depense.findOne({rental: rentalId}).session(session)
+      if(dep){
+
+        await Depense.findByIdAndDelete(dep._id,{session});
+        
+              }   
+
+
+  await Rental.findByIdAndDelete(rentalId,{session});
+
+  await session.commitTransaction()
+  session.endSession()
     return res
       .status(200)
       .json({ status: 'success', message: 'Reservation supprimé avec succès' });
 
 
   } catch (err) {
+    await session.abortTransaction()
+    session.endSession();
   console.log(err)
     return res.status(400).json({ status: 'error', message: err.message });
   }
