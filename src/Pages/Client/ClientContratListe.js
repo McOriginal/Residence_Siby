@@ -333,7 +333,7 @@ export default function ClientContratListe() {
                                             className='edit-item-btn  text-warning'
                                             onClick={() => {
                                               navigate(
-                                                `/contrat/${contrat._id}`
+                                                `/contrat/${contrat?._id}`
                                               );
                                             }}
                                           >

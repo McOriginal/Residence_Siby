@@ -36,8 +36,11 @@ export default function PaiementsContrat() {
   // Fonction de Rechercher
   const filterPaiement = paiementsData?.filter(
     (paiement) =>
-      paiement?.contrat?._id === selectedContrat?._id ||
-      paiement?.rental?.appartement?._id === selectedContrat?.appartement?._id
+      (paiement?.contrat?._id === selectedContrat?._id &&
+        paiement?.contrat?.client?._id === selectedContrat?.client?._id) ||
+      (paiement?.rental?.appartement?._id ===
+        selectedContrat?.appartement?._id &&
+        paiement?.rental?.client?._id === selectedContrat?.client?._id)
   );
 
   // Ouverture de Modal Form

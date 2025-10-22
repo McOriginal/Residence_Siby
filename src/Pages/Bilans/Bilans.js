@@ -1,15 +1,6 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Button, Card, CardBody, Col, Container, Row } from 'reactstrap';
-import { DownloadTableExcel } from 'react-export-table-to-excel';
+import React, { useMemo, useState } from 'react';
+import { Button, Container } from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
-import LoadingSpiner from '../components/LoadingSpiner';
-import {
-  capitalizeWords,
-  formatPhoneNumber,
-  formatPrice,
-} from '../components/capitalizeFunction';
-import { useAllPaiements } from '../../Api/queriesPaiement';
-import { useAllDepenses } from '../../Api/queriesDepense';
 import DepenseBilans from './DepenseBilans';
 import PaiementBilans from './PaiementBilans';
 export default function Bilans() {

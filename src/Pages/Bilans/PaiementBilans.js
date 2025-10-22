@@ -7,6 +7,7 @@ import { useAllPaiements } from '../../Api/queriesPaiement';
 import { useAllContrat } from '../../Api/queriesContrat';
 import { useAllDepenses } from '../../Api/queriesDepense';
 import { useAllSecteur } from '../../Api/queriesSecteurs';
+import { useAllRental } from '../../Api/queriesReservation';
 export default function PaiementBilans() {
   const {
     data: secteursData,
@@ -15,6 +16,7 @@ export default function PaiementBilans() {
   } = useAllSecteur();
   const { data: paiementsData, isLoading, error } = useAllPaiements();
   const { data: contrats } = useAllContrat();
+  const { data: rentals } = useAllRental();
   const { data: depenses } = useAllDepenses();
   const tableRef = useRef(null);
   const [selectedSecteur, setSelectedSecteur] = useState(null);
@@ -37,6 +39,17 @@ export default function PaiementBilans() {
 
   // Filtrer les Contrats
   const filterContrat = contrats
+    ?.filter((item) => {
+      return isBetweenDates(item?.startDate);
+    })
+    ?.filter((item) => {
+      // Filtrer par secteur
+      if (!selectedSecteur) return true;
+      return item?.appartement?.secteur?._id === selectedSecteur;
+    });
+
+  // Filtrer les Reservations
+  const filterRentals = rentals
     ?.filter((item) => {
       return isBetweenDates(item?.startDate);
     })
@@ -71,7 +84,12 @@ export default function PaiementBilans() {
     });
 
   // Total de Contrat
-  const sumTotalAmount = filterContrat?.reduce((curr, item) => {
+  const sumTotalRentalsAmount = filterRentals?.reduce((curr, item) => {
+    return (curr += item?.totalAmount);
+  }, 0);
+
+  // Total de Contrat
+  const sumTotalContratAmount = filterContrat?.reduce((curr, item) => {
     return (curr += item?.totalAmount);
   }, 0);
 
@@ -89,6 +107,8 @@ export default function PaiementBilans() {
   const sumTotalDepense = filterDepense?.reduce((curr, item) => {
     return (curr += item?.totalAmount);
   }, 0);
+
+  const sumTotalAmount = sumTotalContratAmount + sumTotalRentalsAmount;
 
   const revenueAmount = sumTotalPaye - sumTotalComission - sumTotalDepense;
 
@@ -131,6 +151,12 @@ export default function PaiementBilans() {
                         {formatPrice(filterContrat?.length)}
                       </span>
                     </h6>
+                    <h6 className=''>
+                      Reservation :{' '}
+                      <span className='text-info'>
+                        {formatPrice(rentals?.length)}
+                      </span>
+                    </h6>
 
                     <h6>
                       Total Payés:{' '}
@@ -139,7 +165,7 @@ export default function PaiementBilans() {
                       </span>
                     </h6>
                     <h6>
-                      Sur:{' '}
+                      Sur un Total de:{' '}
                       <span className='text-info'>
                         {formatPrice(sumTotalAmount)} F
                       </span>

@@ -30,6 +30,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
   } = useAllAppartement();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [minimumTotalPaye, setMinimumTotalPaye] = useState(0);
 
   const storage = localStorage.getItem('selectedSecteur');
   const secteurStorage = JSON.parse(storage);
@@ -149,6 +150,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
       (filterAppartement.mounthPrice || 0) * mounthValue
     );
 
+    setMinimumTotalPaye(filterAppartement?.dayPrice);
     //  Nouveau total calculé
     const total = heurePrice + dayPrice + weekPrice + mounthPrice;
 
@@ -450,7 +452,7 @@ const ReservationForm = ({ reservationToEdit, clientId, tog_form_modal }) => {
               name='totalPaye'
               placeholder='Montant Payé...'
               type='number'
-              min={0}
+              min={minimumTotalPaye}
               className='form-control border-1 border-dark'
               id='totalPaye'
               onChange={validation.handleChange}

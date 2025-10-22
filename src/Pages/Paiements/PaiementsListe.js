@@ -18,10 +18,12 @@ import { useAllContrat } from '../../Api/queriesContrat';
 import FormModal from '../components/FormModal';
 import PaiementForm from './PaiementForm';
 import { connectedUserRole } from '../Authentication/userInfos';
+import { useAllRental } from '../../Api/queriesReservation';
 
 export default function PaiementsListe() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
   const { data: contrats } = useAllContrat();
+  const { data: rentals } = useAllRental();
   const [paiementToUpdate, setPaiementToUpdate] = useState(null);
   const [formModalTitle, setFormModalTitle] = useState('Nouveau Paiement');
   const [form_modal, setForm_modal] = useState(false);
@@ -46,7 +48,11 @@ export default function PaiementsListe() {
   // }, []);
 
   // Total de commandes
-  const sumTotalAmount = contrats?.reduce((curr, item) => {
+  const sumTotalRentalAmount = rentals?.reduce((curr, item) => {
+    return (curr += item?.totalAmount);
+  }, 0);
+
+  const sumTotalContratAmount = contrats?.reduce((curr, item) => {
     return (curr += item?.totalAmount);
   }, 0);
 
@@ -58,6 +64,7 @@ export default function PaiementsListe() {
   //   return (curr += item?.totalPaye);
   // }, 0);
 
+  const sumTotalAmount = sumTotalContratAmount + sumTotalRentalAmount;
   const sumTotalReliqua = sumTotalAmount - sumTotalPaye;
   // const sumTotalReliqua = filterPaiement?.reduce(
   //   (acc, item) => (acc += item?.contrat?.totalAmount - item?.totalPaye),
