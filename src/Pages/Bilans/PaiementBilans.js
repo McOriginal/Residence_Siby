@@ -68,7 +68,10 @@ export default function PaiementBilans() {
     ?.filter((item) => {
       // Filtrer par secteur
       if (!selectedSecteur) return true;
-      return item?.contrat?.appartement?.secteur?._id === selectedSecteur;
+      return (
+        item?.contrat?.appartement?.secteur?._id === selectedSecteur ||
+        item?.rental?.appartement?.secteur?._id === selectedSecteur
+      );
     });
 
   // Fonction de Rechercher
@@ -306,8 +309,11 @@ export default function PaiementBilans() {
                   <tbody className='list form-check-all text-center'>
                     {filterPaiement?.length > 0 &&
                       filterPaiement?.map((paiement) => {
-                        const client = paiement?.contrat?.client;
-                        const appartement = paiement?.contrat?.appartement;
+                        const client =
+                          paiement?.contrat?.client || paiement?.rental?.client;
+                        const appartement =
+                          paiement?.contrat?.appartement ||
+                          paiement?.rental?.appartement;
                         const secteur = appartement?.secteur;
                         return (
                           <tr key={paiement?._id}>
