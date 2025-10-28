@@ -49,7 +49,10 @@ exports.getAllPaiements = async (req, res) => {
     })
     .populate({path:'rental',
       populate:[
-        {path:'appartement'},
+        {
+          path: 'appartement',
+          populate: { path: 'secteur' }
+        },
         {path:'client'},
       ]
     })
