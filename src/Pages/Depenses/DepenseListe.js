@@ -237,8 +237,6 @@ export default function DepenseListe() {
                                             <div className='remove'>
                                               <button
                                                 className='btn btn-sm btn-danger remove-item-btn'
-                                                data-bs-toggle='modal'
-                                                data-bs-target='#deleteRecordModal'
                                                 onClick={() => {
                                                   deleteButton(
                                                     depense._id,

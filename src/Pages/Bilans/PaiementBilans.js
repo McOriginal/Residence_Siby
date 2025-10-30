@@ -8,6 +8,7 @@ import { useAllContrat } from '../../Api/queriesContrat';
 import { useAllDepenses } from '../../Api/queriesDepense';
 import { useAllSecteur } from '../../Api/queriesSecteurs';
 import { useAllRental } from '../../Api/queriesReservation';
+import { useAllComissions } from '../../Api/queriesComission';
 export default function PaiementBilans() {
   const {
     data: secteursData,
@@ -17,6 +18,7 @@ export default function PaiementBilans() {
   const { data: paiementsData, isLoading, error } = useAllPaiements();
   const { data: contrats } = useAllContrat();
   const { data: rentals } = useAllRental();
+  const { data: comissions } = useAllComissions();
   const { data: depenses } = useAllDepenses();
   const tableRef = useRef(null);
   const [selectedSecteur, setSelectedSecteur] = useState(null);
@@ -74,6 +76,17 @@ export default function PaiementBilans() {
       );
     });
 
+  const filterComission = comissions
+    ?.filter((item) => {
+      // Filtrer par date
+      return isBetweenDates(item.paiementDate);
+    })
+    ?.filter((item) => {
+      // Filtrer par secteur
+      if (!selectedSecteur) return true;
+      return item?.secteur?._id === selectedSecteur;
+    });
+
   // Fonction de Rechercher
   const filterDepense = depenses
     ?.filter((item) => {
@@ -97,8 +110,8 @@ export default function PaiementBilans() {
   }, 0);
 
   // Total de Comission
-  const sumTotalComission = filterContrat?.reduce((curr, item) => {
-    return (curr += item?.comission);
+  const sumTotalComission = filterComission?.reduce((curr, item) => {
+    return (curr += item?.amount);
   }, 0);
 
   // Total Payés

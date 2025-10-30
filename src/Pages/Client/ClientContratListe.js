@@ -37,6 +37,7 @@ import ReservationListe from '../Reservation/ReservationListe';
 import ActiveSecteur from '../Secteurs/ActiveSecteur';
 import Swal from 'sweetalert2';
 import { connectedUserRole } from '../Authentication/userInfos';
+import ClientComissionListe from '../Comission/ClientComissionListe';
 export default function ClientContratListe() {
   const client = useParams();
   const { data: contratData, isLoading, error } = useAllContrat();
@@ -422,6 +423,9 @@ export default function ClientContratListe() {
 
         {/* Reservation */}
         <ReservationListe />
+
+        {/* Comission Liste */}
+        <ClientComissionListe />
       </div>
     </React.Fragment>
   );

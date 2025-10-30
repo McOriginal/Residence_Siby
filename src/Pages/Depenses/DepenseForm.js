@@ -17,7 +17,6 @@ import {
 import LoadingSpiner from '../components/LoadingSpiner';
 import { useCreateDepense, useUpdateDepense } from '../../Api/queriesDepense';
 import { useState } from 'react';
-import { useAllAppartement } from '../../Api/queriesAppartement';
 import { capitalizeWords, formatPrice } from '../components/capitalizeFunction';
 import { useAllSecteur } from '../../Api/queriesSecteurs';
 

@@ -42,6 +42,12 @@ const SidebarData = [
     isMainMenu: true,
   },
   {
+    label: 'Comission',
+    icon: 'fas fa-dollar-sign',
+    isHasArrow: true,
+    url: '/comissionListe',
+  },
+  {
     label: 'Paiements',
     icon: 'fas fa-dollar-sign',
     isHasArrow: true,
